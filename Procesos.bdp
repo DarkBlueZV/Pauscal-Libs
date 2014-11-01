@@ -1,0 +1,278 @@
+Importar "Cadena.prp"
+Importar "Utiles.prp"
+
+Privado:
+'VARIABLES
+Var h_Open:Entero
+
+'APIS
+Proc CreateToolhelp32Snapshot(lFlags:Entero,lProcessID:Entero):Entero, "Kernel32.dll"
+Proc ProcessFirst(hSnapShot:Entero,Referencia uProcess:PROCESSENTRY32):Entero, "Kernel32.dll" "Process32First"
+Proc ProcessNext(hSnapShot:Entero,Referencia uProcess:PROCESSENTRY32):Entero, "Kernel32.dll" "Process32Next"
+Proc SetPriorityClass(hProcess,dwPriorityClass:Entero):Booleano, "Kernel32.dll"
+Proc GetPriorityClass(hProcess:Entero):Entero, "Kernel32.dll"
+Proc TerminateProcess(hProcess,uExitCode:Entero):Entero, "Kernel32.dll"
+Proc GetProcessId(Process:Entero):Entero, "Kernel32.dll"
+Proc OpenProcess(:Entero,:Booleano,:Entero):Entero, "Kernel32.dll"
+
+Estruc PROCESSENTRY32,_
+    dwSize:Entero,_
+    cntUsage:Entero,_
+    th32ProcessID:Entero,_
+    th32DefaultHeapID:Entero,_
+    th32ModuleID:Entero,_
+    cntThreads:Entero,_
+    th32ParentProcessID:Entero,_
+    pcPriClassBase:Entero,_
+    dwFlags:Entero,_
+    szExeFile[260]:Byte
+
+Público:
+
+'CONSTANTES
+Const ABOVE_NORMAL_PRIORITY_CLASS = &00008000
+Const BELOW_NORMAL_PRIORITY_CLASS = &00004000
+Const HIGH_PRIORITY_CLASS = &00000080
+Const IDLE_PRIORITY_CLASS = &00000040
+Const NORMAL_PRIORITY_CLASS = &00000020
+Const REALTIME_PRIORITY_CLASS = &00000100
+Const PROCESS_MODE_BACKGROUND_END = &00200000
+Const PROCESS_MODE_BACKGROUND_BEGIN = &00100000
+Const PROCESS_QUERY_INFORMATION = &00000400
+Const PROCESS_TERMINATE = &0001
+Const TH32CS_SNAPPROCESS = &2
+Const PROCESS_SET_INFORMATION = &0200
+
+' #ProcesoObtenerID# ========================================================================
+' Autor: PowerDeath
+' Modificador: Nadie
+' Parametros: Nombre de proceso.
+' Tipo de devolución: Entero
+' Devolución: ID del proceso
+' Información: Obtiene el ID de un proceso por su nombre.
+' #Fin# =====================================================================================
+
+Proc ProcesoObtenerID(ProcessName:Cadena):Entero
+Var hSnapShot:EnteroSig,h_Cad:Cadena
+Var uProcess:PROCESSENTRY32
+Var success,h_Find,c_Check:Entero
+Var ProcessId:Entero
+
+hSnapShot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS,&0)
+Si hSnapShot = -1 Salir
+uProcess.dwSize = Long(uProcess)
+success = ProcessFirst(hSnapShot, uProcess)
+Si Success = 1
+   Repetir
+   h_Cad = CadenaDePtrCad(uProcess.szExeFile[0]@)
+   h_Find = BuscarEnCad(h_Cad,Null) - 1
+      Si CadMinus(IzquierdaCad(h_Cad,h_Find)) = CadMinus(ProcessName)
+         ProcessId = uProcess.th32ProcessID
+         Salir Repetir
+      FinSi
+   c_Check = ProcessNext(hSnapShot, uProcess)
+   Si c_Check = Falso Salir Repetir
+   PorSiempre
+FinSi
+CloseHandle(hSnapShot)
+Devolver ProcessId
+FinProc
+
+' #ProcesoExiste# ========================================================================
+' Autor: PowerDeath
+' Modificador: Nadie
+' Parametros: Nombre de proceso.
+' Tipo de devolución: Booleano
+' Devolución: Verd - Falso
+' Información: Verifica si un proceso existe.
+' #Fin# ==================================================================================
+
+Proc ProcesoExiste(ProcessName:Cadena):Booleano
+Var hSnapShot:EnteroSig,h_Cad:Cadena
+Var uProcess:PROCESSENTRY32
+Var success,h_Find,c_Check:Entero
+Var ProcessId:Entero
+
+hSnapShot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS,&0)
+Si hSnapShot = -1 Salir
+uProcess.dwSize = Long(uProcess)
+success = ProcessFirst(hSnapShot, uProcess)
+Si Success = 1
+   Repetir
+   h_Cad = CadenaDePtrCad(uProcess.szExeFile[0]@)
+   h_Find = BuscarEnCad(h_Cad,Null) - 1
+      Si CadMinus(IzquierdaCad(h_Cad,h_Find)) = CadMinus(ProcessName)
+         ProcessId = uProcess.th32ProcessID
+         Salir Repetir
+      FinSi
+   c_Check = ProcessNext(hSnapShot, uProcess)
+   Si c_Check = Falso Salir Repetir
+   PorSiempre
+FinSi
+CloseHandle(hSnapShot)
+Devolver ProcessId
+FinProc
+
+' #ProcesoEsperar# ========================================================================
+' Autor: PowerDeath
+' Modificador: Nadie
+' Parametros: Nombre del proceso, Tiempo de espera por sondeo.
+' Tipo de devolución: Entero
+' Devolución: ID del proceso
+' Información: Detiene la ejecución del programa hasta que el proceso especificado exista.
+' #Fin# ==================================================================================
+
+Proc ProcesoEsperar(ProcessName:Cadena,Opcional IntervaloSondeo:Entero = 200):Entero
+Repetir
+   Si ProcesoExiste(ProcessName)
+      Resultado = ProcesoObtenerID(ProcessName)
+      Salir Repetir
+   FinSi
+   Pausar(IntervaloSondeo)
+PorSiempre
+FinProc
+
+' #ProcesoEsperarCierre# ========================================================================
+' Autor: PowerDeath
+' Modificador: Nadie
+' Parametros: Nombre de proceso, intervalo por sondeo.
+' Tipo de devolución: Entero
+' Devolución: ID del proceso
+' Información: Detiene la ejecución del programa hasta que el proceso especificado se cierre.
+' #Fin# ==================================================================================
+
+Proc ProcesoEsperarCierre(ProcessName:Cadena,Opcional IntervaloSondeo:Entero = 200)
+	Mientras ProcesoExiste(ProcessName)
+	   Pausar(IntervaloSondeo)
+	FinMientras
+FinProc
+
+Proc ProcesoActual:Entero, "Kernel32.dll" "GetCurrentProcess"
+Proc ProcesoIDActual:Entero, "Kernel32.dll" "GetCurrentProcessId"
+Proc ProcesoHiloActual:Entero, "Kernel32.dll" "GetCurrentThread"
+Proc ProcesoIDHiloActual:Entero, "Kernel32.dll" "GetCurrentThreadId"
+
+' #ProcesoListar# ========================================================================
+' Autor: PowerDeath
+' Modificador: Nadie
+' Parametros: Ninguno
+' Tipo de devolución: Matriz de cadena "Cadena[]"
+' Devolución: NombreProceso,Hilos,IDPadre,Prioridad
+' Información: Obtiene todos los procesos y sus datos basicos.
+'
+' NombreProceso = El nombre del archivo ejecutable del proceso.
+' Hilos = El número de hilos de ejecución iniciado por el proceso.
+' IDPadre = El identificador del proceso que creó este proceso (el proceso padre).
+' Prioridad = La prioridad de base de todos los hilos creados por este proceso.
+' #Fin# ==================================================================================
+
+Proc ProcesoListar():Cadena[]
+Var hSnapShot:EnteroSig,h_Cad,ReCad[]:Cadena
+Var uProcess:PROCESSENTRY32
+Var success,i,h_Find:Entero
+Var ProcessId:Entero
+ReDim ReCad,10
+i = 0
+hSnapShot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS,&0)
+Si hSnapShot = -1 Salir
+uProcess.dwSize = Long(uProcess)
+success = ProcessFirst(hSnapShot, uProcess)
+Si Success = 1
+   Repetir
+   Si (i = LongMat(ReCad) - 1) ReDim Preservar ReCad,LongMat(ReCad) + 1
+   h_Cad = CadenaDePtrCad(uProcess.szExeFile[0]@) + "," + EntCad(uProcess.th32ProcessID) + "," + EntCad(uProcess.cntThreads) + "," + EntCad(uProcess.th32ParentProcessID) + "," + EntCad(uProcess.pcPriClassBase)
+   ReCad[i] = IzquierdaCad(h_Cad,BuscarEnCad(h_Cad,Null) - 1)
+   ProcessId = ProcessNext(hSnapShot, uProcess)
+   Si (ProcessId = Falso) Salir Repetir
+   i = i + 1
+   PorSiempre
+FinSi
+CloseHandle(hSnapShot)
+ReCad[LongMat(ReCad) - 1] = EntCad(Límite(ReCad))
+Resultado = ReCad
+FinProc
+
+Proc ProcesoEstablecerPrioridad(p_ProcessName:Cadena,s_Status:Entero,Opcional ID:Entero = 0):Booleano
+Var h_Process:Entero
+h_Process = OpenProcess(PROCESS_SET_INFORMATION,Falso,>ID?ID:ProcesoObtenerID(p_ProcessName))
+Resultado = SetPriorityClass(>ID?ID:ProcesoObtenerID(p_ProcessName),s_Status)
+CloseHandle(h_Process)
+FinProc
+
+' #ProcesoObtenerPrioridad# ========================================================================
+' Autor: PowerDeath
+' Modificador: Nadie
+' Parametros: Nombre de proceso[, ID]
+' Tipo de devolución: Cadena
+' Devolución: "Arriba de lo normal", "Abajo de lo normal", "Alta", "Inactiva", "Normal", "Tiempo real", "GetLastError", "Desconocido".
+' Información: Obtiene la prioridad de un proceso por su nombre.
+' #Fin# ==================================================================================
+
+Proc ProcesoObtenerPrioridad(p_ProcessName:Cadena,Opcional ID:Entero = 0):Cadena
+Var h_Process,Case:Entero
+h_Process = OpenProcess(PROCESS_QUERY_INFORMATION,Falso,>ID?ID:ProcesoObtenerID(p_ProcessName))
+
+Case = GetPriorityClass(h_Process)
+Seleccionar Case
+   Caso ABOVE_NORMAL_PRIORITY_CLASS
+      Devolver "Arriba de lo normal"
+   Caso BELOW_NORMAL_PRIORITY_CLASS
+      Devolver "Abajo de lo normal"
+   Caso HIGH_PRIORITY_CLASS
+      Devolver "Alta"
+   Caso IDLE_PRIORITY_CLASS
+      Devolver "Inactiva"
+   Caso NORMAL_PRIORITY_CLASS
+      Devolver "Normal"
+   Caso REALTIME_PRIORITY_CLASS
+      Devolver "Tiempo real"
+   Caso 0
+      Devolver "GetLastError = " + EntCad(GetLastError())
+   Caso Otro
+      Devolver "Desconocido"
+FinSeleccionar
+CloseHandle(h_Process)
+FinProc
+
+' #ProcesoAbrir# ========================================================================
+' Autor: PowerDeath
+' Modificador: Nadie
+' Parametros: Nombre de proceso, Acceso[, ID]
+' Tipo de devolución: Entero
+' Devolución: Puntero al proceso.
+' Información: Abre un proceso para su uso.
+' #Fin# ==================================================================================
+
+Proc ProcesoAbrir(p_ProcessName:Cadena,Acceso:Entero,Opcional ID:Entero = 0):Entero
+Resultado = OpenProcess(Acceso,Falso,>ID?ID:ProcesoObtenerID(p_ProcessName))
+h_Open = Resultado
+FinProc
+
+' #ProcesoCerrar# ========================================================================
+' Autor: PowerDeath
+' Modificador: Nadie
+' Parametros: ID
+' Tipo de devolución: Booleano
+' Devolución: Verd - Falso
+' Información: Cierra un proceso previamente abierto por "ProcesoAbrir".
+' #Fin# ==================================================================================
+
+Proc ProcesoCerrar(Opcional ID:Entero = 0):Booleano
+Resultado = CloseHandle(>ID?ID:h_Open)
+FinProc
+
+' #ProcesoTerminar# ========================================================================
+' Autor: PowerDeath
+' Modificador: Nadie
+' Parametros: Nombre de proceso[, ID]
+' Tipo de devolución: Booleano
+' Devolución: Verd - Falso
+' Información: Termina un proceso por su nombre.
+' #Fin# ==================================================================================
+
+Proc ProcesoTerminar(Nombre:Cadena,Opcional ID:Entero = 0):Booleano
+Var h_Process:Entero
+h_Process = OpenProcess(PROCESS_TERMINATE,Falso,>ID?ID:ProcesoObtenerID(Nombre))
+Resultado = TerminateProcess(>ID?ID:h_Process,0)
+CloseHandle(h_Process)
+FinProc
