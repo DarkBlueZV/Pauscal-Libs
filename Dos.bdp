@@ -1,0 +1,185 @@
+<Datos><Nombre></Nombre><Icono>AA==</Icono><Version><Mayor>0</Mayor><Menor>0</Menor><Revision>0</Revision><AutoIncr>0</AutoIncr></Version><Info/><Contenido>Importar "Convertir.prp"
+'Importar "Declare.prp"
+
+$24EBC-
+$24ADV-
+
+'Var Dos:pscDos
+
+Clase pscDos, _
+  hConsoleIn, _
+  hConsoleOut, _
+  hConsoleErr, _
+  Color:Entero, _
+  Init:Booleano
+
+  Proc Inicializar
+    Si (Init) Salir
+    AllocConsole()
+    hConsoleIn = GetStdHandle(-10)
+    hConsoleOut = GetStdHandle(-11)
+    hConsoleErr = GetStdHandle(-12)
+    Init=Verd
+  FinProc
+  Proc Finalizar
+    Si (Neg Init) Salir
+    FreeConsole()
+    Init=Falso
+  FinProc
+  Constructor:Inicializar
+  Destructor:Finalizar
+  Proc Escribir(Texto:Cadena)
+    Var Temp:Entero
+    Si (Neg Init) Salir
+    Temp=1
+    WriteConsole(hConsoleOut,Texto,CadLong(Texto),Temp,0)
+  FinProc
+  Proc EscribirLn(Opcional Texto:Cadena)
+    Si (Init) Escribir(Texto + CrLf)
+  FinProc
+  Proc EscribirEnt(Num:EnteroSig)
+    Si (Init) Escribir(EntCad(Num))
+  FinProc
+  Proc EscribirEntLn(Num:EnteroSig)
+    Si (Init) EscribirLn(EntCad(Num))
+  FinProc
+  Proc EscribirReal(Num:Real)
+    Si (Init) Escribir(RealCad(Num))
+  FinProc
+  Proc EscribirRealLn(Num:Real)
+    Si (Init) EscribirLn(RealCad(Num))
+  FinProc
+  Proc Leer(Opcional Requerido:Booleano):Cadena
+    Var Str,Sec:Cadena, LenTxt,Temp:Entero
+    Si (Neg Init) Salir
+    Str=Espacio(256)
+    Temp=1
+    Repetir
+      ReadConsole(hConsoleIn,Str,255,Temp,0)
+      LenTxt=lstrlen(Str)
+    HastaQue (Requerido=Falso) Or (LenTxt&gt;2)
+    Si (LenTxt=2) Salir
+    LenTxt=LenTxt-2
+    Sec=Espacio(LenTxt)
+    lstrcpyn(Sec,Str,LenTxt+1)
+    Resultado=Sec
+  FinProc
+  Proc LeerEnt():Entero
+    Si (Init) Resultado=CadEnt(Leer(Verd))
+  FinProc
+  Proc LeerReal():Real
+    Si (Init) Resultado=CadReal(Leer(Verd))
+  FinProc
+  Proc Esperar
+    Si (Init) Leer()
+  FinProc
+  Proc Limpiar
+    Var Temp:Entero
+    Si (Neg Init) Salir
+    Temp=CreateConsoleScreenBuffer(GENERIC_READ Or GENERIC_WRITE,FILE_SHARE_READ Or FILE_SHARE_WRITE,Nulo,1,0)
+    Si (Temp=0) Salir
+    SetConsoleActiveScreenBuffer(Temp)
+    CloseHandle(hConsoleOut)
+    hConsoleOut=Temp
+  FinProc
+  'procs privados
+Privado:
+  Proc SetCol(Value:Entero)
+    Si (Neg Init) Salir
+    Color=Value
+    Seleccionar Value
+      Caso 0
+        SetColor(hConsoleOut,0)
+      Caso 1
+        SetColor(hConsoleOut,4)
+      Caso 2
+        SetColor(hConsoleOut,2)
+      Caso 3
+        SetColor(hConsoleOut,1)
+      Caso 4
+        SetColor(hConsoleOut,6)
+      Caso 5
+        SetColor(hConsoleOut,5)
+      Caso 6
+        SetColor(hConsoleOut,3)
+      Caso 7
+        SetColor(hConsoleOut,7)
+      Caso 8
+        SetColor(hConsoleOut,8)
+      Caso 9
+        SetColor(hConsoleOut,12)
+      Caso 10
+        SetColor(hConsoleOut,10)
+      Caso 11
+        SetColor(hConsoleOut,9)
+      Caso 12
+        SetColor(hConsoleOut,14)
+      Caso 13
+        SetColor(hConsoleOut,13)
+      Caso 14
+        SetColor(hConsoleOut,11)
+      Caso 15
+        SetColor(hConsoleOut,15)
+      Caso Otro
+        GenerarError errColorInv
+    FinSeleccionar
+  FinProc
+  Proc GetCol():Entero
+    Resultado=Color
+  FinProc
+  Proc GetAncho():Entero
+    Var ScrBuff:CONSOLE_SCREEN_BUFFER_INFO
+    GetConsoleScreenBufferInfo(hConsoleOut,ScrBuff)
+    Resultado=ScrBuff.dwSize.x
+  FinProc
+  Proc GetAlto():Entero
+    Var ScrBuff:CONSOLE_SCREEN_BUFFER_INFO
+    GetConsoleScreenBufferInfo(hConsoleOut,ScrBuff)
+    Resultado=ScrBuff.dwSize.y
+  FinProc
+  Proc SetAlto(Valor:Entero)
+    SetConsoleScreenBufferSize(hConsoleOut,GetAncho+Valor*&amp;10000)
+  FinProc
+  Proc SetAncho(Valor:Entero)
+    SetConsoleScreenBufferSize(hConsoleOut,Valor+GetAlto*&amp;10000)
+  FinProc
+  Proc GetX:Entero
+    Var ScrBuff:CONSOLE_SCREEN_BUFFER_INFO
+    GetConsoleScreenBufferInfo(hConsoleOut,ScrBuff)
+    Resultado=ScrBuff.dwCursorPosition.x
+  FinProc
+  Proc GetY:Entero
+    Var ScrBuff:CONSOLE_SCREEN_BUFFER_INFO
+    GetConsoleScreenBufferInfo(hConsoleOut,ScrBuff)
+    Resultado=ScrBuff.dwCursorPosition.y
+  FinProc
+  Proc SetX(Valor:Entero)
+    SetConsoleCursorPosition(hConsoleOut,Valor+GetY*&amp;10000)
+  FinProc
+  Proc SetY(Valor:Entero)
+    SetConsoleCursorPosition(hConsoleOut,GetX+Valor*&amp;10000)
+  FinProc
+  'props p$FAblicos
+P$FAblico:
+  Prop ColorTexto:Entero
+    Lec:GetCol
+    Esc:SetCol
+  FinProp
+  Prop Ancho:Entero
+    Lec:GetAncho
+    Esc:SetAncho
+  FinProp
+  Prop Alto:Entero
+    Lec:GetAlto
+    Esc:SetAlto
+  FinProp
+  Prop CursorX:Entero
+    Lec:GetX
+    Esc:SetX
+  FinProp
+  Prop CursorY:Entero
+    Lec:GetY
+    Esc:SetY
+  FinProp
+FinClase
+</Contenido></Datos>

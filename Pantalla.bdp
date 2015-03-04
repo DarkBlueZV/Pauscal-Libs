@@ -1,0 +1,88 @@
+<Datos><Nombre></Nombre><Icono>AA==</Icono><Version><Mayor>0</Mayor><Menor>0</Menor><Revision>0</Revision><AutoIncr>0</AutoIncr></Version><Info/><Contenido>$24ADV-
+$24EBC-
+
+Importar "Cadena.prp"
+
+Privado:
+
+Proc EnumFontsProc(Referencia lplf:LOGFONT,Referencia lptm:TEXTMETRIC,dwType:Entero,Referencia Data:ENUMINFO):Entero
+  Var Temp:Cadena
+  Temp=Espacio(LF_FACESIZE)
+  CopyMemory(CadPtr(Temp),lplf.lfFaceName[0]@,LF_FACESIZE)
+  Eval Data
+    .MaxFnt=.MaxFnt+1
+    Redim Preservar .Fnts,.MaxFnt
+    .Fnts[.MaxFnt-1]=TruncarCadena(Temp)
+  FinEval
+  Resultado=1
+FinProc
+
+P$FAblico:
+
+'Var Pantalla:pscPantalla
+
+Clase pscPantalla, _
+  Fnts[]:Cadena, FntOk:Booleano
+
+Privado:
+  Proc GetCursorX:EnteroSig
+    Var Cursor:POINTAPI
+    GetCursorPos(Cursor)
+    Resultado=Cursor.X
+  FinProc
+  Proc GetCursorY:EnteroSig
+    Var Cursor:POINTAPI
+    GetCursorPos(Cursor)
+    Resultado=Cursor.Y
+  FinProc
+  Proc SetCursorX(Valor:EnteroSig)
+    SetCursorPos(Valor,GetCursorY())
+  FinProc
+  Proc SetCursorY(Valor:EnteroSig)
+    SetCursorPos(GetCursorX(),Valor)
+  FinProc  
+  Proc GetAncho:EnteroSig
+    Resultado=GetSystemMetrics(SM_CXSCREEN)
+  FinProc
+  Proc GetAlto:EnteroSig
+    Resultado=GetSystemMetrics(SM_CYSCREEN)
+  FinProc
+  Proc GetFnt(Ind:Entero):Cadena
+    Si (Neg FntOk) ListarFuentes
+    Si ((Ind&lt;1) Or (Ind&gt;GetMaxFnt)) GenerarError errParamInv
+    Resultado=Fnts[Ind-1]
+  FinProc
+  Proc GetMaxFnt:Entero
+    Si (Neg FntOk) ListarFuentes
+    Resultado=LongMat(Fnts)
+  FinProc
+  Proc ListarFuentes
+    Var Data:ENUMINFO
+    EnumFonts(GetDC(0),Nulo,EnumFontsProc@,Data@)
+    Fnts=Data.Fnts
+    FntOk=Verd
+  FinProc
+P$FAblico:
+  'props p$FAblicos
+  Prop CursorX:EnteroSig
+    Lec:GetCursorX
+    Esc:SetCursorX
+  FinProp
+  Prop CursorY:EnteroSig
+    Lec:GetCursorY
+    Esc:SetCursorY
+  FinProp
+  Prop Ancho:EnteroSig
+    Lec:GetAncho
+  FinProp
+  Prop Alto:EnteroSig
+    Lec:GetAlto
+  FinProp
+  Prop Fuente:Cadena
+    Lec:GetFnt
+  FinProp
+  Prop Fuentes:Entero
+    Lec:GetMaxFnt
+  FinProp
+FinClase
+</Contenido></Datos>

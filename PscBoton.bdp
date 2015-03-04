@@ -1,0 +1,82 @@
+<Datos><Nombre></Nombre><Icono>AA==</Icono><Version><Mayor>0</Mayor><Menor>0</Menor><Revision>0</Revision><AutoIncr>0</AutoIncr></Version><Info/><Contenido>$24ADV-
+$24EBC-
+
+Importar "WinCtrls.prp"
+
+Privado:
+
+Proc pscBoton_wndproc(hWnd,Msg,wParam,lParam:Entero):Entero
+  Var @Eventos:PSCBOTON_EVENTINFO
+
+  Eventos@=GetProp(hWnd,"EVENT")
+  Si (Eventos@)
+    Seleccionar Msg
+      Caso WM_LBUTTONDOWN,WM_RBUTTONDOWN,WM_MBUTTONDOWN
+        Si (Eventos.AlApretarBotonMouse@) Eventos.AlApretarBotonMouse( &gt;Msg=WM_LBUTTONDOWN?1:(&gt;Msg=WM_RBUTTONDOWN?2:3) ,wParam,LoWord(lParam),HiWord(lParam))
+      Caso WM_LBUTTONUP,WM_RBUTTONUP,WM_MBUTTONUP
+        Si (Eventos.AlSoltarBotonMouse@) Eventos.AlSoltarBotonMouse( &gt;Msg=WM_LBUTTONUP?1:(&gt;Msg=WM_RBUTTONUP?2:3),wParam,LoWord(lParam),HiWord(lParam))
+      Caso WM_LBUTTONDBLCLK,WM_RBUTTONDBLCLK,WM_MBUTTONDBLCLK
+        Si (Eventos.AlSoltarBotonMouse@) Eventos.AlSoltarBotonMouse( &gt;Msg=WM_LBUTTONDBLCLK?1:(&gt;Msg=WM_RBUTTONDBLCLK?2:3),wParam,LoWord(lParam),HiWord(lParam))
+      Caso WM_MOUSEMOVE
+        Si (Eventos.AlMoverMouse@) Eventos.AlMoverMouse(wParam,LoWord(lParam),HiWord(lParam))
+      Caso WM_KEYDOWN
+        Si (Eventos.AlApretarTecla@&lt;&gt;0) And (lParam And &amp;40000000=0) Eventos.AlApretarTecla(wParam)
+        Si (Eventos.AlTeclear@) Eventos.AlTeclear(wParam)
+      Caso WM_KEYUP
+        Si (Eventos.AlSoltarTecla@) Eventos.AlSoltarTecla(wParam)
+      Caso WM_USER
+        Seleccionar wParam
+          Caso BN_CLICKED
+            Si (Eventos.AlCliquear@) Eventos.AlCliquear
+          Caso BN_SETFOCUS
+            Si (Eventos.AlGanarFoco@) Eventos.AlGanarFoco
+          Caso BN_KILLFOCUS
+            Si (Eventos.AlPerderFoco@) Eventos.AlPerderFoco
+        FinSeleccionar
+        Salir
+    FinSeleccionar
+  FinSi
+  Resultado=CallWindowProc(GetProp(hWnd,"PREVHWND"),hWnd,Msg,wParam,lParam)
+FinProc
+
+P$FAblico:
+
+Clase pscBoton(pscTextControl), _
+  ObjNum:Entero
+
+  ClaseVar Eventos:PSCBOTON_EVENTINFO
+
+P$FAblico:
+  'proc p$FAblicos
+  Proc CargarBoton(HwndParent:Entero)
+    Var Nomb:Cadena
+    Si (ObjHwnd&lt;&gt;0) Salir
+    Nomb="BUTTON"
+    ObjHwnd=CreateWindowEx(WS_EX_NOPARENTNOTIFY,Nomb,iTexto,BS_PUSHBUTTON+WS_CLIPSIBLINGS+WS_CHILD+WS_TABSTOP+(&gt;Habil?0:WS_DISABLED)+ _
+                           (&gt;Visib?WS_VISIBLE:0),Coords.x,Coords.y,Coords.Width,Coords.Height,HwndParent,0,GetModuleHandle(""),Nulo)
+    Si (ObjHwnd=0) GenerarError errFalloWinCtrls
+    Fuente.InsertarFuente(ObjHwnd)
+    SetProp(ObjHwnd,"EVENT",Eventos@)
+    SetProp(ObjHwnd,"PREVHWND",SetWindowLong(ObjHwnd,GWL_WNDPROC,pscBoton_wndproc@))
+    SetColor(Col,0)
+    ObtenerDC
+    UpdateWindow(ObjHwnd)
+  FinProc
+  Proc DescargarBoton
+    Si (ObjHwnd=0) Salir
+    DestroyWindow(ObjHwnd)
+    ObjHwnd=0
+  FinProc
+  'extra
+Privado:
+  Proc Inicializar
+    Alto=25
+    Ancho=81
+    Color=COLOR_BTNFACE+&amp;1000000
+    Habilitado=Verd
+    Visible=Verd
+  FinProc
+  Constructor:Inicializar
+  Destructor:DescargarBoton
+FinClase
+</Contenido></Datos>

@@ -1,0 +1,25 @@
+<Datos><Nombre></Nombre><Icono>AA==</Icono><Version><Mayor>0</Mayor><Menor>0</Menor><Revision>0</Revision><AutoIncr>0</AutoIncr></Version><Info/><Contenido>Importar "Apis.prp"
+
+Privado:
+Var h_Timer_h:Entero
+Var b_Timer_p:Entero
+P$FAblico:
+
+Proc TimerCrear():Entero
+Resultado = CreateTimerQueue()
+h_Timer_h = Resultado
+FinProc
+
+Proc TimerComenzar(Procedimiento,Tiempo,Lapso:Entero,Opcional Bandera:Entero = &amp;00000000,Opcional Puntero:Entero):Entero
+CreateTimerQueueTimer(b_Timer_p,&gt;Puntero?Puntero:h_Timer_h,Procedimiento,0,Tiempo,Lapso,Bandera)
+Devolver b_Timer_p
+FinProc
+
+Proc TimerDetener(Opcional Puntero_a,Puntero:Entero):Entero
+Devolver DeleteTimerQueueTimer(&gt;Puntero_a?Puntero_a:h_Timer_h,&gt;Puntero?Puntero:b_Timer_p,0)
+FinProc
+
+Proc TimerDestruir(Opcional Puntero:Entero):Booleano
+Devolver DeleteTimerQueue(&gt;Puntero?Puntero:h_Timer_h)
+FinProc
+</Contenido></Datos>

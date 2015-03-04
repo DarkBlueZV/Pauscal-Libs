@@ -1,0 +1,218 @@
+<Datos><Nombre></Nombre><Icono>AA==</Icono><Version><Mayor>0</Mayor><Menor>0</Menor><Revision>0</Revision><AutoIncr>0</AutoIncr></Version><Info/><Contenido>Importar "Convertir.prp"
+
+$24EBC-
+$24ADV-
+
+Privado:
+
+Const DivVal=1000000000
+Var Time:Entero
+
+Prototipo EjecutarProc():Entero
+
+Uni$F3n Union, Union_e:Entero, Union_b[4]:Byte, Union_w[2]:Word
+
+P$FAblico:
+
+Proc Error:Entero
+	Resultado = GetLastError()
+FinProc
+
+Proc EstablecerError(dwErrCode:Entero), "Kernel32.dll" "SetLastError"
+
+Proc Ejecutar(Referencia Ruta_Programa:Cadena,Opcional Parametros:Cadena = "",Opcional Modo:Entero = 1):Entero
+   Devolver ShellExecute(0,"open",Ruta_Programa,Parametros,"",Modo)
+FinProc
+
+Proc No(Expresi$F3n:Booleano):Booleano
+	Devolver Neg(Expresi$F3n)
+FinProc
+
+'EsPar By Yuki!
+Proc EsPar(N$FAmero:Entero):Booleano
+	Si N$FAmero &lt;= 1 Entonces Devolver Falso
+	Resultado = N$FAmero Mod 2
+	Si Resultado = 0 Entonces
+		Devolver Verd
+	SiNo
+		Devolver Falso
+	FinSi
+FinProc
+
+'Decrementa el valor de una variable.
+Proc Decrementar(i_Valor:Entero,Opcional i_b_Valor:Entero = 1)
+   i_Valor = i_Valor - i_b_Valor
+FinProc
+
+'Incrementa el valor de una variable.
+Proc Incrementar(i_Valor:Entero,Opcional i_b_Valor:Entero = 1)
+   i_Valor = i_Valor + i_b_Valor
+FinProc
+
+Proc RGB(Rojo,Verde,Azul:Byte):Entero
+  Resultado=Rojo + (Verde shl 8) + (Azul shl 16)
+FinProc
+
+Proc ObtenerRGB(Color:Entero,R,V,A:Byte)
+  Si (Color&gt;&amp;FFFFFF) GenerarError errParamInv
+  R=Color And &amp;FF
+  V=(Color shr 8) And &amp;FF
+  A=(Color shr 16) And &amp;FF
+FinProc
+
+Proc Mensaje(Referencia Texto:Cadena,Opcional Titulo:Cadena="Pauscal",Opcional Tipo:Entero,Opcional hWnd:Entero):Entero
+  Si (hWnd=0) hWnd=GetActiveWindow()
+  Devolver MessageBox(hWnd,Texto,Titulo,Tipo)
+FinProc
+
+Proc Trunc(Referencia Num:Real):Entero
+  Resultado=RealEnt(Num)
+  Si (EntReal(Resultado)&gt;Num) Resultado=Resultado-1
+FinProc
+
+
+Proc TruncReal(Referencia Num:Real):Real
+  Resultado=EntReal(Trunc(Num))
+FinProc
+
+
+Proc Rnd():Real
+  Var Num:EnteroSig
+
+  Num=Aleatorio
+  Mientras (Num&lt;=0) Or (Num&gt;999900000)
+    Num=Num+Aleatorio\10
+  FinMientras
+  Devolver EntReal(Num)/DivVal
+FinProc
+
+
+Proc N$FAmeroAlAzar(Min,Max:Entero):Entero
+  Var Lim:Real
+
+  Si (Min&gt;Max) GenerarError errParamInv
+  Lim=EntReal(Max-Min+1)
+  Repetir
+    Resultado=RealEnt(Rnd()*Lim)+Min
+  HastaQue (Resultado&gt;Min) y (Resultado&lt;Max)
+FinProc
+
+
+Proc HiWord(Valor:Entero):Word
+  Resultado=(Valor shr 16) And &amp;FFFF
+FinProc
+
+
+Proc LoWord(Valor:Entero):Word
+  Resultado=Valor
+FinProc
+
+
+Proc Val(Referencia Str:Cadena):Real
+  AdmErr
+    Resultado=CadReal(Str)
+  Controlar
+  FinAdmErr
+FinProc
+
+Proc Tiempo:Entero
+  Resultado=timeGetTime()
+FinProc
+
+Proc TiempoSeg:Entero
+  Resultado=timeGetTime() \ 1000
+FinProc
+
+Proc TiempoHora:Entero
+  Resultado=(timeGetTime() \ 1000) \ 60
+FinProc
+
+'Inicia el contador de tiempo.
+Proc TiempoInicio
+  Time=timeGetTime()
+FinProc
+
+'Obtiene el tiempo transcurrido desde el inicio del contador.
+'En Milesimas
+Proc TiempoFin:Entero
+  Resultado = (timeGetTime - Time)
+FinProc
+
+'Obtiene el tiempo transcurrido desde el inicio del contador.
+'En Segundos
+Proc TiempoFinSeg:Entero
+  Resultado = (timeGetTime - Time) \ 1000
+FinProc
+
+'Obtiene el tiempo transcurrido desde el inicio del contador.
+'En Horas
+Proc TiempoFinHora:Entero
+  Resultado = ((timeGetTime - Time) \ 1000) \ 60
+FinProc
+
+Proc Semilla(Opcional Longi:Entero = 3):Entero
+Var h_Time,h_Left,h_LeftB:Cadena,i:Entero
+h_Time = EntCad(Tiempo)
+h_Left = DerechaCad(h_Time,Longi)
+Resultado = CadEnt(h_Left)
+FinProc
+
+
+Proc Pausar(Milisegundos:Entero)
+  Sleep(Milisegundos)
+FinProc
+
+Proc PausarSeg(Seg:Entero)
+  Sleep(1000 * Seg)
+FinProc
+
+' CREAR HILO FACILMENTE! :D
+' Ptr = Puntero al procedimiento a crear hilo.
+' Datos = Puntero a la estructura que contiene los datos que seran pasados a los parametros del procedimiento establecido _
+' en Ptr.
+' ATENCI$D3N! Si datos estructura envia una cadena, el valor establecido en el parametro es un puntero al puntero de la cadena.
+
+' Ejemplo de obtenci$F3n de cadena.
+' Proc Obt(PunteroAlPunteroDeLaCadena:Entero)
+' Var @Ptr:Entero
+' Ptr@ = PunteroAlPunteroDeLaCadena
+' Mensaje(CadDePtr(Ptr)) ' Ptr es igual al puntero obtenido del puntero.
+' FinProc
+Proc HiloCrear(Ptr:Entero,Opcional Datos:Entero)
+	SHCreateThread(Ptr,Datos,&amp;00000001,0)
+FinProc
+
+
+Proc LlamarAPI(Referencia Libreria:Cadena,Referencia Funci$F3n:Cadena,Referencia Parametros[]:Entero):Entero
+	Var Matriz[]:Byte,EjecutarProc:EjecutarProc
+	Var PtrProc,PtrDll:Entero ' Punteros a las Dll y Procedimientos
+	Var i:EnteroSig,@Ptr:Union ' i Contador, Ptr es un puntero a la uni$F3n.
+	ReDim Matriz, 60415
+	PtrDll = LoadLibrary(Libreria) ' PtrDll = CargarDll
+	Si PtrDll = 0 Entonces Salir
+	PtrProc = GetProcAddress(PtrDll, Funci$F3n) 'PtrProc = CargarProc
+	Si PtrProc = 0 Entonces Salir
+	'PunteroMatriz = Matriz[0]@
+	Ptr@ = Matriz[0]@
+	Ptr.Union_e = &amp;59595958
+	Ptr@ = Ptr@ + 4
+	Ptr.Union_w[0] = &amp;5059
+	Ptr@ = Ptr@ + 2
+	Contar i = L$EDmite(Parametros) A 0 Dec
+		Si i = -1 Salir Contar
+		Ptr.Union_b[0] = &amp;68
+		Ptr@ = Ptr@ + 1
+		Ptr.Union_e = Parametros[i]
+		Ptr@ = Ptr@ + 4
+	Seguir
+	Ptr.Union_b[0] = &amp;E8
+	Ptr@ = Ptr@ + 1
+	Ptr.Union_e = PtrProc - Ptr@ - 4
+	Ptr@ = Ptr@ + 4
+	Ptr.Union_b[0] = &amp;C3
+	Ptr@ = Ptr@ + 1
+	EjecutarProc@ = Matriz[0]@
+	Resultado = EjecutarProc()
+	FreeLibrary(PtrDll)
+FinProc
+</Contenido></Datos>

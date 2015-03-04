@@ -1,0 +1,155 @@
+<Datos><Nombre></Nombre><Icono>AA==</Icono><Version><Mayor>0</Mayor><Menor>0</Menor><Revision>0</Revision><AutoIncr>0</AutoIncr></Version><Info/><Contenido>$24ADV-
+$24EBC-
+
+Importar "Estructuras.prp"
+Importar "Apis.prp"
+Importar "Constantes.prp"
+
+Clase pscPincel, _
+  hBrush:Entero
+
+P$FAblico:
+  ClaseVar Eventos:PSCPINCEL_EVENTINFO
+  ClaseVar Padre:pscZonaDibujo
+
+  Proc ColorS$F3lido(Color:Entero)
+    Eliminar
+    hBrush=CreateSolidBrush(Color)
+    Si (hBrush=0) GenerarError errFalloGrph
+    Cambiado
+  FinProc
+Privado:
+  Proc Eliminar
+    Si (hBrush=0) Salir
+    DeleteObject(hBrush)
+    hBrush=0
+  FinProc
+  Proc Cambiado
+    Si (Eventos.AlCambiar@) Eventos.AlCambiar(hBrush,Padre.hDC)
+  FinProc
+FinClase
+
+Clase pscL$E1piz, _
+  hPen,iAncho,iColor:Entero
+
+P$FAblico:
+  ClaseVar Eventos:PSCL$E1PIZ_EVENTINFO
+  ClaseVar Padre:pscZonaDibujo
+
+Privado:
+  Proc GetAncho:Entero
+    Resultado=iAncho
+  FinProc
+  Proc SetAncho(Valor:Entero)
+    Si (iAncho=Valor) Salir
+    iAncho=Valor
+    CrearL$E1piz
+  FinProc
+  Proc GetColor:Entero
+    Resultado=iColor
+  FinProc
+  Proc SetColor(Valor:Entero)
+    Si (iColor=Valor) Salir
+    iColor=Valor
+    CrearL$E1piz
+  FinProc
+  Proc CrearL$E1piz
+    Eliminar
+    hPen=CreatePen(PS_SOLID,iAncho,iColor)
+    Si (hPen=0) GenerarError errFalloGrph
+    Cambiado
+  FinProc
+  Proc Eliminar
+    Si (hPen=0) Salir
+    DeleteObject(hPen)
+    hPen=0
+  FinProc
+  Proc Cambiado
+    Si (Eventos.AlCambiar@) Eventos.AlCambiar(hPen,Padre.hDC)
+  FinProc
+P$FAblico:
+  Prop Ancho:Entero
+    Lec:GetAncho
+    Esc:SetAncho
+  FinProp
+  Prop Color:Entero
+    Lec:GetColor
+    Esc:SetColor
+  FinProp
+FinClase
+
+Clase pscZonaDibujo, _
+  iDC:Entero
+
+P$FAblico:
+  ClaseVar Pincel:pscPincel
+  ClaseVar L$E1piz:pscL$E1piz
+  ClaseVar Hwnd:Entero
+
+  'procs p$FAblicos
+  Proc L$EDneaHasta(X,Y:EnteroSig)
+    Si (Neg LineTo(hDC,X,Y)) GenerarError errFalloGrph
+  FinProc
+  Proc L$EDnea(X1,Y1,X2,Y2:EnteroSig)
+    Mover(X1,Y1)
+    L$EDneaHasta(X2,Y2)
+  FinProc
+  Proc Mover(X,Y:EnteroSig)
+    Si (Neg MoveToEx(hDC,X,Y,Nulo)) GenerarError errFalloGrph
+  FinProc
+  Proc Rect$E1ngulo(X1,Y1,X2,Y2:EnteroSig)
+    Si (Neg Rectangle(hDC,X1,Y1,X2,Y2)) GenerarError errFalloGrph
+  FinProc
+  Proc Elipse(X1,Y1,X2,Y2:EnteroSig)
+    Si (Neg Ellipse(hDC,X1,Y1,X2,Y2)) GenerarError errFalloGrph
+  FinProc
+Privado:
+  Proc GetX:EnteroSig
+    Var Pnt:POINTAPI
+    MoveToEx(hDC,0,0,Pnt)
+    Resultado=Pnt.X
+    Mover(Pnt.X,Pnt.Y)
+  FinProc
+  Proc SetX(Valor:EnteroSig)
+    Mover(Valor,CurY)
+  FinProc
+  Proc GetY:EnteroSig
+    Var Pnt:POINTAPI
+    MoveToEx(hDC,0,0,Pnt)
+    Resultado=Pnt.Y
+    Mover(Pnt.X,Pnt.Y)
+  FinProc
+  Proc SetY(Valor:EnteroSig)
+    Mover(CurX,Valor)
+  FinProc
+  Proc GetDC:Entero
+    Si (iDC=0) iDC=GetDC(hWnd)
+    Resultado=iDC
+  FinProc
+P$FAblico:
+  'props p$FAblicos
+  Prop CurX:EnteroSig
+    Lec:GetX
+    Esc:SetX
+  FinProp
+  Prop CurY:EnteroSig
+    Lec:GetY
+    Esc:SetY
+  FinProp
+  Prop hDC:Entero
+    Lec:GetDC
+  FinProp
+Privado:
+  Proc ZonaDibujoInit
+    Crear Pincel,L$E1piz
+    Pincel.Padre=EsteObjeto
+    L$E1piz.Padre=EsteObjeto
+    L$E1piz.Ancho=1
+  FinProc
+  Proc ZonaDibujoFin
+    ReleaseDC(hWnd,iDC)
+  FinProc
+  Constructor:ZonaDibujoInit
+  Destructor:ZonaDibujoFin
+FinClase
+</Contenido></Datos>

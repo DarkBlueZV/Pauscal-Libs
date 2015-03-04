@@ -1,0 +1,115 @@
+<Datos><Nombre></Nombre><Icono>AA==</Icono><Version><Mayor>0</Mayor><Menor>0</Menor><Revision>0</Revision><AutoIncr>0</AutoIncr></Version><Info/><Contenido>Importar "Convertir.prp"
+
+Clase PscMySQL
+
+	ClaseVar id:Entero
+
+	Proc Conexi$F3n(destino, usuario, contrase$F1a, esquema:Cadena, Opcional puerto:Entero = 3306)
+		Var ret:Entero
+		Var soquet:Cadena
+		id = mysql_init(0)
+		ret = mysql_real_connect(id, destino, usuario, contrase$F1a, esquema, puerto, soquet, 0)
+	FinProc
+
+	Constructor:Conexi$F3n
+
+P$FAblico:
+
+	Proc EjecutarConsulta(consulta:Cadena):SetResultado
+		Var ret:Entero
+		ret = mysql_query(id, consulta)
+		'TODO: chequear error
+		Resultado = Nuevo SetResultado(mysql_store_result(id))
+	FinProc
+
+FinClase
+
+Clase SetResultado
+
+	ClaseVar res:Entero
+	ClaseVar cols[]:Cadena
+
+	Proc SetResultado(r:Entero)
+		res = r
+		CargarColumnas()
+	FinProc
+
+	Constructor:SetResultado
+
+	Proc Finalizar()
+		mysql_free_result(res)
+	FinProc
+
+	Destructor:Finalizar
+
+	Proc obtenerCantidadFilas():Entero
+		Resultado = mysql_num_rows(res)
+	FinProc
+
+	Proc obtenerCantidadColumnas():Entero
+		Resultado = mysql_num_fields(res)
+	FinProc
+
+	Proc CargarColumnas()
+		Var @ret:Entero
+		Var max, i:EnteroSig
+		max = obtenerCantidadColumnas()
+		Redim cols, max
+		Contar i = 0 a max - 1
+			ret@ = mysql_fetch_field_direct(res, i)
+			cols[i] = CadDePtr(ret)
+		Seguir
+	FinProc
+
+P$FAblico:
+
+	Prop CantidadFilas:Entero
+		Lec:obtenerCantidadFilas
+	FinProp
+
+	Prop CantidadColumnas:Entero
+		Lec:obtenerCantidadColumnas
+	FinProp
+
+	Proc AvanzarFila():FilaResultado
+		Var ret:Entero
+		ret = mysql_fetch_row(res)
+		'TODO: chequear error
+		Resultado = Nuevo FilaResultado(ret)
+	FinProc
+
+	Proc Columna($EDndice:Entero):Cadena
+		Resultado = cols[$EDndice]
+	FinProc
+
+	Proc Columnas:Cadena[]
+		Resultado = cols
+	FinProc
+
+FinClase
+
+Clase FilaResultado
+
+	ClaseVar row:Entero
+
+	Proc FilaResultado(r:Entero)
+		row = r
+	FinProc
+
+	Constructor:FilaResultado
+
+P$FAblico:
+
+	Proc Valor($EDndice:Entero):Cadena
+		Var @ret:Entero
+		ret@ = row + ($EDndice * Long(ret))
+		'TODO: chequear error
+		Resultado = CadDePtr(ret)
+	FinProc
+
+	Proc ValorEnt($EDndice:Entero):Entero
+		Resultado = CadEnt(Valor($EDndice))
+	FinProc
+
+FinClase
+</Contenido></Datos>

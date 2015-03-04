@@ -1,0 +1,871 @@
+<Datos><Nombre></Nombre><Icono>AA==</Icono><Version><Mayor>0</Mayor><Menor>0</Menor><Revision>0</Revision><AutoIncr>0</AutoIncr></Version><Info/><Contenido>$24ADV-
+$24EBC-
+
+Importar "Utiles.prp"
+Importar "Pantalla.prp"
+Importar "Graficos.prp"
+
+Var Programa:pscPrograma
+Var Pantalla:PscPantalla
+
+Proc IniciarWinCtrls' Inicio
+  Crear Programa,Pantalla
+FinProc
+
+Proc EnteroToControl(Num:Entero):pscControl
+  Var @Ret:pscControl
+  Si (Num=0) Salir
+  Ret@=Num@
+  Resultado=Ret
+  Ret@=0
+FinProc
+
+Privado:
+
+Var pscWinCount,pscModalCount,MenuItemCount:Entero
+
+'Proc EnteroToForm(Num:Entero):pscForm
+'  Var @Ret:pscForm
+'  Si (Num=0) Salir
+'  Ret@=Num@
+'  Resultado=Ret
+'  Ret@=0
+'FinProc
+
+Proc EnteroToMenu(Num:Entero):pscMenuItem
+  Var @Ret:pscMenuItem
+  Si (Num=0) Salir
+  Ret@=Num@
+  Resultado=Ret
+  Ret@=0
+FinProc
+
+
+Proc ActualizarWin(hWnd:Entero)
+  Var Rct:RECT
+  GetClientRect(hWnd,Rct)
+  InvalidateRect(hWnd,Rct,Verd)
+FinProc
+
+Proc pscForm_enumwincount(hWnd:Entero,Referencia Count:Entero):Booleano
+  Si (GetWindowLong(hWnd,GWL_WNDPROC)=pscForm_wndproc@) Count=Count+1
+  Resultado=Verd
+FinProc
+
+Proc pscForm_enumwin(hWnd:Entero,Referencia Data:WINTHREADDATA):Booleano
+  Resultado=Verd
+  Si IsWindowEnabled(hWnd)
+    Eval Data
+      Si (hWnd=.hWnd) Salir
+      Redim Preservar .hWndDisable,LongMat(.hWndDisable)+1
+      .hWndDisable[L$EDmite(.hWndDisable)]=hWnd
+    FinEval
+    EnableWindow(hWnd,Falso)
+  FinSi
+FinProc
+
+Proc pscForm_countwin:Entero
+  Var Count:Entero
+  EnumThreadWindows(GetCurrentThreadId(),pscForm_enumwincount@,Count@)
+  Resultado=Count
+FinProc
+
+Proc pscForm_wndproc(hWnd,Msg,wParam,lParam:Entero):Entero
+  Var @Eventos:PSCFORM_EVENTINFO
+  Var This:pscForm
+  Var @Rc:RECT
+  Var MenuItem:pscMenuItem
+  Var DebeCancelar:Booleano
+
+  This=EnteroToControl(GetProp(hWnd,"THIS"))
+  Eventos@=GetProp(hWnd,"EVENT")
+  Si (Eventos@)
+    Seleccionar Msg
+      Caso WM_LBUTTONDOWN,WM_RBUTTONDOWN,WM_MBUTTONDOWN
+        Si (Eventos.AlApretarBotonMouse@) Eventos.AlApretarBotonMouse( &gt;Msg=WM_LBUTTONDOWN?1:(&gt;Msg=WM_RBUTTONDOWN?2:3) ,wParam,LoWord(lParam),HiWord(lParam))
+      Caso WM_LBUTTONUP,WM_RBUTTONUP,WM_MBUTTONUP
+        Si (Eventos.AlSoltarBotonMouse@) Eventos.AlSoltarBotonMouse( &gt;Msg=WM_LBUTTONUP?1:(&gt;Msg=WM_RBUTTONUP?2:3),wParam,LoWord(lParam),HiWord(lParam))
+        Si (Msg=WM_LBUTTONUP) And (Eventos.AlCliquear@&lt;&gt;0) Eventos.AlCliquear
+      Caso WM_LBUTTONDBLCLK,WM_RBUTTONDBLCLK,WM_MBUTTONDBLCLK
+        Si (Eventos.AlSoltarBotonMouse@) Eventos.AlSoltarBotonMouse( &gt;Msg=WM_LBUTTONDBLCLK?1:(&gt;Msg=WM_RBUTTONDBLCLK?2:3),wParam,LoWord(lParam),HiWord(lParam))
+      Caso WM_MOUSEMOVE
+        Si (Eventos.AlMoverMouse@) Eventos.AlMoverMouse(wParam,LoWord(lParam),HiWord(lParam))
+      Caso WM_KEYDOWN
+        Si (Eventos.AlApretarTecla@&lt;&gt;0) And (lParam And &amp;40000000=0) Eventos.AlApretarTecla(wParam)
+        Si (Eventos.AlTeclear@) Eventos.AlTeclear(wParam)
+      Caso WM_KEYUP
+        Si (Eventos.AlSoltarTecla@) Eventos.AlSoltarTecla(wParam)
+      Caso WM_CLOSE
+        Si (Eventos.AlCerrarse@)
+          Eventos.AlCerrarse(DebeCancelar)
+          Si (DebeCancelar) Salir
+        FinSi
+        This.CerrarForm
+        DestroyWindow(hWnd)
+      Caso WM_DESTROY
+        Si (pscForm_countwin()&lt;2) PostQuitMessage(0)
+        This.QuitarForm
+        Salir
+      Caso WM_ACTIVATE
+        Si (Eventos.AlGanarFoco@) Si (LoWord(wParam)&lt;&gt;WA_INACTIVE) Eventos.AlGanarFoco
+        Si (Eventos.AlPerderFoco@) Si (LoWord(wParam)=WA_INACTIVE) Eventos.AlPerderFoco
+      Caso WM_SIZING
+        Si (This.PuedeCambiarDeTama$F1o=Falso)
+          Rc@=lParam
+          Rc.Left=This.X
+          Rc.Top=This.Y
+          Rc.Right=Rc.Left+This.Ancho
+          Rc.Bottom=Rc.Top+This.Alto
+          Devolver 1
+        FinSi
+      Caso WM_COMMAND
+        Si (lParam=0)
+          MenuItem=EnteroToMenu(GetProp(hWnd,"MENU"+EntCad(LoWord(wParam))))
+          MenuItem.Seleccionado
+        SiNo
+          SendMessage(lParam,WM_USER,HiWord(wParam),0)
+        FinSi
+      Caso WM_USER+1 'acomodar men$FA
+        This.Alto=This.Alto+GetSystemMetrics(SM_CYMENU)
+    FinSeleccionar
+  FinSi
+  Resultado=DefWindowProc(hWnd,Msg,wParam,lParam)
+FinProc
+
+Proc CanvasCambiado(hObject,hDC:Entero)
+  hObject=SelectObject(hDC,hObject)
+  Si (hObject) DeleteObject(hObject)
+FinProc
+
+P$FAblico:
+
+Clase pscFuente, _
+  Taman:Entero, _
+  Nomb:Cadena, _
+  Bold,Italics,Underline,StrikeOut:Booleano, _
+  Events:PSCFUENTE_EVENTINFO
+
+  ClaseVar hFont:Entero
+  ClaseVar UpdateHwnd:Entero
+
+Privado:
+  'procs privados
+  Proc Init
+    Nomb="MS Sans Serif"
+    Taman=8
+    CrearFuente
+  FinProc
+  Proc CrearFuente
+    Si (hFont) DeleteObject(hFont)
+    hFont=CreateFont(-MulDiv(Taman,GetDeviceCaps(GetDC(0),LOGPIXELSY),72),0,0,0,&gt;Bold?FW_BOLD:FW_NORMAL,Italics,Underline,StrikeOut,DEFAULT_CHARSET,OUT_DEFAULT_PRECIS,CLIP_DEFAULT_PRECIS,PROOF_QUALITY,DEFAULT_PITCH,Nomb)
+    Si (hFont=0) GenerarError errFalloWinCtrls
+    InsertarFuente
+  FinProc
+  Proc GetNomb:Cadena
+    Resultado=Nomb
+  FinProc
+  Proc SetNomb(Valor:Cadena)
+    Nomb=Valor
+    CrearFuente
+  FinProc
+  Proc GetTaman:Entero
+    Resultado=Taman
+  FinProc
+  Proc SetTaman(Valor:Entero)
+    Taman=Valor
+    CrearFuente
+  FinProc
+  Proc GetItalics:Booleano
+    Resultado=Italics
+  FinProc
+  Proc SetItalics(Valor:Booleano)
+    Italics=Valor
+    CrearFuente
+  FinProc
+  Proc GetBold:Booleano
+    Resultado=Bold
+  FinProc
+  Proc SetBold(Valor:Booleano)
+    Bold=Valor
+    CrearFuente
+  FinProc
+  Proc GetUndln:Booleano
+    Resultado=Underline
+  FinProc
+  Proc SetUndln(Valor:Booleano)
+    Underline=Valor
+    CrearFuente
+  FinProc
+  Proc GetStrik:Booleano
+    Resultado=StrikeOut
+  FinProc
+  Proc SetStrik(Valor:Booleano)
+    StrikeOut=Valor
+    CrearFuente
+  FinProc
+P$FAblico:
+  'props p$FAblicos
+  Prop Tama$F1o:Entero
+    Lec:GetTaman
+    Esc:SetTaman
+  FinProp
+  Prop Nombre:Cadena
+    Lec:GetNomb
+    Esc:SetNomb
+  FinProp
+  Prop Negrita:Booleano
+    Lec:GetBold
+    Esc:SetBold
+  FinProp
+  Prop Cursiva:Booleano
+    Lec:GetItalics
+    Esc:SetItalics
+  FinProp
+  Prop Subrayado:Booleano
+    Lec:GetUndln
+    Esc:SetUndln
+  FinProp
+  Prop Tachado:Booleano
+    Lec:GetStrik
+    Esc:SetStrik
+  FinProp
+  'procs p$FAblicos
+  Proc InsertarFuente(Opcional ObjHwnd:Entero)
+    Si (ObjHwnd) UpdateHwnd=ObjHwnd
+    Si (Events.AlCambiar@) Events.AlCambiar
+    Si (UpdateHwnd) SendMessage(UpdateHwnd,WM_SETFONT,hFont,Verd)
+  FinProc
+  Constructor:Init
+FinClase
+
+Clase pscControl, _
+  Coords:POSANDSIZE, _
+  ObjHwnd:Entero
+
+  ClaseVar Padre:pscForm
+
+Privado:
+  'procs privados
+  Proc ChangeCoords
+    Si (ObjHwnd)
+      Eval Coords
+        MoveWindow(ObjHwnd,.x,.y,.Width,.Height,Verd)
+      FinEval
+    FinSi
+  FinProc
+  Proc GetCoords
+    Var Plc:WINDOWPLACEMENT
+    Si (ObjHwnd)
+      Plc.Length=Long(Plc)
+      GetWindowPlacement(ObjHwnd,Plc)
+      Eval Plc.rcNormalPosition
+        Coords.X=.Left
+        Coords.Y=.Top
+        Coords.Width=.Right-.Left
+        Coords.Height=.Bottom-.Top
+      FinEval
+    FinSi
+  FinProc
+  Proc GetX:EnteroSig
+    GetCoords
+    Resultado=Coords.X
+  FinProc
+  Proc SetX(Valor:EnteroSig)
+    Coords.X=Valor
+    ChangeCoords
+  FinProc
+  Proc GetY:EnteroSig
+    GetCoords
+    Resultado=Coords.Y
+  FinProc
+  Proc SetY(Valor:EnteroSig)
+    Coords.Y=Valor
+    ChangeCoords
+  FinProc
+  Proc GetAncho:EnteroSig
+    GetCoords
+    Resultado=Coords.Width
+  FinProc
+  Proc SetAncho(Valor:EnteroSig)
+    Coords.Width=Valor
+    ChangeCoords
+  FinProc
+  Proc GetAlto:EnteroSig
+    GetCoords
+    Resultado=Coords.Height
+  FinProc
+  Proc SetAlto(Valor:EnteroSig)
+    Coords.Height=Valor
+    ChangeCoords
+  FinProc
+P$FAblico:
+  'procs p$FAblicos
+  Proc ObjPtr:Entero
+    Var @Temp:Entero
+    Temp@=EsteObjeto@
+    Resultado=Temp
+  FinProc
+  'props p$FAblicos
+  Prop X:EnteroSig
+    Lec:GetX
+    Esc:SetX
+  FinProp
+  Prop Y:EnteroSig
+    Lec:GetY
+    Esc:SetY
+  FinProp
+  Prop Ancho:EnteroSig
+    Lec:GetAncho
+    Esc:SetAncho
+  FinProp
+  Prop Alto:EnteroSig
+    Lec:GetAlto
+    Esc:SetAlto
+  FinProp
+FinClase
+
+
+Clase pscWinControl(pscControl), _
+  Visib,Habil:Booleano, _
+  Col,iDC:Entero
+
+  ClaseVar ZonaDibujo:pscZonaDibujo
+  ClaseVar Extra:Cadena
+  ClaseVar hBrush:Entero
+
+  'procs privados
+Privado:
+  Proc GetHDC:Entero
+    Si (iDC=0) ObtenerDC
+    Resultado=iDC
+  FinProc
+  Proc GetVisib:Booleano
+    Si (ObjHwnd) Visib=IsWindowVisible(ObjHwnd)
+    Devolver Visib
+  FinProc
+  Proc SetVisib(Valor:Booleano)
+    Visib=Valor
+    Si (ObjHwnd) ShowWindow(ObjHwnd,&gt;Valor?SW_SHOW:SW_HIDE)
+  FinProc
+  Proc GetHabil:Booleano
+    Si (ObjHwnd) Habil=IsWindowEnabled(ObjHwnd)
+    Devolver Habil
+  FinProc
+  Proc SetHabil(Valor:Booleano)
+    Habil=Valor
+    Si (ObjHwnd) EnableWindow(ObjHwnd,Valor)
+  FinProc
+  Proc GetColor:Entero
+    Resultado=Col
+  FinProc
+  Proc SetColor(Valor:Entero)
+    Var Rct:RECT
+    Col=Valor
+    Si (ObjHwnd)
+      Si (hBrush) DeleteObject(hBrush)
+      hBrush=CreateSolidBrush(ColorReal(Valor))
+      SetClassLong(ObjHwnd,GCL_HBRBACKGROUND,hBrush)
+      Actualizar
+    FinSi
+  FinProc
+P$FAblico:
+  'props p$FAblicos
+  Prop Hwnd:Entero
+    Lec:ObjHwnd
+  FinProp
+  Prop Habilitado:Booleano
+    Lec:GetHabil
+    Esc:SetHabil
+  FinProp
+  Prop Visible:Booleano
+    Lec:GetVisib
+    Esc:SetVisib
+  FinProp
+  Prop Color:Entero
+    Lec:GetColor
+    Esc:SetColor
+  FinProp
+  Prop hDC:Entero
+    Lec:GetHDC
+  FinProp
+  'procs p$FAblicos
+  Proc Enfocar
+    SetFocus(ObjHwnd)
+  FinProc
+  Proc Actualizar
+    ActualizarWin(ObjHwnd)
+    UpdateWindow(ObjHwnd)
+  FinProc
+  Proc ObtenerDC
+    Si (ObjHwnd=0) GenerarError errFalloWinCtrls
+    iDC=GetDC(ObjHwnd)
+    ZonaDibujo.hWnd=ObjHwnd
+  FinProc
+Privado:
+  Proc WinControlInit
+    Crear ZonaDibujo
+    Eval ZonaDibujo
+      .Pincel.Eventos.AlCambiar@=CanvasCambiado@
+      .L$E1piz.Eventos.AlCambiar@=CanvasCambiado@
+    FinEval
+  FinProc
+  Constructor:WinControlInit
+FinClase
+
+
+Clase pscTextControl(pscWinControl), _
+  iTexto:Cadena
+
+  ClaseVar Fuente:pscFuente
+
+Privado:
+  Proc GetTexto:Cadena
+    Var Longit:Entero
+    Si (ObjHwnd)
+      Longit=GetWindowTextLength(ObjHwnd)*2
+      iTexto=Espacio(Longit)
+      GetWindowText(ObjHwnd,iTexto,Longit)
+      Devolver TruncarCadena(iTexto)
+    SiNo
+      Devolver iTexto
+    FinSi
+  FinProc
+  Proc SetTexto(Valor:Cadena)
+    iTexto=Valor
+    Si (ObjHwnd) SetWindowText(ObjHwnd,Valor)
+  FinProc
+  Proc TextControlInit
+    Crear Fuente
+  FinProc
+  Constructor:TextControlInit
+P$FAblico:
+  Prop Texto:Cadena
+    Lec:GetTexto
+    Esc:SetTexto
+  FinProp
+  'Prop Fuente,iFuente
+FinClase
+
+Clase pscForm(pscWinControl), _
+  Text,ClassNomb:Cadena, _
+  Estad,ModalHwnd[]:Entero, _
+  Modal,iMinBtn,iMaxBtn,iSysMnu,iSizeBox,iBorder,iCenter,iOnTop:Booleano
+
+  ClaseVar Eventos:PSCFORM_EVENTINFO
+
+Privado:
+  'procs privados
+  Proc GetText:Cadena
+    Var Longit:Entero
+    Si (ObjHwnd)
+      Longit=GetWindowTextLength(ObjHwnd)*2
+      Text=Espacio(Longit)
+      GetWindowText(ObjHwnd,Text,Longit)
+      Devolver TruncarCadena(Text)
+    SiNo
+      Devolver Text
+    FinSi
+  FinProc
+  Proc SetText(Valor:Cadena)
+    Text=Valor
+    Si (ObjHwnd) SetWindowText(ObjHwnd,Valor)
+  FinProc
+  Proc GetEstad:Entero
+    Var WinPlc:WINDOWPLACEMENT
+    Si (ObjHwnd)
+      Eval WinPlc
+        .Length=Long(WinPlc)
+        GetWindowPlacement(ObjHwnd,WinPlc)
+        Si (.showcmd And SW_MAXIMIZE)=SW_MAXIMIZE Estad=ST_MAX;Salir Eval
+        Si (.showcmd And SW_MINIMIZE)=SW_MINIMIZE Estad=ST_MIN;Salir Eval
+        Si (.showcmd And SW_RESTORE)=SW_RESTORE Estad=ST_REST;Salir Eval
+      FinEval
+    FinSi
+    Devolver Estad
+  FinProc
+  Proc SetEstad(Valor:Entero)
+    Var WinPlc:WINDOWPLACEMENT
+    Estad=Valor
+    Si (ObjHwnd)
+      WinPlc.Length=Long(WinPlc)
+      GetWindowPlacement(ObjHwnd,WinPlc)
+      Seleccionar Valor
+        Caso ST_MAX
+          WinPlc.showcmd=SW_MAXIMIZE
+        Caso ST_MIN
+          WinPlc.showcmd=SW_MINIMIZE
+        Caso ST_REST
+          WinPlc.showcmd=SW_RESTORE
+      FinSeleccionar
+      SetWindowPlacement(ObjHwnd,WinPlc)
+    FinSi
+  FinProc
+  Proc GetCargado:Booleano
+    Resultado=ObjHwnd&lt;&gt;0
+  FinProc
+  Proc GetMenuSistema:Booleano
+    Resultado=iSysMnu
+  FinProc
+  Proc SetMenuSistema(Valor:Booleano)
+    Si (ObjHwnd) GenerarError errOpImposible
+    iSysMnu=Valor
+  FinProc
+  Proc GetBotonMinimizar:Booleano
+    Resultado=iMinBtn
+  FinProc
+  Proc SetBotonMinimizar(Valor:Booleano)
+    Si (ObjHwnd) GenerarError errOpImposible
+    iMinBtn=Valor
+  FinProc
+  Proc GetBotonMaximizar:Booleano
+    Resultado=iMaxBtn
+  FinProc
+  Proc SetBotonMaximizar(Valor:Booleano)
+    Si (ObjHwnd) GenerarError errOpImposible
+    iMaxBtn=Valor
+  FinProc
+  Proc GetPuedeCambiarDeTama$F1o:Booleano
+    Resultado=iSizeBox
+  FinProc
+  Proc SetPuedeCambiarDeTama$F1o(Valor:Booleano)
+    Si (ObjHwnd) GenerarError errOpImposible
+    iSizeBox=Valor
+  FinProc
+  Proc GetCentrar:Booleano
+    Resultado=iCenter
+  FinProc
+  Proc SetCentrar(Valor:Booleano)
+    Si (ObjHwnd) GenerarError errOpImposible
+    iCenter=Valor
+  FinProc
+  Proc GetOnTop:Booleano
+    Resultado=iOnTop
+  FinProc
+  Proc SetOnTop(Valor:Booleano)
+    Si (ObjHwnd) GenerarError errOpImposible
+    iOnTop=Valor
+  FinProc
+  Proc GetBorde:Booleano
+    Resultado=iBorder
+  FinProc
+  Proc SetBorde(Valor:Booleano)
+    Si (ObjHwnd) GenerarError errOpImposible
+    iBorder=Valor
+  FinProc
+  Proc EjecutarModal
+    Var Msg:MSG
+    'Mientras (GetMessage(Msg,0,0,0)=Verd) And (Visible=Verd)
+    '  TranslateMessage(Msg)
+    '  DispatchMessage(Msg)
+    'FinMientras
+    Mientras Visible
+      GetMessage(Msg,0,0,0)
+      TranslateMessage(Msg)
+      DispatchMessage(Msg)
+    FinMientras
+  FinProc
+  Proc CentrarForm
+    X=(Pantalla.Ancho\2)-(Ancho\2)
+    Y=(Pantalla.Alto\2)-(Alto\2)
+  FinProc
+P$FAblico:
+  'props p$FAblicos
+  'Prop Eventos,Events
+  Prop Texto:Cadena
+    Lec:GetText
+    Esc:SetText
+  FinProp
+  Prop Cargado:Booleano
+    Lec:GetCargado
+  FinProp
+  Prop MenuSistema:Booleano
+    Lec:GetMenuSistema
+    Esc:SetMenuSistema
+  FinProp
+  Prop BotonMinimizar:Booleano
+    Lec:GetBotonMinimizar
+    Esc:SetBotonMinimizar
+  FinProp
+  Prop BotonMaximizar:Booleano
+    Lec:GetBotonMaximizar
+    Esc:SetBotonMaximizar
+  FinProp
+  Prop PuedeCambiarDeTama$F1o:Booleano
+    Lec:GetPuedeCambiarDeTama$F1o
+    Esc:SetPuedeCambiarDeTama$F1o
+  FinProp
+  Prop Centrar:Booleano
+    Lec:GetCentrar
+    Esc:SetCentrar
+  FinProp
+  Prop SiempreVisible:Booleano
+    Lec:GetOnTop
+    Esc:SetOnTop
+  FinProp
+  Prop Borde:Booleano
+    Lec:GetBorde
+    Esc:SetBorde
+  FinProp
+  'proc p$FAblicos
+  Proc CerrarForm
+    Var i:Entero
+    Si (Modal)
+      pscModalCount=pscModalCount-1
+      Modal=Falso
+      Contar i=1 a LongMat(ModalHwnd)
+        EnableWindow(ModalHwnd[i-1],Verd)
+      Seguir
+    FinSi
+  FinProc
+  Proc CrearForm
+    Si (ObjHwnd) Salir
+    ObjHwnd=CreateWindowEx( (&gt;iOnTop?WS_EX_TOPMOST:0),ClassNomb,Text,WS_CLIPCHILDREN+WS_OVERLAPPED+WS_CAPTION+ _
+                          (&gt;iSysMnu?WS_SYSMENU:0)+(&gt;iMaxBtn?WS_MAXIMIZEBOX:0)+(&gt;iMinBtn?WS_MINIMIZEBOX:0)+(&gt;iBorder?WS_THICKFRAME:0) _
+                          +(&gt;Habil?0:WS_DISABLED),Coords.x,Coords.y,Coords.Width,Coords.Height,0,0,Programa.hInstance,Nulo)
+    Si (ObjHwnd=0) GenerarError errFalloWinCtrls
+    SetColor(Col,0)
+    SetProp(ObjHwnd,"EVENT",Eventos@)
+    SetProp(ObjHwnd,"THIS",ObjPtr())
+    ObtenerDC
+    SetColor(GetColor(),0)
+  FinProc
+  Proc QuitarForm
+    Si (ObjHwnd=0) Salir
+    ObjHwnd=0
+  FinProc
+  Proc DescargarForm
+    Si (ObjHwnd=0) Salir
+    'CerrarForm
+    SendMessage(ObjHwnd,WM_CLOSE,0,0)
+  FinProc
+  Proc MostrarModalInt
+    Var Data:WINTHREADDATA
+    Data.hWnd=hWnd
+    EnumThreadWindows(GetCurrentThreadId(),pscForm_enumwin@,Data@)
+    ModalhWnd=Data.hWndDisable
+    pscModalCount=pscModalCount+1
+    Modal=Verd
+    Si (Centrar) CentrarForm
+    Visible=Verd
+    EjecutarModal()
+  FinProc
+  Proc MostrarInt
+    Si (pscModalCount) GenerarError errImposibleNoModal
+    Si (Centrar) CentrarForm
+    Visible=Verd
+  FinProc
+  Proc Ocultar
+    CerrarForm
+    Visible=Falso
+  FinProc
+  Proc FormCargado
+    Si (Eventos.AlCargarse@) Eventos.AlCargarse
+  FinProc
+Privado:
+  'extra
+  Proc Registrar
+    Var wndcls:WNDCLASS
+    wndcls.style = CS_HREDRAW+CS_VREDRAW+CS_PARENTDC
+    wndcls.lpfnwndproc = pscForm_wndproc@
+    wndcls.hInstance = Programa.hInstance
+    wndcls.hCursor = LoadCursorNum(0, IDC_ARROW)
+    wndcls.hbrBackground = COLOR_WINDOW
+    wndcls.lpszMenuName = ""
+    wndcls.lpszClassName = ClassNomb
+    Si (RegisterClass(wndcls)=0) GenerarError errFalloWinCtrls
+  FinProc
+  Proc Inicializar
+    Alto=200
+    Ancho=200
+    Habilitado=Verd
+    MenuSistema=Verd
+    BotonMinimizar=Verd
+    BotonMaximizar=Verd
+    PuedeCambiarDeTama$F1o=Verd
+    Color=COLOR_BTNFACE+&amp;1000000 '16777216
+    pscWinCount=pscWinCount+1
+    ClassNomb="pscForm"+EntCad(pscWinCount)
+    Registrar
+  FinProc
+  Proc Finalizar
+    DescargarForm
+    UnregisterClass(ClassNomb,Programa.hInstance)
+  FinProc
+  Constructor:Inicializar
+  Destructor:Finalizar
+FinClase
+
+Clase pscPrograma
+Privado:
+  'procs privados
+  Proc GetHInstance:Entero
+    Resultado=GetModuleHandle("")
+  FinProc
+P$FAblico:
+  'procs p$FAblicos
+  Proc Ejecutar
+    Var Msg:MSG
+    Mientras GetMessage(Msg,0,0,0)=Verd
+      TranslateMessage(Msg)
+      DispatchMessage(Msg)
+    FinMientras
+  FinProc
+  Proc ProcesarEventos
+    Var Msg:MSG
+    Mientras PeekMessage(Msg,0,0,0,PM_REMOVE)
+      TranslateMessage(Msg)
+      DispatchMessage(Msg)
+    FinMientras
+  FinProc
+  Proc Terminar
+    PostQuitMessage(0)
+  FinProc
+  'props p$FAblicos
+  Prop hInstance:Entero
+    Lec:GetHInstance
+  FinProp
+FinClase
+
+
+Clase pscMenuItem, _
+  hMenu,ItemIndex:Entero, _
+  iTexto:Cadena, _
+  iHabil,iChk:Booleano
+
+  ClaseVar @Submenu:pscMenu
+  ClaseVar Eventos:PSCMENUITEM_EVENTINFO
+
+Privado:
+  'procs privados
+  Proc GetTexto:Cadena
+    Var BuffStr:Cadena
+    Si (hMenu)
+      BuffStr=Espacio(256)
+      GetMenuString(hMenu,ItemIndex,BuffStr,CadLong(BuffStr),MF_BYPOSITION)
+      iTexto=TruncarCadena(BuffStr)
+    FinSi
+    Resultado=iTexto
+  FinProc
+  Proc SetTexto(Valor:Cadena)
+    iTexto=Valor
+    Si (hMenu) ModifyMenu(hMenu,ItemIndex,MF_BYPOSITION Or MF_STRING,0,CadPtr(iTexto))
+  FinProc
+  Proc GetHabil:Booleano
+    Resultado=iHabil
+  FinProc
+  Proc SetHabil(Valor:Booleano)
+    Var Info:MENUITEMINFO
+    Si (iHabil=Valor) Salir
+    iHabil=Valor
+    Si (hMenu=0) Salir
+    Info.cbSize=Long(Info)
+    Info.fMask=MIIM_STATE
+    Info.fState= (&gt;iHabil?MFS_ENABLED:MFS_GRAYED)
+    SetMenuItemInfo(hMenu,ItemIndex,Verd,Info)
+  FinProc
+  Proc GetChk:Booleano
+    Resultado=iChk
+  FinProc
+  Proc SetChk(Valor:Booleano)
+    Var Info:MENUITEMINFO
+    Si (iChk=Valor) Salir
+    iChk=Valor
+    Si (hMenu=0) Salir
+    Info.cbSize=Long(Info)
+    Info.fMask=MIIM_STATE
+    Info.fState= (&gt;iChk?MFS_CHECKED:MFS_UNCHECKED)
+    SetMenuItemInfo(hMenu,ItemIndex,Verd,Info)
+  FinProc
+P$FAblico:
+  'props p$FAblicos
+  Prop Texto:Cadena
+    Lec:GetTexto
+    Esc:SetTexto
+  FinProp
+  Prop Habilitado:Booleano
+    Lec:GetHabil
+    Esc:SetHabil
+  FinProp
+  Prop Chequeado:Booleano
+    Lec:GetChk
+    Esc:SetChk
+  FinProp
+  'Prop Submenu,Submenu
+  'Prop Eventos,Events
+  'procs p$FAblicos
+  Proc CrearMenuItem(hMenuParent,Indice,hWnd:Entero)
+    hMenu=hMenuParent
+    ItemIndex=Indice
+    MenuItemCount=MenuItemCount+1
+    SetProp(hWnd,"MENU"+EntCad(MenuItemCount),ObjPtr())
+    Si (Submenu@)
+      Submenu.CargarMenu(hWnd,Verd)
+      AppendMenu(hMenu,MF_STRING Or MF_POPUP,Submenu.hMenu,CadPtr(iTexto))
+    SiNo
+      AppendMenu(hMenu, (&gt;iTexto="-"?MF_SEPARATOR:MF_STRING) ,MenuItemCount,CadPtr(iTexto))
+    FinSi
+  FinProc
+  Proc Seleccionado
+    Si (Eventos.AlSeleccionar@) Eventos.AlSeleccionar
+  FinProc
+Privado:
+  Proc ObjPtr:Entero
+    Var @Temp:Entero
+    Temp@=EsteObjeto@
+    Resultado=Temp
+  FinProc
+  Proc Init
+    iHabil=Verd
+  FinProc
+  Constructor:Init
+FinClase
+
+Clase pscMenu, _
+  MaxItems,hWnd:Entero
+
+  ClaseVar Items[]:pscMenuItem
+  ClaseVar hMenu:Entero
+
+  'procs p$FAblicos
+  Proc NuevoItem:Entero
+    Redim Preservar Items,MaxItems+1
+    Crear Items[MaxItems]
+    Si (hMenu) Items[MaxItems].CrearMenuItem(hMenu,MaxItems,hWnd)
+    Resultado=MaxItems
+    MaxItems=MaxItems+1
+  FinProc
+  Proc NuevosItems(Cuantos:Entero)
+    Var i:Entero
+    Contar i=1 a Cuantos
+      NuevoItem
+    Seguir
+  FinProc
+  Proc CantidadItems:Entero
+    Resultado=MaxItems
+  FinProc
+  Proc CargarMenu(ObjhWnd:Entero,Opcional NoSetWin:Booleano)
+    Var i:Entero
+    Si (hMenu) Salir
+    hWnd=ObjhWnd
+    hMenu=CreateMenu()
+    Contar i=1 a MaxItems
+      Items[i-1].CrearMenuItem(hMenu,i-1,hWnd)
+    Seguir
+    Si (NoSetWin=Falso)
+      SendMessage(ObjhWnd,WM_USER+1,0,0)
+      SetMenu(hWnd,hMenu)
+    FinSi
+  FinProc
+  'props p$FAblicos
+  'Prop Items,Items
+  'Prop hMenu,hMenu
+FinClase
+
+Proc ColorReal(Color:Entero):Entero
+  Si (Color&gt;&amp;FFFFFF)
+    Resultado=GetSysColor(Color-&amp;1000000)
+  SiNo
+    Resultado=Color
+  FinSi
+FinProc
+</Contenido></Datos>

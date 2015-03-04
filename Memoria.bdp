@@ -1,0 +1,10 @@
+<Datos><Nombre></Nombre><Icono>AA==</Icono><Version><Mayor>0</Mayor><Menor>0</Menor><Revision>0</Revision><AutoIncr>0</AutoIncr></Version><Info/><Contenido>Importar "Utiles.prp"
+
+Proc MemoriaCopiar(Ptr1,Ptr2,Longitud:Entero)
+	CopyMemory(Ptr1,Ptr2,Longitud)
+FinProc
+
+Proc MemoriaMover(Ptr1,Ptr2,Longitud:Entero)
+	MoveMemory(Ptr1,Ptr2,Longitud)
+FinProc
+</Contenido></Datos>

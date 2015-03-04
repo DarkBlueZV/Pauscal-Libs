@@ -1,0 +1,104 @@
+<Datos><Nombre></Nombre><Icono>AA==</Icono><Version><Mayor>0</Mayor><Menor>0</Menor><Revision>0</Revision><AutoIncr>0</AutoIncr></Version><Info/><Contenido>Importar "Registros.prp"
+Importar "Utiles.prp"
+Importar "Macros.prp"
+
+$24ADV-
+
+Proc ExplorerLimpiarCache()
+	Ejecutar("ie4uinit.exe","-ClearIconCache")
+FinProc
+
+Proc TaskBar()
+	Keybd_event(&amp;11,0,0,0)
+	Keybd_event(&amp;10,0,0,0)
+	Keybd_event(&amp;1B,0,0,0)
+	keybd_event(&amp;11,0,KEYEVENTF_KEYUP,0)
+	Keybd_event(&amp;10,0,KEYEVENTF_KEYUP,0)
+	Keybd_event(&amp;1B,0,KEYEVENTF_KEYUP,0)
+FinProc
+
+Proc DLLRegistrar(Referencia RutaDll:Cadena):Booleano
+Var Ruta:PscRutas
+Var Verificar:Entero
+Crear Ruta
+Verificar = Ejecutar(Ruta.Sistema + "\regsvr32.exe","/s " + RutaDll)
+Resultado = Verificar
+Destruir Ruta
+FinProc
+
+Proc DLLBorrar(Referencia RutaDll:Cadena):Booleano
+Var Ruta:PscRutas
+Var Verificar:Entero
+Crear Ruta
+Verificar = Ejecutar(Ruta.Sistema + "\regsvr32.exe","/s /u " + RutaDll)
+Resultado = Verificar
+Destruir Ruta
+FinProc
+
+Proc IniciarChrome(Opcional URL:Cadena = "about:blank",Opcional Chrome_Path:Cadena = "")
+	Var Ruta:PscRutas
+   Var Program_Files,LocalAppData,AppData:Cadena
+   Crear Ruta
+   AppData = Ruta.AppData
+   LocalAppData = ObtCarpEsp(28)
+   Program_Files = Ruta.ArchivosDePrograma
+   Si CadLong(Chrome_Path) = 0
+   'Chequear en archivos de programa
+      Si ExisteArchivo(Program_Files + "\Google\Chrome\Application\chrome.exe") 
+         Chrome_Path = Program_Files + "\Google\Chrome\Application\chrome.exe"
+      SiNo
+         Si ExisteArchivo(Program_Files + "\Google\Chrome\chrome.exe") 
+            Chrome_Path = Program_Files + "\Google\Chrome\chrome.exe"
+         SiNo
+            ' Chequear en la AppData
+            Si ExisteArchivo(AppData + "\Google\Chrome\Application\chrome.exe") 
+               Chrome_Path = AppData + "\Google\Chrome\Application\chrome.exe"
+            SiNo
+               Si ExisteArchivo(AppData + "\Google\Chrome\chrome.exe") 
+                  Chrome_Path = AppData + "\Google\Chrome\chrome.exe"
+               SiNo
+                  ' Chequear en la LocalAppData
+                  Si ExisteArchivo(LocalAppData + "\Google\Chrome\Application\chrome.exe") 
+                     Chrome_Path = LocalAppData + "\Google\Chrome\Application\chrome.exe"
+                  SiNo
+                     Si ExisteArchivo(LocalAppData + "\Google\Chrome\chrome.exe") 
+                        Chrome_Path = LocalAppData + "\Google\Chrome\Application\chrome.exe"
+                     FinSi
+                  FinSi
+               FinSi
+            FinSi
+         FinSi
+      FinSi
+   FinSi
+
+   Si CadLong(Chrome_Path) &gt; 0
+     Ejecutar(Chrome_Path, URL)
+   SiNo
+     GenerarError 1, "Google Chrome no encontrado."
+   FinSi
+   Destruir Ruta
+FinProc
+
+' Este procedimiento modifica el tama$F1o de un archivo, es una iluci$F3n.
+' Nuevo tama$F1o falso: 1073741824 Bytes.
+Proc FalsearTama$F1o(Referencia ArchivoBase,ArchivoFinal:Cadena)
+	Var Origen,Destino,FSize,bReturn:Entero,Buffer:Cadena
+	Const FSCTL_SET_SPARSE = &amp;000900C4
+		Resultado = Verd
+		Origen = CreateFile(ArchivoBase,GENERIC_READ,FILE_SHARE_READ,Nulo,OPEN_EXISTING,0,0)
+		FSize = GetFileSize(Origen,Nulo)
+		Buffer = Espacio(FSize)
+		ReadFile(Origen, CadPtr(Buffer), FSize, 0, Nulo)
+		CloseHandle(Origen)
+		Destino = CreateFile(ArchivoFinal,GENERIC_WRITE,FILE_SHARE_WRITE,Nulo,CREATE_NEW,0,0)
+		WriteFile(Destino, CadPtr(Buffer), FSize, 0, Nulo)
+		bReturn = DeviceIoControl(Destino, FSCTL_SET_SPARSE, 0, 0, 0, 0, 0, 0)
+		Si bReturn = INVALID_HANDLE Entonces
+			Mensaje(EntCad(Error))
+			Salir
+		FinSi
+		SetFilePointer(Destino,1073741824, 0, 0)
+		SetEndOfFile(Destino)
+		CloseHandle(Destino)
+FinProc
+</Contenido></Datos>

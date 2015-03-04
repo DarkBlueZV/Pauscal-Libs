@@ -1,965 +1,195 @@
-Importar "Declare.prp"
+<Datos><Nombre></Nombre><Icono>AA==</Icono><Version><Mayor>0</Mayor><Menor>0</Menor><Revision>0</Revision><AutoIncr>0</AutoIncr></Version><Info/><Contenido>Importar "Apis.prp"
+Importar "Constantes.prp"
 
-$ADV-
-$EBC-
+$24ADV-
+$24EBC-
+$24CED-
 
-Público:
-Const CrLf        = #13#10
-Const Enter       = #13#10
-Const Null        = #0
-Const Vacio       = #0
-Const Defecto     = &0 ' Diseñado para establecer "Defecto" como parametro, Aprobechando el bug descubierto por PowerDeath.
+' Por cada funci$F3n optimizada de esta libreria, se optimizan todos los procedimientos que
+' Utilicen estas funciones, en velocidad y estabilidad.
+
+' $E1 $E9 $ED $F3 $FA $F1 
+
+' &lt; &gt;
+
+' &amp;
+
+' $24
 
 Privado:
-	Proc VarCyFromR8(nro:Real, Referencia cy:Decimal):Entero, "oleaut32"
-Público:
+	Uni$F3n StrAndIntToArrayByte,Str:Cadena,Bite[]:Byte
+	' Decid$ED usar una uni$F3n debido al costo de memoria de los procedimientos individuales.
+	' Nota: Funciona excelentemente.
+P$FAblico:
 
-' #############################################################
-' Nombre       : HexEnt
-' Función      : Convierte una cadena hexadecimal a entero.
-' Devolución   : Entero
-' Autor        : Paul Guerra
-' Parametros   : #1 {Cadena} Expresión a convertir.
-' #############################################################
-Proc HexEnt(hex:Cadena):Entero
-   Var i:Byte
-   Var car:Entero
-
-   Contar i = CadLong(hex) a 1
-      car = Ascii(ParteCad(hex, i))
-      Si (i > 8) or (car < 48 and car > 58) or (car < 65 and car > 71) Entonces GenerarError errParamInv
-      Resultado = Resultado + ((> car<65 ? car - 48 : car - 55) shr (i-1))
-   Seguir
+'By Yuki!
+'Este procedimiento fue creado para asignar los datos de una variable de cade a otra.
+'Agradecimientos a Jmetin por ense$F1arme el funcionamiento de las cadenas.
+'Este procedimiento se utiliza al igual que el operador "=", pero funciona mas rapido.
+'Ejemplo, Cadena1 = Cadena2
+'Cadena1 obtiene los datos de cadena 2, con el operador "=" se tarda mas que con este procedimiento.
+'Se acabo el problema al trabajar con cadenas! :D
+'Nota: Se recomienda el uso de este procedimiento cuando se trabaje con cadenas de grandes longitudes.
+'Nota2: Parece que esta funci$F3n AVECES (AVECES &lt;&lt;&lt;) Causa un error al acceder en la memoria, usar con precauci$F3n.
+'Nota3: Procedimiento experimental.
+Proc CadAsignar(Referencia Str1,Str2:Cadena)
+	Var @Ptr1:Entero
+	Ptr1@ = Str1@
+	Ptr1 = CadPtr(Str2)
 FinProc
 
-
-' #############################################################
-' Nombre       : EntHext
-' Función      : Convierte una expresión a Hexadecimal.
-' Devolución   : Cadena
-' Autor        : Paul Guerra
-' Parametros   : #1 {Entero} Valor a convertir[, #2 {Booleano} Rellenar con ceros.]
-' #############################################################
-Proc EntHex(lNum:Entero,Opcional FillWithZero:Booleano):Cadena
-  Var Digit,i:Byte
-  Contar i=1 a 8
-    Si (lNum=0) And (FillWithZero=Falso) Salir
-    Digit=lNum And &0F
-    Resultado=Carac(>Digit<10?Digit+48:Digit+55)+Resultado
-    lNum=lNum shr 4
-  Seguir
+'By Yuki!
+Proc RepCarac(Crc:Byte,Longitud:Entero):Cadena
+	Resultado = Espacio(Longitud)
+	FillMemory(CadPtr(Resultado),Longitud,Crc)
 FinProc
 
-
-'Proc CadHex(Str:Cadena):Cadena
-'Var i:Entero,Array[]:Byte
-'Array = MatrizByteDeCadena(Str) ; Str = ""
-'Contar i = 0 a Límite(Array)
-'	Str = Str + EntCad(Array[i])
-'Seguir
-'Devolver Str
-'FinProc
-
-
-'Proc HexCad(Str:Cadena):Cadena
-'Var i:Entero,Lt:Cadena
-'Contar i = 1 a CadLong(Str)
-'	Si Neg(EsPar(i)) Entonces Lt = Lt + Carac(CadEnt(ParteCad(Str,i,2)))
-'Seguir 
-'Devolver Lt
-'FinProc
-
-' #############################################################
-' Nombre       : EsPar
-' Función      : Verifica si un número es par.
-' Devolución   : Booleano
-' Autor        : PowerDeath
-' Parametros   : #1 {Entero} Valor a comprobar.
-' #############################################################
-Proc EsPar(Número:Entero):Booleano
-	Var Texto:Cadena
-	Texto = EntCad(Número)
-	Texto = DerechaCad(Texto,1)
-	Seleccionar Texto
-		Caso "2","4","6","8","0"
-			Devolver Verd
-		Caso Otro
-			Devolver Falso
-	FinSeleccionar
-FinProc
-
-' #############################################################
-' Nombre       : RealDec2
-' Función      : Convierte una expresión a decimal.
-' Devolución   : Decimal
-' Autor        : Paul Guerra
-' Parametros   : #1 {Real} Valor a convertir.
-' #############################################################
-Proc RealDec2(nro:Real):Decimal
-   VarCyFromR8(nro, Resultado)
-FinProc
-
-' #############################################################
-' Nombre       : CadDec
-' Función      : Convierte una expresión a decimal.
-' Devolución   : Decimal
-' Autor        : Paul Guerra
-' Parametros   : #1 {Cadena} Valor a convertir.
-' #############################################################
-Proc CadDec(txt:Cadena):Decimal
-   Resultado = RealDec2(CadReal(txt))
-FinProc
-
-' #############################################################
-' Nombre       : DecCad
-' Función      : Convierte una expresión a cadena.
-' Devolución   : Cadena
-' Autor        : Paul Guerra
-' Parametros   : #1 {Decimal} Valor a convertir.
-' #############################################################
-Proc DecCad(nro:Decimal):Cadena
-   Resultado = RealCad(DecReal(nro))
-FinProc
-
-' #############################################################
-' Nombre       : EntDec
-' Función      : Convierte una expresión a decimal.
-' Devolución   : Decimal
-' Autor        : Paul Guerra
-' Parametros   : #1 {EnteroSig} Valor a convertir.
-' #############################################################
-Proc EntDec(nro:EnteroSig):Decimal
-   Var @temp:EnteroSig
-   temp@ = Resultado@
-   temp = nro
-   Resultado = Resultado * 10000
-FinProc
-
-' #############################################################
-' Nombre       : DecEnt
-' Función      : Convierte una expresión a entero con signo.
-' Devolución   : EnteroSig
-' Autor        : Paul Guerra
-' Parametros   : #1 {Decimal} Valor a convertir.
-' #############################################################
-Proc DecEnt(nro:Decimal):EnteroSig
-   Var @temp:Decimal
-   Var da[]:EnteroSig
-   da=[0,0]
-   temp@ = da[0]@
-   temp = nro/10000
-   Resultado = da[0]
-FinProc
-
-' #############################################################
-' Nombre       : EntreCad
-' Función      : Obtiene la cadena entre dos cadenas establecidas.
-' Devolución   : Cadena
-' Autor        : PowerDeath
-' Parametros   : #1 {Cadena} Texto completo, #2 {Cadena} Palabra inicial, #3 {Cadena} Palabra segundaria[, #4 {Entero} Posición inicial.]
-' #############################################################
-Proc EntreCad(Referencia Texto,Inicial,Final:Cadena,Opcional InicialB:Entero = 1):Cadena
-	Var Str[]:Cadena
-	Str = Separar(Texto,Inicial,InicialB)
-	Str = Separar(Str[1],Final)
-	Devolver Str[0]
-FinProc
-
-' #############################################################
-' Nombre       : MatEliminar
-' Función      : Elimina una expresión dentro de una matriz.
-' Devolución   : Cadena[]
-' Autor        : PowerDeath
-' Parametros   : #1 {Cadena[]} Matriz completa, #2 {Cadena} Expresión a eliminar.
-' #############################################################
-Proc MatEliminar(Matriz[]:Cadena,Expresión:Cadena):Cadena[]
-Var i:Entero,Matriz2[]:Cadena,Contador:Entero
-ReDim Matriz2,1
-Contar i = 0 a Límite(Matriz)
-	Si Matriz[i] <> Expresión Entonces
-		Si Contador = LongMat(Matriz2) Entonces ReDim Preservar Matriz2,LongMat(Matriz2) + 1
-		Matriz2[Contador] = Matriz[i]
-		Contador = Contador + 1
-	FinSi
-Seguir
-	Resultado = Matriz2
-FinProc
-
-' #############################################################
-' Nombre       : RepartirCad
-' Función      : Reparte una cadena dentro de una matriz.
-' Devolución   : Cadena[]
-' Autor        : PowerDeath
-' Parametros   : #1 {Cadena} Expresión a repartir, #2 {Entero} Cantidad a repartir.
-' #############################################################
-Proc RepartirCad(Textos:Cadena,Opcional LongitudCad:Entero = 1):Cadena[]
-Var i,Longitud:Entero,Matriz[]:Cadena
-Longitud = CadLong(Textos)
-Si LongitudCad > Longitud Entonces GenerarError 0,"La longitud establecida es mayor a la longitud del texto."
-Si EsPar(LongitudCad) Xor EsPar(Longitud) Entonces GenerarError 1, "Si la longitud del parametro #1 es par -" + CrLf + "El valor del segundo parametro tambien debe serlo."
-ReDim Matriz, Longitud
-i = 1
-Mientras i <= Longitud
-   Matriz[i - 1] = ParteCad(Textos,i,LongitudCad)
-   i = i + LongitudCad
-FinMientras
-   Resultado = MatEliminar(Matriz,"")
-FinProc
-
-' #############################################################
-' Nombre       : UnirCad
-' Función      : Une una matriz de cadena.
-' Devolución   : Cadena
-' Autor        : PowerDeath
-' Parametros   : #1 {Cadena[]} Matriz de cadena a unir.
-' #############################################################
-Proc UnirCad(Matriz[]:Cadena):Cadena
-	Var Result:Cadena,i:Entero
-	Contar i = 0 a Límite(Matriz)
-		Result = Result + Matriz[i]
-	Seguir
-	Devolver Result
-FinProc
-
-' #############################################################
-' Nombre       : RepartirEnt
-' Función      : Reparte una expresión dentro de una matriz.
-' Devolución   : Entero[]
-' Autor        : PowerDeath
-' Parametros   : #1 {Cadena} Expresión a repartir.
-' #############################################################
-Proc RepartirEnt(Números:Entero):Entero[]
-Var i,Longitud,Matriz[]:Entero,Textos:Cadena
-Textos = EntCad(Números)
-Longitud = CadLong(Textos)
-ReDim Matriz, Longitud
-Contar i = 1 a Longitud
-   Matriz[i -1] = CadEnt(ParteCad(Textos,i,1))
-Seguir
-   Resultado = Matriz
-FinProc
-
-' #############################################################
-' Nombre       : UnirEnt
-' Función      : Une o suma una matriz.
-' Devolución   : Entero
-' Autor        : PowerDeath
-' Parametros   : #1 {Entero[]} Matriz[, #2 {Booleano} Sumar la matriz.]
-' #############################################################
-Proc UnirEnt(Matriz[]:Entero,Opcional Sumar:Booleano = Falso):Entero
-	Var Result:Cadena,Beta:Entero,i:Entero
-	Var Matris[]:Cadena
-	'Matris = MatEntCad(Matriz)
-	Contar i = 0 a Límite(Matriz)
-		Si Sumar = Verd Entonces Beta = Beta + Matriz[i]
-		Si Sumar = Falso Entonces Result = Result + EntCad(Matriz[i])
-	Seguir
-	Si Sumar = Verd Entonces Devolver Beta
-	Si Sumar = Falso Entonces Devolver CadEnt(Result)
-FinProc
-
-' #############################################################
-' Nombre       : MatEntCad
-' Función      : Convierte una matriz.
-' Devolución   : Cadena[]
-' Autor        : PowerDeath
-' Parametros   : #1 {Entero[]} Matriz a convertir.
-' #############################################################
-Proc MatEntCad(Matriz[]:Entero):Cadena[]
-	Var Result[]:Cadena,i:Entero
-	Redim Result,LongMat(Matriz)
-	Contar i = 0 a Límite(Matriz)
-		Result[i] = EntCad(Matriz[i])
-	Seguir
-	Resultado = Result
-FinProc
-
-' #############################################################
-' Nombre       : MatCadEnt
-' Función      : Convierte una matriz.
-' Devolución   : Entero[]
-' Autor        : PowerDeath
-' Parametros   : #1 {Cadena[]} Matriz a convertir.
-' #############################################################
-Proc MatCadEnt(Matriz[]:Cadena):Entero[]
-	Var Result[],i:Entero
-	Redim Result,LongMat(Matriz)
-	Contar i = 0 a Límite(Matriz)
-		Result[i] = CadEnt(Matriz[i])
-	Seguir
-	Resultado = Result
-FinProc
-
-' #############################################################
-' Nombre       : RepartirDec
-' Función      : Reparte un valor decimal en una matriz.
-' Devolución   : Decimal[]
-' Autor        : PowerDeath
-' Parametros   : #1 {Decimal} Expresión a repartir.
-' #############################################################
-Proc RepartirDec(Números:Decimal):Decimal[]
-Var i,Longitud:Entero,Matriz[]:Decimal,Textos:Cadena
-Textos = DecCad(Números)
-Longitud = CadLong(Textos)
-ReDim Matriz, Longitud
-Contar i = 1 a Longitud
-   Matriz[i -1] = CadDec(ParteCad(Textos,i,1))
-Seguir
-   Resultado = Matriz
-FinProc
-
-' #############################################################
-' Nombre       : RepartirReal
-' Función      : Reparte un valor real en una matriz.
-' Devolución   : Real[]
-' Autor        : PowerDeath
-' Parametros   : #1 {Real} Expresión a repartir.
-' #############################################################
-Proc RepartirReal(Números:Real):Real[]
-Var i,Longitud:Entero,Matriz[]:Real,Textos:Cadena
-Textos = RealCad(Números)
-Longitud = CadLong(Textos)
-ReDim Matriz, Longitud
-Contar i = 1 a Longitud
-   Matriz[i -1] = CadReal(ParteCad(Textos,i,1))
-Seguir
-   Resultado = Matriz
-FinProc
-
-' #############################################################
-' Nombre       : MatrizByteDeCadena
-' Función      : Obtiene una matriz de una cadena.
-' Devolución   : Byte[]
-' Autor        : PowerDeath
-' Parametros   : #1 {Cadena} Texto a convertir.
-' #############################################################
-Proc MatrizByteDeCadena(Referencia Temp:Cadena):Byte[]
-Var i,lLen:Entero,bArr[]:Byte,Letra:Cadena
-    lLen = CadLong(Temp)
-    Redim bArr,lLen
-    Contar i = 1 a lLen
-      Letra = ParteCad(Temp,i, 1)
-      bArr[i - 1] = Ascii(Letra)
-    Seguir
-    Resultado = bArr
-FinProc
-
-' #############################################################
-' Nombre       : EsSimbolo
-' Función      : Verifica si una cadena contiene simbolos.
-' Devolución   : Booleano
-' Autor        : PowerDeath
-' Parametros   : #1 {Cadena} Texto a chequear.
-' #############################################################
-Proc EsSimbolo(Referencia PalabraA:Cadena):Booleano ' VERIFICAR
-Var i:Entero
-Var a:Cadena
-Const nums = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
-Resultado = Falso
-Contar i = 1 a CadLong(PalabraA)
-   a = ParteCad(PalabraA,i,1)
-      Si Neg LetraExiste(Nums,a) > 0 Entonces
-         Resultado = Verd
-         Salir Contar
-      FinSi
-Seguir
-FinProc
-
-
-'Proc CadXor(Referencia Cadena1:Cadena):Cadena
-'Var Kod,X2:Cadena
-'Var X3:Entero
-'Contar X3 = 1 a CadLong(Cadena1)
-'X2 = ParteCad(Cadena1,X3,1)
-'Kod = Kod + Carac(ASCII(X2) Xor 255)
-'Seguir
-'Devolver Kod
-'FinProc
-
-' #############################################################
-' Nombre       : Espacio
-' Función      : Reparte una cantidad establecida de caracteres nulos.
-' Devolución   : Cadena
-' Autor        : PowerDeath
-' Parametros   : #1 {Entero} Longitud de la cadena devuelta.
-' #############################################################
-Proc Espacio(Longitud:Entero):Cadena
-Devolver RepCarac(0,Longitud)
-FinProc
-
-' #############################################################
-' Nombre       : EsDecimal
-' Función      : Verifica si una cadena es de tipo decimal.
-' Devolución   : Booleano
-' Autor        : PowerDeath
-' Parametros   : #1 {Cadena} Texto a chequear.
-' #############################################################
-Proc EsDecimal(Referencia PalabraA:Cadena):Booleano ' VERIFICAR
-Var i:Entero
-Var a,nums:Cadena
-nums = "123456789."
-Resultado = Verd
-Contar i = 1 a CadLong(PalabraA)
-   a = ParteCad(PalabraA,i,1)
-      Si LetraExiste(Nums,a) = 0 Entonces
-         Resultado = Falso
-         Salir Contar
-      FinSi
-Seguir
-FinProc
-
-' #############################################################
-' Nombre       : EsAlfanumerico
-' Función      : Verifica si una cadena contiene caracteres alfanumericos (Números, Letras y Signos).
-' Devolución   : Booleano
-' Autor        : PowerDeath
-' Parametros   : #1 {Cadena} Texto a chequear.
-' #############################################################
-Proc EsAlfanumerico(Referencia PalabraA:Cadena):Booleano
-Var i:Entero
-Var nums,a:Cadena
-nums = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-Resultado = Verd
-Contar i = 1 a CadLong(PalabraA)
-   a = ParteCad(PalabraA,i,1)
-      Si LetraExiste(Nums,a) = 0 Entonces
-         Resultado = Falso
-         Salir Contar
-      FinSi
-Seguir
-FinProc
-
-' #############################################################
-' Nombre       : EsMinusculas
-' Función      : Verifica si una cadena contiene unicamente minusculas.
-' Devolución   : Booleano
-' Autor        : PowerDeath
-' Parametros   : #1 {Cadena} Texto a chequear.
-' #############################################################
-Proc EsMinusculas(Referencia PalabraA:Cadena):Booleano
-Var i:Entero
-Var nums,a:Cadena
-nums = "abcdefghijklmnopqrstuvwxyzáéíóú"
-Resultado = Verd
-Contar i = 1 a CadLong(PalabraA)
-   a = ParteCad(PalabraA,i,1)
-      Si LetraExiste(Nums,a) = 0 Entonces
-         Resultado = Falso
-         Salir Contar
-      FinSi
-Seguir
-FinProc
-
-' #############################################################
-' Nombre       : EsSimbolo
-' Función      : Verifica si una cadena contiene unicamente mayusculas.
-' Devolución   : Booleano
-' Autor        : PowerDeath
-' Parametros   : #1 {Cadena} Texto a chequear.
-' #############################################################
-Proc EsMayusculas(Referencia PalabraA:Cadena):Booleano
-Var i:Entero
-Var nums,a:Cadena
-nums = "ABCDEFGHIJKLMNOPQRSTUVWXYZÁÉÍÓÚ"
-Resultado = Verd
-Contar i = 1 a CadLong(PalabraA)
-   a = ParteCad(PalabraA,i,1)
-      Si LetraExiste(Nums,a) = 0 Entonces
-         Resultado = Falso
-         Salir Contar
-      FinSi
-Seguir
-FinProc
-
-' #############################################################
-' Nombre       : EsCadena
-' Función      : Verifica si una cadena contiene unicamente letras.
-' Devolución   : Booleano
-' Autor        : PowerDeath
-' Parametros   : #1 {Cadena} Texto a chequear.
-' #############################################################
-Proc EsCadena(Referencia PalabraA:Cadena):Booleano
-Var i:Entero
-Var nums,a:Cadena
-nums = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-Resultado = Verd
-Contar i = 1 a CadLong(PalabraA)
-   a = ParteCad(PalabraA,i,1)
-      Si LetraExiste(Nums,a) = 0 Entonces
-         Resultado = Falso
-         Salir Contar
-      FinSi
-Seguir
-FinProc
-
-' #############################################################
-' Nombre       : EsNúmero
-' Función      : Verifica si una cadena contiene unicamente números.
-' Devolución   : Booleano
-' Autor        : PowerDeath
-' Parametros   : #1 {Cadena} Texto a chequear.
-' #############################################################
-Proc EsNúmero(Referencia NumeroA:Cadena):Booleano
-Var i:Entero
-Var nums,a:Cadena
-nums = "0123456789"
-Resultado = Verd
-Contar i = 1 a CadLong(NumeroA)
-   a = ParteCad(NumeroA,i,1)
-      Si LetraExiste(Nums,a) = 0 Entonces
-         Resultado = Falso
-         Salir Contar
-      FinSi
-Seguir
-FinProc
-
-' #############################################################
-' Nombre       : LetraExiste
-' Función      : Verifica si una cadena contiene un caracter establecida.
-' Devolución   : Booleano
-' Autor        : PowerDeath
-' Parametros   : #1 {Cadena} Texto a chequear.
-' #############################################################
-Proc LetraExiste(Referencia CadenaA,Caracter:Cadena):Booleano
-Var Letra_A:Cadena,Longitud_A,Valor_A:Entero
-Longitud_A = CadLong(CadenaA)
-Resultado = Falso
-Contar Valor_A = 1 a Longitud_A
-   Letra_A = ParteCad(CadenaA,Valor_A,1)
-   Si Letra_A = Caracter
-      Resultado = Verd ; Salir Contar
-   FinSi
-Seguir
-FinProc
-
-' #############################################################
-' Nombre       : InvertirCad
-' Función      : Invierte una cadena establecida.
-' Devolución   : Cadena
-' Autor        : PowerDeath
-' Parametros   : #1 {Cadena} Texto a invertir.
-' #############################################################
-Proc InvertirCad(Referencia Cadenilla:Cadena):Cadena
-Var Longitudes,EsteNumero:Entero,TextoDevuelto,Letrita:Cadena
-   Contar EsteNumero = CadLong(Cadenilla) a 1 Dec
-      Letrita = ParteCad(Cadenilla,EsteNumero,1)
-      TextoDevuelto = TextoDevuelto + Letrita
-   Seguir
-Devolver TextoDevuelto
-FinProc
-
-' #############################################################
-' Nombre       : InvertirEnt
-' Función      : Invierte una expresión establecida.
-' Devolución   : Entero
-' Autor        : PowerDeath
-' Parametros   : #1 {Entero} Expresión numerica a invertir.
-' #############################################################
-Proc InvertirEnt(Número:Entero):Entero
-Var Longitudes,EsteNumero:Entero,TextoDevuelto,Letrita,Cadenilla:Cadena
-Cadenilla = EntCad(Número)
-   Contar EsteNumero = CadLong(Cadenilla) a 1 Dec
-      Letrita = ParteCad(Cadenilla,EsteNumero,1)
-      TextoDevuelto = TextoDevuelto + Letrita
-   Seguir
-Devolver CadEnt(TextoDevuelto)
-FinProc
-
-' #############################################################
-' Nombre       : CadPtr
-' Función      : Obtiene la dirección en memoria de una cadena.
-' Devolución   : Entero
-' Autor        : Paul Guerra
-' Parametros   : #1 {Cadena} Cadena a obtener dirección.
-' #############################################################
-Proc CadPtr(Referencia lpStr:Cadena):Entero
-  Var @Dir:Entero
-  Dir@=lpStr@
-  Resultado=Dir
-FinProc
-
-' #############################################################
-' Nombre       : CadLong
-' Función      : Obtiene la longitud de una cadena.
-' Devolución   : Entero
-' Autor        : Paul Guerra
-' Parametros   : #1 {Cadena} Texto a obtener longitud.
-' #############################################################
 Proc CadLong(Referencia lpStr:Cadena):Entero
   Var @Ptr,Ret:Entero
   Ret=CadPtr(lpStr)
   Si (Ret=0) Salir
   Ptr@=Ret-4
-  Resultado=Ptr
+  Devolver Ptr
 FinProc
 
-' #############################################################
-' Nombre       : EntLong
-' Función      : Obtiene la longitud de un valor numerico.
-' Devolución   : Entero
-' Autor        : PowerDeath
-' Parametros   : #1 {Entero} Valor a obtener longitud.
-' #############################################################
-Proc EntLong(Referencia lpStr:Entero):Entero
-Var Matriz[]:Entero
-Matriz = RepartirEnt(lpStr)
-Devolver LongMat(Matriz)
+'By Yuki!
+'Re dise$F1ado, 100% nativo de Pauscal, como me gusta :)
+'Nota: Esta funci$F3n es demaciado rapida, no hay razon para reemplazarla, que quede asi para siempre nom$E1'.
+'Proc Espacio(Longitud:Entero):Cadena
+'	Var @Ptr,Ret:Entero
+'	Resultado = #0
+'	Ret = CadPtr(Resultado)
+'	Ptr@ = Ret - 4
+'	Ptr = Longitud
+'FinProc
+
+' Este es el anterior, parece ser que el metodo de arriba es mas eficiente con la velocidad,
+' Pero como alarga la longitud de la cadena "invalidamente" podria generar errores grabes.
+Proc Espacio(Longitud:Entero):Cadena
+   Var Ptr:StrAndIntToArrayByte
+   ReDim Ptr.Bite,Longitud
+   Devolver Ptr.Str
 FinProc
 
-' #############################################################
-' Nombre       : CadMayus
-' Función      : Convierte una cadena a mayusculas.
-' Devolución   : Cadena
-' Autor        : Paul Guerra
-' Parametros   : #1 {Cadena} Texto a convertir.
-' #############################################################
-Proc CadMayus(Referencia lpStr:Cadena):Cadena
-  CharUpperBuff(lpStr,CadLong(lpStr))
-  Resultado=lpStr
+'By Yuki!
+'Este procedimiento es muy rapido, no es necesario reemplazar.
+Proc Invertir(Referencia Expresi$F3n:Cadena):Cadena
+	Var Matriz1[],Matriz2[]:Byte,l,i,e:Entero
+	Matriz1 = MatrizByteDeCadena(Expresi$F3n)
+	l = LongMat(Matriz1)
+	e = l-1
+	ReDim Matriz2,l
+	Contar i = 0 a e
+		Matriz2[i] = Matriz1[e]
+		e = e - 1
+	Seguir
+	Devolver CadenaDeMatrizByte(Matriz2)
 FinProc
 
-' #############################################################
-' Nombre       : CadMinus
-' Función      : Convierte una cadena a minusculas.
-' Devolución   : Cadena
-' Autor        : Paul Guerra
-' Parametros   : #1 {Cadena} Texto a convertir.
-' #############################################################
-Proc CadMinus(Referencia lpStr:Cadena):Cadena
-  CharLowerBuff(lpStr,CadLong(lpStr))
-  Resultado=lpStr
-FinProc
-
-' #############################################################
-' Nombre       : Carac
-' Función      : Obtiene el caracter de un valor byte.
-' Devolución   : Cadena
-' Autor        : Paul Guerra
-' Parametros   : #1 {Byte} Valor byte del caracter a obtener.
-' #############################################################
-Proc Carac(Referencia bByte:Byte):Cadena
-  Var Temp:Cadena, @Ptr:Byte
-  Temp=" "
+' Carac ._.
+Proc Carac(bByte:Byte):Cadena
+  Var Temp:Cadena,@Ptr:Byte
+  Temp="c"
   Ptr@=CadPtr(Temp)
   Ptr=bByte
-  Resultado=Temp
+  Devolver Temp
 FinProc
 
-' #############################################################
-' Nombre       : RepCarac
-' Función      : Obtiene un caracter de un valor byte y lo devuelve con una longitud establecida.
-' Devolución   : Cadena
-' Autor        : Paul Guerra
-' Parametros   : #1 {Byte} Valor byte del caracter a obtener, #2 {Entero} Longitud de la cadena devuelta.
-' #############################################################
-Proc RepCarac(bByte:Byte,dwRep:Entero):Cadena
-  Var Rep:Cadena, i:Entero
-  Rep=Carac(bByte)
-  Contar i = 1 a dwRep
-    Resultado=Resultado + Rep
-  Seguir
-FinProc
-
-' #############################################################
-' Nombre       : CadEnt
-' Función      : Convierte una cadena a entero.
-' Devolución   : EnteroSig
-' Autor        : Paul Guerra
-' Parametros   : #1 {Cadena} Texto a convertir.
-' #############################################################
-Proc CadEnt(Referencia lpStr:Cadena):EnteroSig
-  Var Temp:Cadena, LenCad:Entero, Num:EnteroSig
-  LenCad=CadLong(lpStr)
-  Temp=RepCarac(0,(LenCad+1)*2)
-  MultiByteToWideChar(0,0,lpStr,LenCad,Temp,LenCad*2)
-  Si (VarI4FromStr(Temp,0,0,Num)) GenerarError errTipoIncompatible
-  Resultado=Num
-FinProc
-
-' #############################################################
-' Nombre       : EntCad
-' Función      : Convierte un entero a cadena.
-' Devolución   : Cadena
-' Autor        : Paul Guerra
-' Parametros   : #1 {EnteroSig} Expresión a convertir.
-' #############################################################
-Proc EntCad(lNum:EnteroSig):Cadena
-  Var Temp,Res:Cadena, LenCad:Entero
-  $CED-
-  VarBstrFromI4(lNum,0,0,Temp)
-  $CED
-  LenCad=CadLong(Temp)\2
-  Res=RepCarac(32,LenCad)
-  WideCharToMultiByte(0,0,Temp,-1,Res,LenCad,Nulo,Nulo)
-  Resultado=Res
-FinProc
-
-' #############################################################
-' Nombre       : CadReal
-' Función      : Convierte una cadena a real.
-' Devolución   : Real
-' Autor        : Paul Guerra
-' Parametros   : #1 {Cadena} Texto a convertir.
-' #############################################################
-Proc CadReal(Referencia lpStr:Cadena):Real
-  Var Temp:Cadena, LenCad:Entero, Num:Real
-  LenCad=CadLong(lpStr)
-  Temp=RepCarac(0,(LenCad+1)*2)
-  MultiByteToWideChar(0,0,lpStr,LenCad,Temp,LenCad*2)
-  Si (VarR8FromStr(Temp,0,0,Num)) GenerarError errTipoIncompatible
-  Resultado=Num
-FinProc
-
-' #############################################################
-' Nombre       : RealCad
-' Función      : Convierte una expresión real a cadena.
-' Devolución   : Cadena
-' Autor        : Paul Guerra
-' Parametros   : #1 {Real} Expresión a convertir.
-' #############################################################
-Proc RealCad(lNum:Real):Cadena
-  Var Temp,Res:Cadena, LenCad:Entero
-  $CED-
-  VarBstrFromR8(lNum,0,0,Temp)
-  $CED
-  LenCad=CadLong(Temp)\2
-  Res=RepCarac(32,LenCad)
-  WideCharToMultiByte(0,0,Temp,-1,Res,LenCad,Nulo,Nulo)
-  Resultado=Res
-FinProc
-
-' #############################################################
-' Nombre       : ParteCad
-' Función      : Obtiene una porción de texto de un texto completo.
-' Devolución   : Cadena
-' Autor        : Paul Guerra
-' Parametros   : #1 {Cadena} Texto completo, #2 {EnteroSig} Inició de la extracción[, #3 {EnteroSig} Longitud a extraer (Por defecto el resto de la cadena).]
-' #############################################################
-Proc ParteCad(Referencia Texto:Cadena, Comienzo:EnteroSig, Opcional Longit:EnteroSig=-1):Cadena
-  Var Temp:Cadena, LenTxt:EnteroSig
-  Si (Comienzo<1) Or (Longit<(-1)) GenerarError errParamInv
-  LenTxt=CadLong(Texto)
-  Si (LenTxt=0) GenerarError errParamInv
-  Si (Longit=-1) Longit=LenTxt-Comienzo+1
-  Si (Comienzo+Longit-1>LenTxt) Or (Comienzo>LenTxt) GenerarError errParamInv
-  Temp=RepCarac(0,Longit)
-  CopyMemory(CadPtr(Temp),CadPtr(Texto)+Comienzo-1,Longit)
-  Resultado=Temp
-FinProc
-
-' #############################################################
-' Nombre       : ParteEnt
-' Función      : Obtiene una porción de valor de un valor completo.
-' Devolución   : Entero
-' Autor        : PowerDeath
-' Parametros   : #1 {Entero} Valor completo, #2 {EnteroSig} Inició de la extracción[, #3 {EnteroSig} Longitud a extraer (Por defecto el resto del valor).]
-' #############################################################
-Proc ParteEnt(Referencia Texto:Entero, Comienzo:EnteroSig, Opcional Longit:EnteroSig=-1):Entero
-Var TXT:Cadena
-TXT = EntCad(Texto)
-Devolver CadEnt(ParteCad(TXT,Comienzo,Longit))
-FinProc
-
-' #############################################################
-' Nombre       : IzquierdaCad
-' Función      : Obtiene una porción izquierda de texto de un texto completo.
-' Devolución   : Cadena
-' Autor        : Paul Guerra
-' Parametros   : #1 {Cadena} Texto completo, #2 {EnteroSig} Cantidad a extraer.
-' #############################################################
-Proc IzquierdaCad(Referencia Texto:Cadena,Longit:EnteroSig):Cadena
-  Si (CadLong(Texto)<=Longit) Devolver Texto
-  Resultado=ParteCad(Texto,1,Longit)
-FinProc
-
-' #############################################################
-' Nombre       : IzquierdaEnt
-' Función      : Obtiene una porción izquierda de un valor completo.
-' Devolución   : Cadena
-' Autor        : PowerDeath
-' Parametros   : #1 {Entero} Valor completo, #2 {EnteroSig} Cantidad a extraer.
-' #############################################################
-Proc IzquierdaEnt(Referencia Texto:Entero,Longit:EnteroSig):Entero
-Var TXT:Cadena
-TXT = EntCad(Texto)
-Devolver CadEnt(IzquierdaCad(TXT,Longit))
-FinProc
-
-' #############################################################
-' Nombre       : DerechaCad
-' Función      : Obtiene una porción derecha de texto de un texto completo.
-' Devolución   : Cadena
-' Autor        : Paul Guerra
-' Parametros   : #1 {Cadena} Texto completo, #2 {EnteroSig} Cantidad a extraer.
-' #############################################################
-Proc DerechaCad(Referencia Texto:Cadena,Longit:EnteroSig):Cadena
-  Var LenTxt:Entero
-  LenTxt=CadLong(Texto)
-  Si (LenTxt<=Longit) Devolver Texto
-  Resultado=ParteCad(Texto,LenTxt-Longit+1,Longit)
-FinProc
-
-' #############################################################
-' Nombre       : DerechaEnt
-' Función      : Obtiene una porción derecha de un valor completo.
-' Devolución   : Cadena
-' Autor        : PowerDeath
-' Parametros   : #1 {Entero} Valor completo, #2 {EnteroSig} Cantidad a extraer.
-' #############################################################
-Proc DerechaEnt(Referencia Texto:Entero,Longit:EnteroSig):Entero
-Var TXT:Cadena
-TXT = EntCad(Texto)
-Devolver CadEnt(DerechaCad(TXT,Longit))
-FinProc
-
-' #############################################################
-' Nombre       : CadenaDeMatrizByte
-' Función      : Obtiene una cadena de una matriz byte.
-' Devolución   : Cadena
-' Autor        : Paul Guerra
-' Parametros   : #1 {Byte[]} Matriz a obtener cadena.
-' #############################################################
-Proc CadenaDeMatrizByte(Referencia ByteAry[]:Byte):Cadena
-  Var Temp:Cadena, LenTxt:EnteroSig
-  LenTxt=LongMat(ByteAry)
-  Si LenTxt<1 Salir
-  Temp=RepCarac(0,LenTxt)
-  CopyMemory(CadPtr(Temp),ByteAry@,LenTxt)
-  Resultado=Temp
-FinProc
-
-' #############################################################
-' Nombre       : CadenaDePtrCad
-' Función      : Obtiene una cadena de un puntero/dirección a cadena.
-' Devolución   : Cadena
-' Autor        : Paul Guerra
-' Parametros   : #1 {Entero} Dirección en memoria de la cadena a obtener.
-' #############################################################
-Proc CadenaDePtrCad(Referencia PtrCad:Entero):Cadena
-  Var Temp:Cadena, LenTxt:EnteroSig
-  LenTxt=lstrlenptr(PtrCad)
-  Si LenTxt<1 Salir
-  Temp=RepCarac(0,LenTxt)
-  CopyMemory(CadPtr(Temp),PtrCad,LenTxt)
-  Resultado=Temp
-FinProc
-
-' #############################################################
-' Nombre       : Ascii
-' Función      : Obtiene el valor ASCII de un caracter.
-' Devolución   : Byte
-' Autor        : Paul Guerra
-' Parametros   : #1 {Entero} Caracter a obtener valor.
-' #############################################################
+' Ascii ._.
 Proc Ascii(Referencia lpStr:Cadena):Byte
   Var i:Entero,@Ret:Byte
   Si (CadLong(lpStr))
     Ret@=CadPtr(lpStr)
-    Resultado=Ret
+    Devolver Ret
   FinSi
 FinProc
 
-' #############################################################
-' Nombre       : BuscarEnCad
-' Función      : Busca en una cadena completa una subcadena.
-' Devolución   : Entero
-' Autor        : Paul Guerra
-' Parametros   : #1 {Cadena} Texto completo, #2 {Cadena} Texto a buscar[, #3 {Entero} Posición a comenzar la busqueda.]
-' #############################################################
-Proc BuscarEnCad(Referencia lpStr,lpMatch:Cadena,Opcional dwPos:Entero):Entero
-  Var i,LongMatch,TotLng:Entero
-  LongMatch=CadLong(lpMatch)
-  Si (LongMatch=0) GenerarError errParamInv
-  TotLng=CadLong(lpStr)-LongMatch+1
-  Si (dwPos>TotLng) GenerarError errParamInv
-  Si (dwPos=0) dwPos=1
-  Contar i = dwPos a TotLng
-    Si (ParteCad(lpStr,i,LongMatch)=lpMatch) Devolver i
-  Seguir
+' Esta funci$F3n se podria realizar de manera mas nativa, pero Pauscal tiene serios problemas
+' Al liberar matrices, por lo que se deja en defecto.
+Proc IzquierdaCad(Referencia Texto:Cadena,Longit:EnteroSig):Cadena
+  Si (CadLong(Texto)&lt;=Longit) Devolver Texto
+  Devolver ParteCad(Texto,1,Longit)
+FinProc ' $BF$BFSe producen errores al salir del procedimiento?? Dios santo ....................
+
+' DerechaCad, Procedimiento mas rapido by Yuki.
+' Jugando con punteros jajajaj
+' Nota: Eh probado con otras alternativas, pero esta parece ser la mas veloz, mucho mas rapido que con CopyMemory.
+' Nota2: Creo que esta usando "MoveMemory", me preocupa un poco el uso de estos punteros.
+Proc DerechaCad(Referencia Str:Cadena,Pos1:Entero):Cadena
+	Var @Ptr1,@Ptr2,Longi:Entero
+	Si Str = "" Entonces Salir
+	Longi = CadLong(Str)
+	Si (Pos1 &gt; Longi) Or (Pos1 &lt;= 0) Entonces Salir
+	Ptr1@ = Resultado@
+	Ptr2@ = Str@
+	Ptr1 = Ptr2 + (Longi - Pos1)
 FinProc
 
-' #############################################################
-' Nombre       : BuscarEnEnt
-' Función      : Busca en un valor en un valor numerico completo.
-' Devolución   : Entero
-' Autor        : PowerDeath
-' Parametros   : #1 {Entero} Valor completo, #2 {Entero} Valor a buscar[, #3 {Entero} Posición a comenzar la busqueda.]
-' #############################################################
-Proc BuscarEnEnt(Referencia lpStr,lpMatch:Entero,Opcional dwPos:Entero):Entero
-Var TXT_A,TXT_B:Cadena
-TXT_A = EntCad(lpStr)
-TXT_B = EntCad(lpMatch)
-Devolver BuscarEnCad(TXT_A,TXT_B,dwPos)
+Proc UnicodeACad(Referencia Expresi$F3n:Cadena):Cadena
+	Devolver Reemplazar(Expresi$F3n,Null,"")
 FinProc
 
-' #############################################################
-' Nombre       : BuscarEnCadInv
-' Función      : Busca en una cadena completa una subcadena partiendo del final.
-' Devolución   : Entero
-' Autor        : Paul Guerra
-' Parametros   : #1 {Cadena} Texto completo, #2 {Cadena} Texto a buscar[, #3 {Entero} Posición a comenzar la busqueda.]
-' #############################################################
+' CadAUnicode nuevo, Nativo &lt;
+Proc CadAUnicode(Referencia Expresion:Cadena):Cadena
+	Var Matriz1[],Matriz2[]:Byte,d,i,l:Entero
+	Matriz1 = MatrizByteDeCadena(Expresion)
+	d = LongMat(Matriz1)
+	ReDim Matriz2,(d*2)+1
+	Repetir
+		Matriz2[i] = Matriz1[l]
+		l = l + 1
+		i = i + 2
+	HastaQue l = d
+	Devolver CadenaDeMatrizByte(Matriz2)
+FinProc
+
+' ParteCad Optimizado By Yuki
+Proc ParteCad(Referencia Texto:Cadena, Comienzo:EnteroSig, Opcional Longit:EnteroSig=-1):Cadena
+	Var LenTxt:EnteroSig,@Ptr,@Ln:Entero
+	Si Texto = "" Entonces Salir
+	LenTxt=CadLong(Texto)
+	Si (Comienzo &gt; LenTxt) Or (Comienzo &lt;= 0) Or (Longit &gt; LenTxt) Entonces Salir
+	Longit = &gt;Longit=-1?LenTxt-Comienzo+1:Longit
+	Ptr@ = Resultado@
+	Ln@ = Texto@
+	Resultado = Espacio(Longit)
+	CopyMemory(Ptr,ln+Comienzo-1,Longit)
+FinProc
+
+' BuscarEnCad Alternativo by Yuki
+' No son necesarias tantas sentencias, el procedimient parteCad ya hace el trabajo.
+Proc BuscarEnCad(Referencia lpStr,lpMatch:Cadena,Opcional dwPos:Entero = 1):Entero
+	Var i,l:Entero
+	l = CadLong(lpMatch)
+	Contar i = dwPos a CadLong(lpStr)
+		Si ParteCad(lpStr,i,l) = lpMatch Entonces Devolver i
+	Seguir
+FinProc
+
+
 Proc BuscarEnCadInv(Referencia lpStr,lpMatch:Cadena,Opcional dwPos:Entero):Entero
   Var i,LongMatch,TotLng:Entero
   LongMatch=CadLong(lpMatch)
-  Si (LongMatch=0) GenerarError errParamInv
+  'Si (LongMatch=0) Salir
   TotLng=CadLong(lpStr)-LongMatch+1
-  Si (dwPos>TotLng) GenerarError errParamInv
-  Si (dwPos=0) dwPos=TotLng
+  'Si (dwPos&gt;TotLng) Salir
+  'Si (dwPos=0) dwPos=TotLng
   Contar i = dwPos a 1 Dec
     Si (ParteCad(lpStr,i,LongMatch)=lpMatch) Devolver i
   Seguir
 FinProc
 
-' #############################################################
-' Nombre       : BuscarEnEntInv
-' Función      : Busca en un valor en un valor numerico completo partiendo del final.
-' Devolución   : Entero
-' Autor        : PowerDeath
-' Parametros   : #1 {Entero} Valor completo, #2 {Entero} Valor a buscar[, #3 {Entero} Posición a comenzar la busqueda.]
-' #############################################################
-Proc BuscarEnEntInv(Referencia lpStr,lpMatch:Entero,Opcional dwPos:Entero):Entero
-Var TXT_A,TXT_B:Cadena
-TXT_A = EntCad(lpStr)
-TXT_B = EntCad(lpMatch)
-Devolver BuscarEnCadInv(TXT_A,TXT_B,dwPos)
-FinProc
-
-' #############################################################
-' Nombre       : TruncarCadena
-' Función      : Corta una cadena a partir del primer caracter nulo que se encuentre.
-' Devolución   : Cadena
-' Autor        : PowerDeath
-' Parametros   : #1 {Cadena} Textp completo.
-' #############################################################
-Proc TruncarCadena(Referencia lpStr:Cadena):Cadena 
-  Var Pos:Entero,lpStrA,A:Cadena
-  lpStrA = lpStr
-  A = Null
-  Pos=BuscarEnCad(lpStrA,A)
-  Si (Pos=0) Devolver lpStr
-  Si (Pos=1) Salir
-  Resultado=IzquierdaCad(lpStr,Pos-1)
-FinProc
-
-' #############################################################
-' Nombre       : Reemplazar
-' Función      : Busca en una cadena completa una subcadena y la reemplaza por una cadena establecida.
-' Devolución   : Cadena
-' Autor        : PowerDeath
-' Parametros   : #1 {Cadena} Textp completo, #2 {Cadena} Texto a buscar, #3 {Cadema} Cadena de reemplazo[, #4 {EnteroSig} Posición de inicio de estaneo.]
-' #############################################################
 Proc Reemplazar(Referencia Str,Match,Rep:Cadena, Opcional Pos:EnteroSig):Cadena
   Var i,LongMatch,CL,TotLng:Entero
   LongMatch=CadLong(Match)
-  Si (LongMatch=0) GenerarError errParamInv
+  Si (LongMatch=0) Salir
   CL=CadLong(Str)
   Si (CL=0) Salir
   TotLng=CL-LongMatch+1
-  Si (Pos>TotLng) GenerarError errParamInv
+  Si (Pos&gt;TotLng) Salir
   Si (Pos=0) Pos=1
   Contar i = 1 a CL
-    Si ((i>=Pos) And (i<=TotLng) And (ParteCad(Str,i,LongMatch)=Match))
+    Si ((i&gt;=Pos) And (i&lt;=TotLng) And (ParteCad(Str,i,LongMatch)=Match))
       Resultado=Resultado+Rep
       i=i+LongMatch-1
     SiNo
@@ -968,13 +198,65 @@ Proc Reemplazar(Referencia Str,Match,Rep:Cadena, Opcional Pos:EnteroSig):Cadena
   Seguir
 FinProc
 
-' #############################################################
-' Nombre       : Separar
-' Función      : Separa una cadena completa en una matriz de cadena dependiendo de un delimitador establecido.
-' Devolución   : Cadena[]
-' Autor        : Paul Guerra
-' Parametros   : #1 {Cadena} Textp completo, #2 {Cadena} Delimitador[, #3 {Entero} Posición a comenzar la busqueda, #4 {Entero} Cantidad maxima de resultados.]
-' #############################################################
+'EntreCad Bu Yuki!
+Proc EntreCad(Referencia Texto,Inicial,Final:Cadena,Opcional InicialB:Entero = 1):Cadena
+	Var Str[]:Cadena
+	AdmErr
+	Str = Separar(Texto,Inicial,InicialB)
+	Str = Separar(Str[1],Final)
+	Devolver Str[0]
+	Controlar
+		Salir
+	FinAdmErr
+FinProc
+
+' MatrizByteDeCadena By Yuki.
+Proc MatrizByteDeCadena(Referencia Temp:Cadena):Byte[]
+	Var Ptr:StrAndIntToArrayByte
+	Ptr.Str = Temp
+	Resultado = Ptr.Bite
+FinProc ' Genera Error al salir del procedimiento O.o
+'Nota: Deja Vu O.o!!!11
+
+Proc CadPtr(Referencia lpStr:Cadena):Entero
+  Var @Dir:Entero
+  Dir@=lpStr@
+  Devolver Dir
+FinProc
+
+Proc CadMayus(Referencia lpStr:Cadena):Cadena
+  Devolver CadDePtr(CharUpper(CadPtr(lpStr)))
+FinProc
+
+Proc CadMinus(Referencia lpStr:Cadena):Cadena
+  Devolver CadDePtr(CharLower(CadPtr(lpStr)))
+FinProc
+
+'CadenaDeMarizByte By Yuki
+Proc CadenaDeMatrizByte(Referencia ByteAry[]:Byte):Cadena
+  Var Ptr:StrAndIntToArrayByte
+  Ptr.Bite = ByteAry
+  Devolver Ptr.Str
+FinProc
+
+' CadenaDePtrCad By Paul Guerra - Modificado!
+' Lo habia modificado utilizando matrices de bytes, pero como que CopyMemory es mas lento de esa forma, asique Ptr de cadenas nomas.
+Proc CadDePtr(PtrCad:Entero):Cadena
+  Var Temp[]:Byte, LenTxt:EnteroSig
+  LenTxt=lstrlenptr(PtrCad)
+  Si LenTxt&lt;1 Salir
+  Resultado = Espacio(LenTxt)
+  CopyMemory(CadPtr(Resultado),PtrCad,LenTxt)
+FinProc
+
+Proc TruncarCadena(Referencia lpStr:Cadena):Cadena 
+  Var Pos:Entero
+  Pos=BuscarEnCad(lpStr,Null)
+  Si (Pos=0) Devolver lpStr
+  Si (Pos=1) Salir
+  Devolver IzquierdaCad(lpStr,Pos-1)
+FinProc
+
 Proc Separar(Referencia Texto,Sep:Cadena, Opcional PosInicio:Entero=1, Opcional MaxRet:Entero):Cadena[]
   Var Pos,Ret,Mx,SepLen,TxtLen:Entero
   SepLen = CadLong(Sep)
@@ -982,25 +264,33 @@ Proc Separar(Referencia Texto,Sep:Cadena, Opcional PosInicio:Entero=1, Opcional 
   TxtLen = CadLong(Texto)
   Borrar Resultado
   Repetir
-    Ret = BuscarEnCad(Texto,Sep,Pos+1)
-    Si (Ret=0) Salir Repetir
-    Redim Preservar Resultado, Mx + 1
-    Resultado[Mx] = ParteCad(Texto,Pos+1,Ret-Pos-1)
+    Ret = BuscarEnCad(Texto,Sep,Pos+1) ' Ret = la posici$F3n del separador el separador
+    Si (Ret=0) Salir Repetir ' Si no se encuentra el separador, salir.
+    Redim Preservar Resultado, Mx + 1 ' Redimenciona el resultado.
+    Resultado[Mx] = ParteCad(Texto,Pos+1,Ret-Pos-1) ' Resultado.Contador =
     Pos = Ret + SepLen - 1
     Mx = Mx + 1
     Si (MaxRet) Si (Mx = MaxRet) Salir Repetir
-    Si (Pos>=TxtLen) Salir Repetir
+    Si (Pos&gt;=TxtLen) Salir Repetir
   PorSiempre
-  Redim Preservar Resultado, Mx + 1
-  Resultado[Mx] = > (Pos>=TxtLen) ? ("") : (ParteCad(Texto,Pos+1))
+  ReDim Preservar Resultado, Mx + 1
+  Resultado[Mx] = &gt; (Pos&gt;=TxtLen) ? ("") : (ParteCad(Texto,Pos+1))
 FinProc
 
-
+Proc CadObtPosMat(Referencia Ex,Del:Cadena):Entero[]
+	Var A,B:Entero
+	Repetir
+		ReDim Preservar Resultado,B + 1
+		A = BuscarEnCad(Ex,Del,A+1)
+		Si A Entonces B = B + 1 ; SiNo ; ReDim Preservar Resultado,LongMat(Resultado) - 1 ; Salir
+		Resultado[B - 1] = A
+	PorSiempre
+FinProc
 
 Clase pscCadenas, _
   Buff[]:PSCCADENASINFO, _
   MaxBuff,iHwnd:Entero
-Público:
+P$FAblico:
   ClaseVar Eventos:PSCCADENAS_EVENTINFO
 Privado:
   Proc evCambiar()
@@ -1013,7 +303,7 @@ Privado:
     Si (Eventos.AlQuitar@) Eventos.AlQuitar(hWnd,Pos)
   FinProc
   Proc EsValido(Indice:Entero)
-    Si (Indice>=MaxBuff) GenerarError errParamInv
+    Si (Indice&gt;=MaxBuff) GenerarError errParamInv
   FinProc
   Proc GetItem(Indice:Entero):Cadena
     EsValido(Indice)
@@ -1035,7 +325,7 @@ Privado:
   Proc GetCantidad:Entero
     Resultado=MaxBuff
   FinProc
-Público:
+P$FAblico:
   Prop hWnd:Entero
     Lec:iHwnd
     Esc:iHwnd
@@ -1078,3 +368,4 @@ Público:
     evDel(Indice)
   FinProc
 FinClase
+</Contenido></Datos>

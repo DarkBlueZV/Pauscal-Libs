@@ -1,0 +1,267 @@
+<Datos><Nombre></Nombre><Icono>AA==</Icono><Version><Mayor>0</Mayor><Menor>0</Menor><Revision>0</Revision><AutoIncr>0</AutoIncr></Version><Info/><Contenido>'C$F3digo multimedia
+'Escrito originalmente para Visual Basic por Abdullah Al-Ahdal
+
+$24ADV-
+$24EBC-
+
+Importar "Convertir.prp"
+
+Privado :
+
+Var iDesde, iHasta, iHwnd, iAliasCnt:Entero
+Var iAlias:Cadena
+
+P$FAblico:
+
+Proc AbrirMultimedia(Referencia Archivo,Alias:Cadena,Opcional Tipo:Cadena = "MPEGVideo", Opcional hWnd:Entero):Cadena
+  Var cmdToDo,ret,tmp,ShortPath:Cadena
+  Var dwReturn,lenShort:Entero
+
+  Si (hWnd=0) hWnd = GetDesktopWindow()
+  tmp = Espacio(255)
+  ret = Espacio(128)
+
+  lenShort = GetShortPathName(Archivo,tmp,255)
+  ShortPath = IzquierdaCad(tmp,lenShort)
+
+  cmdToDo = "open " + ShortPath + " type " + Tipo + " Alias " + Alias + " parent " + EntCad(hWnd) + " Style " + EntCad(&amp;40000000)
+  dwReturn = mciSendString(cmdToDo, Nulo, 0, 0)
+
+  Si (dwReturn)
+    mciGetErrorString(dwReturn, Ret, 128)
+    Resultado = TruncarCadena(Ret)
+  SiNo
+    Resultado = "OK"
+  FinSi
+FinProc
+
+Proc ReproducirMultimedia(Referencia Alias:Cadena, Opcional Desde:EnteroSig, Opcional Hasta:EnteroSig=-1):Cadena
+  Var cmdToDo,ret:Cadena
+  Var dwReturn:Entero
+
+  Si (Hasta=-1) Hasta = CantidadDeCuadros(Alias)
+  Si (Alias=iAlias)
+    iDesde = Desde
+    iHasta = Hasta
+  FinSi
+
+  ret = Espacio(128)
+
+  cmdToDo = "play " + Alias + " from " + EntCad(Desde) + " to " + EntCad(Hasta)
+  dwReturn = mciSendString(cmdToDo, Nulo, 0, 0)
+
+  Si (dwReturn)
+    mciGetErrorString(dwReturn, Ret, 128)
+    Resultado = TruncarCadena(Ret)
+  SiNo
+    Resultado = "OK"
+  FinSi
+FinProc
+
+Proc DetenerMultimedia(Referencia Alias:Cadena):Cadena
+  Var cmdToDo,ret:Cadena
+  Var dwReturn:Entero
+
+  ret = Espacio(128)
+  cmdToDo = "stop " + Alias
+  dwReturn = mciSendString(cmdToDo, Nulo, 0, 0)
+
+  Si (dwReturn)
+    mciGetErrorString(dwReturn, ret, 128)
+    Resultado = TruncarCadena(ret)
+  SiNo
+    Resultado = "OK"
+  FinSi
+FinProc
+
+Proc CerrarMultimedia(Referencia Alias:Cadena):Cadena
+  Var cmdToDo,ret:Cadena
+  Var dwReturn:Entero
+
+  ret = Espacio(128)
+  cmdToDo = "close " + Alias
+  dwReturn = mciSendString(cmdToDo, Nulo, 0, 0)
+
+  Si (dwReturn)
+    mciGetErrorString(dwReturn, ret, 128)
+    Resultado = TruncarCadena(ret)
+  SiNo
+    Resultado = "OK"
+  FinSi
+FinProc
+
+Proc PausarMultimedia(Referencia Alias:Cadena):Cadena
+  Var cmdToDo,ret:Cadena
+  Var dwReturn:Entero
+
+  ret = Espacio(128)
+  cmdToDo = "pause " + Alias
+  dwReturn = mciSendString(cmdToDo, Nulo, 0, 0)
+
+  Si (dwReturn)
+    mciGetErrorString(dwReturn, ret, 128)
+    Resultado = TruncarCadena(ret)
+  SiNo
+    Resultado = "OK"
+  FinSi
+FinProc
+
+Proc MoverMultimedia(Referencia Alias:Cadena, Posici$F3n:EnteroSig):Cadena
+  Var cmdToDo,ret:Cadena
+  Var dwReturn:Entero
+
+  ret = Espacio(128)
+  cmdToDo = "seek " + Alias + " to " + EntCad(Posici$F3n)
+  dwReturn = mciSendString(cmdToDo, Nulo, 0, 0)
+
+  Si (dwReturn)
+    mciGetErrorString(dwReturn, ret, 128)
+    Resultado = TruncarCadena(ret)
+  SiNo
+    Resultado = "OK"
+  FinSi
+FinProc
+
+Proc ResumirMultimedia(Referencia Alias:Cadena):Cadena
+  Var cmdToDo,ret:Cadena
+  Var dwReturn:Entero
+
+  ret = Espacio(128)
+  cmdToDo = "resume " + Alias
+  dwReturn = mciSendString(cmdToDo, Nulo, 0, 0)
+
+  Si (dwReturn)
+    mciGetErrorString(dwReturn, ret, 128)
+    Resultado = TruncarCadena(ret)
+  SiNo
+    Resultado = "OK"
+  FinSi
+FinProc
+
+Proc DevolverPosici$F3nMultimedia(Referencia Alias:Cadena):EnteroSig
+  Var cmdToDo,pos:Cadena
+  Var dwReturn:Entero
+
+  pos = Espacio(128)
+  cmdToDo = "status " + Alias + " position"
+  dwReturn = mciSendString(cmdToDo, pos, 128, 0)
+
+  Si (dwReturn)
+    Resultado = -1
+  SiNo
+    Resultado = CadEnt(pos)
+  FinSi
+FinProc
+
+Proc MultimediaTerminado(Referencia Alias:Cadena, Opcional $FAltimoCuadro:EnteroSig):Booleano
+  Var Pos:EnteroSig
+
+  Si ($FAltimoCuadro = 0) $FAltimoCuadro = CantidadDeCuadros(Alias)
+  Pos = DevolverPosici$F3nMultimedia(Alias)
+  Si (Pos = -1) o ($FAltimoCuadro = -1) Salir
+  Resultado = ($FAltimoCuadro = Pos) o (($FAltimoCuadro - 1) &lt; Pos)
+FinProc
+
+Proc CantidadDeCuadros(Referencia Alias:Cadena):EnteroSig
+  Var cmdToDo,Total:Cadena
+  Var dwReturn:Entero
+
+  Total = Espacio(128)
+
+  cmdToDo = "set " + Alias + " time format frames"
+  dwReturn = mciSendString(cmdToDo, Total, 128, 0)
+  cmdToDo = "status " + Alias + " length"
+  dwReturn = mciSendString(cmdToDo, Total, 128, 0)
+
+  Si (dwReturn)
+    Resultado = -1
+  SiNo
+    Resultado = CadEnt(TruncarCadena(Total))
+  FinSi
+FinProc
+
+Proc CantidadDeMilisegundos(Referencia Alias:Cadena):EnteroSig
+  Var cmdToDo,Total:Cadena
+  Var dwReturn:Entero
+
+  Total = Espacio(128)
+
+  cmdToDo = "set " + Alias + " time format ms"
+  dwReturn = mciSendString(cmdToDo, Total, 128, 0)
+  cmdToDo = "status " + Alias + " length"
+  dwReturn = mciSendString(cmdToDo, Total, 128, 0)
+
+  cmdToDo = "set " + Alias + " time format frames"
+  mciSendString(cmdToDo, Nulo, 0, 0)
+
+  Si (dwReturn)
+    Resultado = -1
+  SiNo
+    Resultado = CadEnt(TruncarCadena(Total))
+  FinSi
+FinProc
+
+Clase pscMultimedia, _
+  iAlias:Cadena, _
+  iAliasNum:Entero
+
+  ClaseVar Archivo:Cadena
+
+Privado:
+  Proc iInicio
+    iAliasCnt = iAliasCnt + 1
+    iAliasNum = iAliasCnt
+    iAlias = "m" + EntCad(iAliasCnt)
+  FinProc
+  Proc iFinal
+    Cerrar
+    Si (iAliasCnt = iAliasNum) iAliasCnt = iAliasCnt - 1    
+  FinProc
+  Constructor:iInicio
+  Destructor:iFinal
+  Proc GetTerminado:Booleano
+    Resultado=MultimediaTerminado(iAlias)
+  FinProc
+  Proc GetPosici$F3n:EnteroSig
+    Resultado=DevolverPosici$F3nMultimedia(iAlias)
+  FinProc
+  Proc SetPosici$F3n(Valor:EnteroSig)
+    Si (MoverMultimedia(iAlias,Valor)&lt;&gt;"OK") GenerarError errFalloMultimedia
+  FinProc
+  Proc GetTama$F1oEnMilisegundos:EnteroSig
+    Resultado=CantidadDeMilisegundos(iAlias)
+  FinProc
+  Proc GetTama$F1o:EnteroSig
+    Resultado=CantidadDeCuadros(iAlias)
+  FinProc
+P$FAblico:
+  'procs p$FAblicos
+  Proc Abrir
+    Si (AbrirMultimedia(Archivo, iAlias)&lt;&gt;"OK") GenerarError errFalloMultimedia
+  FinProc
+  Proc Reproducir
+    Detener
+    ReproducirMultimedia(iAlias)
+  FinProc
+  Proc Detener
+    DetenerMultimedia(iAlias)
+  FinProc
+  Proc Cerrar
+    CerrarMultimedia(iAlias)
+  FinProc
+  'props p$FAblicos
+  Prop Terminado:Booleano
+    Lec:GetTerminado
+  FinProp
+  Prop Posici$F3n:EnteroSig
+    Lec:GetPosici$F3n
+    Esc:SetPosici$F3n
+  FinProp
+  Prop Tama$F1o:EnteroSig
+    Lec:GetTama$F1o
+  FinProp
+  Prop Tama$F1oEnMilisegundos:EnteroSig
+    Lec:GetTama$F1oEnMilisegundos
+  FinProp
+FinClase
+</Contenido></Datos>

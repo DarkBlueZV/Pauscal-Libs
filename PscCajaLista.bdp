@@ -1,0 +1,206 @@
+<Datos><Nombre></Nombre><Icono>AA==</Icono><Version><Mayor>0</Mayor><Menor>0</Menor><Revision>0</Revision><AutoIncr>0</AutoIncr></Version><Info/><Contenido>$24ADV-
+$24EBC-
+
+'Importar "DeclareW.prp"
+'Importar "Declare.prp"
+'Importar "Utiles.prp"
+Importar "WinCtrls.prp"
+
+Privado:
+
+Proc pscCajaLista_wndproc(hWnd,Msg,wParam,lParam:Entero):Entero
+  Var @Eventos:PSCCAJALISTA_EVENTINFO
+  Var Rc:RECT
+
+  Eventos@=GetProp(hWnd,"EVENT")
+  Si (Eventos@)
+    Seleccionar Msg
+      Caso WM_LBUTTONDOWN,WM_RBUTTONDOWN,WM_MBUTTONDOWN
+        Si (Eventos.AlApretarBotonMouse@) Eventos.AlApretarBotonMouse( &gt;Msg=WM_LBUTTONDOWN?1:(&gt;Msg=WM_RBUTTONDOWN?2:3) ,wParam,LoWord(lParam),HiWord(lParam))
+      Caso WM_LBUTTONUP,WM_RBUTTONUP,WM_MBUTTONUP
+        Si (Eventos.AlSoltarBotonMouse@) Eventos.AlSoltarBotonMouse( &gt;Msg=WM_LBUTTONUP?1:(&gt;Msg=WM_RBUTTONUP?2:3),wParam,LoWord(lParam),HiWord(lParam))
+      Caso WM_LBUTTONDBLCLK,WM_RBUTTONDBLCLK,WM_MBUTTONDBLCLK
+        Si (Eventos.AlSoltarBotonMouse@) Eventos.AlSoltarBotonMouse( &gt;Msg=WM_LBUTTONDBLCLK?1:(&gt;Msg=WM_RBUTTONDBLCLK?2:3),wParam,LoWord(lParam),HiWord(lParam))
+      Caso WM_MOUSEMOVE
+        Si (Eventos.AlMoverMouse@) Eventos.AlMoverMouse(wParam,LoWord(lParam),HiWord(lParam))
+      Caso WM_KEYDOWN
+        Si (Eventos.AlApretarTecla@&lt;&gt;0) And (lParam And &amp;40000000=0) Eventos.AlApretarTecla(wParam)
+        Si (Eventos.AlTeclear@) Eventos.AlTeclear(wParam)
+      Caso WM_KEYUP
+        Si (Eventos.AlSoltarTecla@) Eventos.AlSoltarTecla(wParam)
+      Caso WM_USER
+        Seleccionar wParam
+          Caso LBN_SELCHANGE
+            Si (Eventos.AlSeleccionar@) Eventos.AlSeleccionar
+          Caso LBN_DBLCLK
+            Si (Eventos.AlDobleCliquear@) Eventos.AlDobleCliquear
+        FinSeleccionar
+        Salir
+      Caso LB_SETCURSEL
+        Si (Eventos.AlSeleccionar@) Eventos.AlSeleccionar
+    FinSeleccionar
+  FinSi
+  Resultado=CallWindowProc(GetProp(hWnd,"PREVHWND"),hWnd,Msg,wParam,lParam)
+FinProc
+
+Proc pscCajaLista_evCambiar(hWnd,Pos:EnteroSig)
+  Var TempObj:pscCajaLista
+  TempObj=EnteroToControl(GetProp(hWnd,"THIS"))
+  TempObj.evCambiar(Pos)
+FinProc
+
+Proc pscCajaLista_evAdd(hWnd,Pos:EnteroSig)
+  Var TempObj:pscCajaLista
+  TempObj=EnteroToControl(GetProp(hWnd,"THIS"))
+  TempObj.evAdd(Pos)
+FinProc
+
+Proc pscCajaLista_evDel(hWnd,Pos:EnteroSig)
+  Var TempObj:pscCajaLista
+  TempObj=EnteroToControl(GetProp(hWnd,"THIS"))
+  TempObj.evDel(Pos)
+FinProc
+
+P$FAblico:
+
+Clase pscCajaLista(pscWinControl), _
+  ObjNum:Entero, _
+  iMulti,iSrt:Booleano
+
+  ClaseVar Items:pscCadenas
+  ClaseVar Fuente:pscFuente
+  ClaseVar Eventos:PSCCAJALISTA_EVENTINFO
+
+Privado:
+  'procs privados
+  Proc GetSel:EnteroSig
+    Si (ObjHwnd)
+      Devolver SendMessage(ObjHwnd,LB_GETCURSEL,0,0)
+    SiNo
+      Devolver -1
+    FinSi
+  FinProc
+  Proc SetSel(Valor:EnteroSig)
+    Si (iMulti) GenerarError errOpImposible
+    Si (ObjHwnd) SendMessage(ObjHwnd,LB_SETCURSEL,Valor,1)
+  FinProc
+  Proc GetSelCnt:Entero
+    Si (ObjHwnd=0) Salir
+    Si (iMulti)
+      Devolver SendMessage(ObjHwnd,LB_GETSELCOUNT,0,0)
+    SiNo
+      Devolver (&gt;GetSel=-1? 0 : 1)
+    FinSi
+  FinProc
+  Proc GetSelSt(Indice:Entero):Booleano
+    Si (ObjHwnd=0) Salir
+    Si (Neg iMulti) GenerarError errParamInv
+    Devolver (SendMessage(ObjHwnd,LB_GETSEL,Indice,0)&lt;&gt;0)
+  FinProc
+  Proc SetSelSt(Valor:Booleano,Indice:Entero)
+    Si (ObjHwnd=0) Salir
+    Si (Neg iMulti) GenerarError errParamInv
+    SendMessage(ObjHwnd,LB_SETSEL,Valor,Indice)
+  FinProc
+  Proc GetMulti:Booleano
+    Resultado=iMulti
+  FinProc
+  Proc SetMulti(Valor:Booleano)
+    Si (ObjHwnd) GenerarError errOpImposible
+    iMulti=Valor
+  FinProc
+  Proc GetSrt:Booleano
+    Resultado=iSrt
+  FinProc
+  Proc SetSrt(Valor:Booleano)
+    Si (ObjHwnd) GenerarError errOpImposible
+    iSrt=Valor
+  FinProc
+P$FAblico:
+  'props p$FAblicos
+  'Prop Fuente,Font
+  'Prop Eventos,Events
+  'Prop Items,Lns
+  Prop ItemSeleccionado:EnteroSig
+    Lec:GetSel
+    Esc:SetSel
+  FinProp
+  Prop CantidadSeleccionados:Entero
+    Lec:GetSelCnt
+  FinProp
+  Prop Seleccionado:Booleano
+    Lec:GetSelSt
+    Esc:SetSelSt
+  FinProp
+  Prop Multil$EDnea:Booleano
+    Lec:GetMulti
+    Esc:SetMulti
+  FinProp
+  Prop Ordenado:Booleano
+    Lec:GetSrt
+    Esc:SetSrt
+  FinProp
+  'proc p$FAblicos
+  Proc evCambiar(Pos:EnteroSig)
+    Var i:Entero
+    Var Act:EnteroSig
+    Var Str:Cadena
+    Si (iMulti=Falso) Act=ItemSeleccionado
+    SendMessage(ObjHwnd,LB_RESETCONTENT,0,0)
+    Contar i=1 a Items.Cantidad
+      Str=Items.Item(i-1)
+      SendMessage(ObjHwnd,LB_ADDSTRING,0,CadPtr(Str))
+      SendMessage(ObjHwnd,LB_SETITEMDATA,0,Items.Dato(i-1))
+      Si (iMulti) Si (Seleccionado(i-1)) SendMessage(ObjHwnd,LB_SETSEL,1,i-1)
+    Seguir
+    Si (iMulti=Falso) ItemSeleccionado=Act
+  FinProc
+  Proc evAdd(Pos:EnteroSig)
+    Var Str:Cadena
+    Str=Items.Item(Pos)
+    SendMessage(ObjHwnd,LB_ADDSTRING,0,CadPtr(Str))
+  FinProc
+  Proc evDel(Pos:EnteroSig)
+    SendMessage(ObjHwnd,LB_DELETESTRING,Pos,0)
+  FinProc
+  Proc CargarCajaLista(HwndParent:Entero)
+    Var Nomb:Cadena
+    Si (ObjHwnd) Salir
+    Nomb="LISTBOX"
+    ObjHwnd=CreateWindowEx(WS_EX_CLIENTEDGE,Nomb,Nulo,WS_VSCROLL+LBS_NOTIFY+LBS_HASSTRINGS+WS_CLIPSIBLINGS+WS_CHILD+WS_TABSTOP+WS_BORDER+(&gt;Habil?0:WS_DISABLED)+ _
+                          (&gt;iSrt?LBS_SORT:0)+(&gt;iMulti?LBS_EXTENDEDSEL:0)+(&gt;Visib?WS_VISIBLE:0),Coords.x,Coords.y,Coords.Width,Coords.Height,HwndParent,0,Programa.hInstance,Nulo)
+    Si (ObjHwnd=0) GenerarError errFalloWinCtrls
+    Fuente.InsertarFuente(ObjHwnd)
+    Items.Hwnd=ObjHwnd
+    SetProp(ObjHwnd,"THIS",ObjPtr())
+    SetProp(ObjHwnd,"EVENT",Eventos@)
+    SetProp(ObjHwnd,"PREVHWND",SetWindowLong(ObjHwnd,GWL_WNDPROC,pscCajaLista_wndproc@))
+    SetColor(Col,0)
+    ObtenerDC
+    UpdateWindow(ObjHwnd)
+  FinProc
+  Proc DescargarCajaLista
+    Si (ObjHwnd=0) Salir
+    DestroyWindow(ObjHwnd)
+    ObjHwnd=0
+  FinProc
+  'extra
+Privado:
+  Proc Inicializar
+    Alto=200
+    Ancho=100
+    Color=COLOR_BTNFACE+&amp;1000000
+    Habilitado=Verd
+    Visible=Verd
+    Crear Fuente
+    Crear Items
+    Eval Items.Eventos
+      .AlCambiar@=pscCajaLista_evCambiar@
+      .AlAgregar@=pscCajaLista_evAdd@
+      .AlQuitar@=pscCajaLista_evDel@
+    FinEval
+  FinProc
+  Constructor:Inicializar
+  Destructor:DescargarCajaLista
+FinClase
+</Contenido></Datos>

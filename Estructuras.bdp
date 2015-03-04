@@ -1,0 +1,604 @@
+<Datos><Nombre></Nombre><Icono>AA==</Icono><Version><Mayor>0</Mayor><Menor>0</Menor><Revision>0</Revision><AutoIncr>0</AutoIncr></Version><Info/><Contenido>'Importar "Prototipos.prp"
+
+Prototipo pscThreadLlamada
+Prototipo pscEvNotif
+Prototipo pscEvMouse(Bot$F3n,Shift,X,Y:EnteroSig)
+Prototipo pscEvMouseMov(Shift,X,Y:EnteroSig)
+Prototipo pscEvTecla(Tecla:Entero)
+Prototipo pscEvFormCierra(Referencia Cancelar:Booleano)
+Prototipo pscEvTxtNavegar(Horizontal:Booleano)
+Prototipo pscEvCadNotif(hWnd,Pos:EnteroSig)
+Prototipo pscEvGrphNotif(,:Entero)
+
+'Estruc Variante,iType,reserved,lLen:Entero
+Estruc Variante,Tipo:Word,Reservado:Booleano,Ptr:Entero
+
+Estruc OVERLAPPED, _
+			Internal, _
+			InternalHigh, _
+			offset, _
+			OffsetHigh, _
+			hEvent:Entero
+
+Estruc KBDLLHOOKSTRUCT,VkCode,ScanCode,Flags,Time,DwExtraInfo:Entero
+
+Estruc FILETIME, _
+	dwLowDateTime, _
+	dwHighDateTime:Entero
+
+
+Estruc WIN32_FIND_DATA, _
+	dwFileAttributes:Entero, _
+	ftCreationTime, _
+	ftLastAccessTime, _
+	ftLastWriteTime:FILETIME, _
+	nFileSizeHigh, _
+	nFileSizeLow, _
+	dwReserved0, _
+	dwReserved1:Entero, _
+	cFileName[255]:Byte, _
+	cAlternateFileName[14]:Byte
+
+'ESTRUCTURAS
+
+Estruc SECURITY_ATTRIBUTES, _
+  nLength:Entero, _
+  lpSecurityDescriptor:Entero, _
+  bInheritedHandle:Booleano
+
+Estruc OPENFILENAME, _
+  lStructSize: Entero, _
+  hWndOwner: Entero, _
+  hInstance: Entero, _
+  lpstrFilter: Cadena, _
+  lpstrCustomFilter: Cadena, _
+  nMaxCustFilter: Entero, _
+  nFilterIndex: Entero, _
+  lpstrFile: Cadena, _
+  nMaxFile: Entero, _
+  lpstrFileTitle: Cadena, _
+  nMaxFileTitle: Entero, _
+  lpstrInitialDir: Cadena, _
+  lpstrTitle: Cadena, _
+  flags: Entero, _
+  nFileOffset: Word, _
+  nFileExtension: Word, _
+  lpstrDefExt: Cadena, _
+  lCustData: Entero, _
+  lpfnHook: Entero, _
+  lpTemplateName: Cadena
+
+Estruc COORD, _
+  x, _
+  y:Word
+
+Estruc SMALL_RECT, _
+  Left, _
+  Top, _
+  Right, _
+  Bottom:Word
+
+Estruc CONSOLE_SCREEN_BUFFER_INFO, _
+  dwSize, _
+  dwCursorPosition:COORD, _
+  wAttributes:Word, _
+  srWindow:SMALL_RECT, _
+  dwMaximumWindowSize:COORD
+
+Estruc SYSTEMTIME, _
+  wYear, _
+  wMonth, _
+  wDayOfWeek, _
+  wDay, _
+  wHour, _
+  wMinute, _
+  wSecond, _
+  wMilliseconds:Word
+
+Estruc THREADDATA, _
+  tdDir:pscThreadLlamada, _
+  @tdActivo:Booleano
+
+Estruc WINTHREADDATA, _
+  hWnd, hWndDisable[]:Entero
+
+Estruc PSCCADENASINFO, _
+  Texto:Cadena, _
+  Dato:Entero
+
+Estruc POSANDSIZE, _
+  x,y, _
+  Width,Height:EnteroSig
+
+Estruc PSCFUENTE_EVENTINFO, _
+  AlCambiar:pscEvNotif
+
+Estruc PSCFORM_EVENTINFO, _
+  AlCliquear:pscEvNotif, _
+  AlMoverMouse:pscEvMouseMov, _
+  AlDobleCliquear:pscEvNotif, _
+  AlApretarBotonMouse:pscEvMouse, _
+  AlSoltarBotonMouse:pscEvMouse, _
+  AlApretarTecla:pscEvTecla, _
+  AlTeclear:pscEvTecla, _
+  AlSoltarTecla:pscEvTecla, _
+  AlGanarFoco:pscEvNotif, _
+  AlPerderFoco:pscEvNotif, _
+  AlCerrarse:pscEvFormCierra, _
+  AlCargarse:pscEvNotif
+
+Estruc PSCETIQUETA_EVENTINFO, _
+  AlCliquear:pscEvNotif, _
+  AlDobleCliquear:pscEvNotif
+
+Estruc PSCBOTON_EVENTINFO, _
+  AlCliquear:pscEvNotif, _
+  AlMoverMouse:pscEvMouseMov, _
+  AlDobleCliquear:pscEvNotif, _
+  AlApretarBotonMouse:pscEvMouse, _
+  AlSoltarBotonMouse:pscEvMouse, _
+  AlApretarTecla:pscEvTecla, _
+  AlTeclear:pscEvTecla, _
+  AlSoltarTecla:pscEvTecla, _
+  AlGanarFoco:pscEvNotif, _
+  AlPerderFoco:pscEvNotif
+
+Estruc PSCCAJALISTA_EVENTINFO, _
+  AlSeleccionar:pscEvNotif, _
+  AlMoverMouse:pscEvMouseMov, _
+  AlDobleCliquear:pscEvNotif, _
+  AlApretarBotonMouse:pscEvMouse, _
+  AlSoltarBotonMouse:pscEvMouse, _
+  AlApretarTecla:pscEvTecla, _
+  AlTeclear:pscEvTecla, _
+  AlSoltarTecla:pscEvTecla, _
+  AlGanarFoco:pscEvNotif, _
+  AlPerderFoco:pscEvNotif
+
+Estruc PSCCAJACOMBO_EVENTINFO, _
+  AlSeleccionar:pscEvNotif, _
+  AlCambiar:pscEvNotif, _
+  AlAparecerLista:pscEvNotif, _
+  AlCerrarLista:pscEvNotif, _
+  AlMoverMouse:pscEvMouseMov, _
+  AlDobleCliquear:pscEvNotif, _
+  AlApretarBotonMouse:pscEvMouse, _
+  AlSoltarBotonMouse:pscEvMouse, _
+  AlApretarTecla:pscEvTecla, _
+  AlTeclear:pscEvTecla, _
+  AlSoltarTecla:pscEvTecla, _
+  AlGanarFoco:pscEvNotif, _
+  AlPerderFoco:pscEvNotif
+
+Estruc PSCCAJATEXTO_EVENTINFO, _
+  AlCliquear:pscEvNotif, _
+  AlMoverMouse:pscEvMouseMov, _
+  AlDobleCliquear:pscEvNotif, _
+  AlApretarBotonMouse:pscEvMouse, _
+  AlSoltarBotonMouse:pscEvMouse, _
+  AlApretarTecla:pscEvTecla, _
+  AlTeclear:pscEvTecla, _
+  AlSoltarTecla:pscEvTecla, _
+  AlGanarFoco:pscEvNotif, _
+  AlPerderFoco:pscEvNotif, _
+  AlCambiar:pscEvNotif, _
+  AlNavegar:pscEvTxtNavegar
+
+Estruc PSCTEMPORIZADOR_EVENTINFO, _
+  AlTranscurrirIntervalo:pscEvNotif
+
+Estruc PSCMENUITEM_EVENTINFO, _
+  AlSeleccionar:pscEvNotif
+
+Estruc PSCCADENAS_EVENTINFO, _
+  AlCambiar, _
+  AlAgregar, _
+  AlQuitar:pscEvCadNotif
+
+'PAUSCAL visual environment specific declarations
+
+Estruc RECT _
+,Left:Entero _
+,Top:Entero _
+,Right:Entero _
+,Bottom:Entero
+
+Estruc POINTAPI _
+,x:Entero _
+,y:Entero
+
+Estruc MSG _
+,hwnd:Entero _
+,message:Entero _
+,wParam:Entero _
+,lParam:Entero _
+,time:Entero _
+,pt:POINTAPI
+
+Estruc WNDCLASS _
+,style:Entero _
+,lpfnwndproc:Entero _
+,cbClsextra:Entero _
+,cbWndExtra2:Entero _
+,hInstance:Entero _
+,hIcon:Entero _
+,hCursor:Entero _
+,hbrBackground:Entero _
+,lpszMenuName:Cadena _
+,lpszClassName:Cadena
+
+
+Estruc MINMAXINFO _
+,ptReserved:POINTAPI _
+,ptMaxSize:POINTAPI _
+,ptMaxPosition:POINTAPI _
+,ptMinTrackSize:POINTAPI _
+,ptMaxTrackSize:POINTAPI
+
+Estruc WINDOWPLACEMENT _
+,Length:Entero _
+,flags:Entero _
+,showCmd:Entero _
+,ptMinPosition:POINTAPI _
+,ptMaxPosition:POINTAPI _
+,rcNormalPosition:RECT
+
+
+Estruc LOGFONT, _
+  lfHeight, _
+  lfWidth, _
+  lfEscapement, _
+  lfOrientation, _
+  lfWeight:Entero, _
+  lfItalic, _
+  lfUnderline, _
+  lfStrikeOut, _
+  lfCharSet, _
+  lfOutPrecision, _
+  lfClipPrecision, _
+  lfQuality, _
+  lfPitchAndFamily:Byte, _
+  lfFaceName[32]:Byte
+
+Estruc TEXTMETRIC, _
+        tmHeight:Entero, _
+        tmAscent:Entero, _
+        tmDescent:Entero, _
+        tmInternalLeading:Entero, _
+        tmExternalLeading:Entero, _
+        tmAveCharWidth:Entero, _
+        tmMaxCharWidth:Entero, _
+        tmWeight:Entero, _
+        tmOverhang:Entero, _
+        tmDigitizedAspectX:Entero, _
+        tmDigitizedAspectY:Entero, _
+        tmFirstChar, _
+        tmLastChar, _
+        tmDefaultChar, _
+        tmBreakChar, _
+        tmItalic, _
+        tmUnderlined, _
+        tmStruckOut, _
+        tmPitchAndFamily, _
+        tmCharSet:Byte
+
+Estruc PAINTSTRUCT, _
+  hdc, _
+  fErase:Entero, _
+  rcPaint:Rect, _
+  fRestore, _
+  fIncUpdate:Entero, _
+  rgbReserved[35]:Byte
+
+Estruc MENUITEMINFO, _
+  cbSize, _
+  fMask, _
+  fType, _
+  fState, _
+  wID, _
+  hSubMenu, _
+  hbmpChecked, _
+  hbmpUnchecked, _
+  dwItemData, _
+  dwTypeData, _
+  cch:Entero
+
+Estruc ENUMINFO, _
+  Fnts[]:Cadena, _
+  MaxFnt:Entero
+
+Estruc SOCKADDR, _
+	sin_family:Word, _
+	sin_port:Word, _
+	sin_addr:Entero, _
+	sin_zero[8]:Byte
+
+Estruc WSAData, _
+	wVersion:Word, _
+	wHighVersion:Word, _
+	szDescription[257]:Byte, _
+	szSystemStatus[129]:Byte, _
+	iMaxSockets:Word, _
+	iMaxUdpDg:Word, _
+	lpVendorInfo:Entero
+	
+Estruc hostent, _
+	h_name:Entero, _
+	h_aliases:Entero, _
+	h_addrtype:Word, _
+	h_length:Word, _
+	@h_addr_list:Entero
+	
+'Estruc POINTAPI,X,Y:Entero
+Estruc LPRECT,Left,Top,Right,Bottom:Entero
+Estruc MOUSEINPUT,Dx,Dy,MouseData,dwFlags,Time,dwExtraInfo:EnteroSig
+Estruc KEYBOARDINPUT,wVk,wScan,dwFlags,time,dwExtraInfo:EnteroSig
+Estruc HARDWAREINPUT, uMsg,wParamL,wParamH:EnteroSig
+Uni$F3n Mikihi, Mi:MOUSEINPUT,KI:KEYBOARDINPUT,hi:HARDWAREINPUT
+Estruc INPUT,Tipo:Entero,Union:Mikihi
+
+'Estruc FILETIME, _
+'   dwLowDateTime, _
+'   dwHighDateTime:Entero
+
+
+Estruc FTPInformaci$F3n, _
+   dwFileAttributes:Entero, _
+   ftCreationTime, _
+   ftLastAccessTime, _
+   ftLastWriteTime:FILETIME, _
+   nFileSizeHigh, _
+   nFileSizeLow, _
+   dwReserved0, _
+   dwReserved1:Entero, _
+   cFileName[255]:Byte, _
+   cAlternateFileName[14]:Byte
+
+Estruc PSCPINCEL_EVENTINFO, _
+  AlCambiar:pscEvGrphNotif
+
+Estruc PSCL$E1PIZ_EVENTINFO, _
+  AlCambiar:pscEvGrphNotif
+
+Estruc PROCESSENTRY32,_
+    dwSize:Entero,_
+    cntUsage:Entero,_
+    th32ProcessID:Entero,_
+    th32DefaultHeapID:Entero,_
+    th32ModuleID:Entero,_
+    cntThreads:Entero,_
+    th32ParentProcessID:Entero,_
+    pcPriClassBase:Entero,_
+    dwFlags:Entero,_
+    szExeFile[260]:Byte
+
+Estruc SECURITY_ATTRIBUTES_B,nLength,lpSecurityDescriptor:Entero,bInheritHandle:Booleano
+'typedef struct _FILETIME {
+  'DWORD dwLowDateTime;
+  'DWORD dwHighDateTime;
+'Estruc FILETIME, dwLowDateTime,dwHighDateTime:Entero
+
+Estruc GdiplusStartupInput _
+ ,GdiplusVersion:Entero _
+ ,DebugEventCallback:Entero _
+ ,SuppressBackgroundThread:Byte _
+ ,SuppressExternalCodecs:Byte
+
+Estruc BITMAPINFOHEADER _
+ ,biSize:Entero _
+ ,biOffset:Entero _
+ ,biHeaderSize:Entero _
+ ,biWidth:Entero _
+ ,biWidthReal:Real _
+ ,biHeight:Entero _
+ ,biHeightReal:Real _
+ ,biPlanes:Entero _
+ ,biBitCount:Entero _
+ ,biCompression:Entero _
+ ,biSizeImage:Entero _
+ ,biXPelsPerMeter:Entero _
+ ,biYPelsPerMeter:Entero _
+ ,biClrUsed:Entero _
+ ,biClrImportant:Entero _
+ ,Valido:Booleano _
+ ,biHBMP:Entero _
+ ,biAspecto:Real
+
+ Estruc RGBQUAD _
+ ,rgbBlue:Byte _
+ ,rgbGreen:Byte _
+ ,rgbRed:Byte _
+ ,rgbReserved:Byte
+
+ Estruc BITMAPINFOHEADER1 _
+ ,biSize:Entero _
+ ,biOffset:Entero _
+ ,biHeaderSize:Entero _
+ ,biWidth:Entero _
+ ,biHeight:Entero _
+ ,biPlanes:Entero _
+ ,biBitCount:Entero _
+ ,biCompression:Entero _
+ ,biSizeImage:Entero _
+ ,biXPelsPerMeter:Entero _
+ ,biYPelsPerMeter:Entero _
+ ,biClrUsed:Entero _
+ ,biClrImportant:Entero
+
+Estruc BITMAPINFO _
+ ,bmiHeader:BITMAPINFOHEADER _
+ ,bmiColors:Entero
+
+Estruc BITMAP,_
+bmType:Entero,_
+bmWidth:Entero,_
+bmHeight:Entero,_
+bmWidthBytes:Entero,_
+bmPlanes:Word,_
+bmBitsPixel:Word,_
+bmBits:Entero
+
+Estruc PMIB_TCPSTATS,_
+    dwRtoAlgorithm,_    ' time-out algorithm
+    dwRtoMin,_          ' minimum time-out
+    dwRtoMax,_          ' maximum time-out
+    dwMaxConn,_         ' maximum connections
+    dwActiveOpens,_     ' active opens
+    dwPassiveOpens,_    ' passive opens
+    dwAttemptFails,_    ' failed attempts
+    dwEstabResets,_     ' established connections reset
+    dwCurrEstab,_       ' established connections
+    dwInSegs,_          ' segments received
+    dwOutSegs,_         ' segment sent
+    dwRetransSegs,_     ' segments retransmitted
+    dwInErrs,_          ' incoming errors
+    dwOutRsts,_         ' outgoing resets
+    dwNumConns:Entero   ' cumulative connections
+
+Estruc STARTUPINFO, _
+			cb:EnteroSig, _
+			lpReserved:EnteroSig, _
+			lpDesktop:EnteroSig, _
+			lpTitle:EnteroSig, _
+			dwX:EnteroSig, _
+			dwY:EnteroSig, _
+			dwXSize:EnteroSig, _
+			dwYSize:EnteroSig, _
+			dwXCountChars:EnteroSig, _
+			dwYCountChars:EnteroSig, _
+			dwFillAttribute:EnteroSig, _
+			dwFlags:EnteroSig, _
+			wShowWindow:EnteroSig, _
+			cbReserved2:EnteroSig, _
+			lpReserved2:EnteroSig, _
+			hStdInput:EnteroSig, _
+			hStdOutput:EnteroSig, _
+			hStdError:EnteroSig
+
+Estruc PROCESS_INFORMATION, _
+			hProcess:EnteroSig, _
+			hThread:EnteroSig, _
+			dwProcessId:EnteroSig, _
+			dwThreadID:EnteroSig
+
+Estruc FLOATING_SAVE_AREA, _
+			ControlWord:EnteroSig, _
+			StatusWord:EnteroSig, _
+			TagWord:EnteroSig, _
+			ErrorOffset:EnteroSig, _
+			ErrorSelector:EnteroSig, _
+			DataOffset:EnteroSig, _
+			DataSelector:EnteroSig, _
+			RegisterArea[80]:Byte, _
+			Cr0NpxState:EnteroSig
+
+Estruc CONTEXT, _
+			ContextFlags:EnteroSig, _
+			Dr0:EnteroSig, _
+			Dr1:EnteroSig, _
+			Dr2:EnteroSig, _
+			Dr3:EnteroSig, _
+			Dr6:EnteroSig, _
+			Dr7:EnteroSig, _
+			FloatSave:FLOATING_SAVE_AREA, _
+			SegGs:EnteroSig, _
+			SegFs:EnteroSig, _
+			SegEs:EnteroSig, _
+			SegDs:EnteroSig, _
+			Edi:EnteroSig, _
+			Esi:EnteroSig, _
+			Ebx:EnteroSig, _
+			Edx:EnteroSig, _
+			Ecx:EnteroSig, _
+			Eax:EnteroSig, _
+			Ebp:EnteroSig, _
+			Eip:EnteroSig, _
+			SegCs:EnteroSig, _
+			EFlags:EnteroSig, _
+			Esp:EnteroSig, _
+			SegSs:EnteroSig
+
+Estruc IMAGE_DOS_HEADER, _
+			e_magic:WordSig, _
+			e_cblp:WordSig, _
+			e_cp:WordSig, _
+			e_crlc:WordSig, _
+			e_cparhdr:WordSig, _
+			e_minalloc:WordSig, _
+			e_maxalloc:WordSig, _
+			e_ss:WordSig, _
+			e_sp:WordSig, _
+			e_csum:WordSig, _
+			e_ip:WordSig, _
+			e_cs:WordSig, _
+			e_lfarlc:WordSig, _
+			e_ovno:WordSig, _
+			e_res[3]:WordSig, _
+			e_oemid:WordSig, _
+			e_oeminfo:WordSig, _
+			e_res2[9]:WordSig, _
+			e_lfanew:EnteroSig
+
+Estruc IMAGE_FILE_HEADER, _
+			Machine:WordSig, _
+			NumberOfSections:WordSig, _
+			TimeDateStamp:EnteroSig, _
+			PointerToSymbolTable:EnteroSig, _
+			NumberOfSymbols:EnteroSig, _
+			SizeOfOptionalHeader:WordSig, _
+			characteristics:WordSig
+
+Estruc IMAGE_DATA_DIRECTORY, _
+			VirtualAddress:EnteroSig, _
+			Size:EnteroSig
+
+Estruc IMAGE_OPTIONAL_HEADER, _
+			Magic:WordSig, _
+			MajorLinkerVersion:Byte, _
+			MinorLinkerVersion:Byte, _
+			SizeOfCode:EnteroSig, _
+			SizeOfInitializedData:EnteroSig, _
+			SizeOfUnitializedData:EnteroSig, _
+			AddressOfEntryPoint:EnteroSig, _
+			BaseOfCode:EnteroSig, _
+			BaseOfData:EnteroSig, _
+			ImageBase:EnteroSig, _
+			SectionAlignment:EnteroSig, _
+			FileAlignment:EnteroSig, _
+			MajorOperatingSystemVersion:WordSig, _
+			MinorOperatingSystemVersion:WordSig, _
+			MajorImageVersion:WordSig, _
+			MinorImageVersion:WordSig, _
+			MajorSubsystemVersion:WordSig, _
+			MinorSubsystemVersion:WordSig, _
+			W32VersionValue:EnteroSig, _
+			SizeOfImage:EnteroSig, _
+			SizeOfHeaders:EnteroSig, _
+			CheckSum:EnteroSig, _
+			SubSystem:WordSig, _
+			DllCharacteristics:WordSig, _
+			SizeOfStackReserve:EnteroSig, _
+			SizeOfStackCommit:EnteroSig, _
+			SizeOfHeapReserve:EnteroSig, _
+			SizeOfHeapCommit:EnteroSig, _
+			LoaderFlags:EnteroSig, _
+			NumberOfRvaAndSizes:EnteroSig, _
+			DataDirectory[15]:IMAGE_DATA_DIRECTORY
+
+Estruc IMAGE_NT_HEADERS, _
+			Signature:EnteroSig, _
+			FileHeader:IMAGE_FILE_HEADER, _
+			OptionalHeader:IMAGE_OPTIONAL_HEADER
+
+Estruc IMAGE_SECTION_HEADER, _
+			SecName[]:Byte, _
+			VirtualSize:EnteroSig, _
+			VirtualAddress:EnteroSig, _
+			SizeOfRawData:EnteroSig, _
+			PointerToRawData:EnteroSig, _
+			PointerToRelocations:EnteroSig, _
+			PointerToLinenumbers:EnteroSig, _
+			NumberOfRelocations:WordSig, _
+			NumberOfLinenumbers:WordSig, _
+			characteristics:EnteroSig
+</Contenido></Datos>

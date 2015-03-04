@@ -1,0 +1,79 @@
+<Datos><Nombre></Nombre><Icono>AA==</Icono><Version><Mayor>0</Mayor><Menor>0</Menor><Revision>0</Revision><AutoIncr>0</AutoIncr></Version><Info/><Contenido>'Importar "Apis.prp"
+'Importar "Constantes.prp"
+Importar "Cadena.prp"
+'Importar "Macros.prp"
+
+$24ADV-
+
+Proc ArchivoCrear(Referencia Ruta:Cadena):Booleano
+	Var Ptr:Entero
+	Ptr = CreateFile(Ruta,GENERIC_WRITE,FILE_SHARE_WRITE,Nulo,CREATE_NEW,0,0)
+	Si (Ptr = -1) Entonces Devolver Falso
+	CloseHandle(Ptr)
+	Devolver Verd
+FinProc
+
+Proc ArchivoAbrir(Referencia Ruta:Cadena,Opcional Acceso:Cadena = "Todo",Opcional Modo:Entero = 3):Entero
+	Seleccionar CadMayus(Acceso)
+		Caso "LECTURA-ESCRITURA"
+			Resultado = CreateFile(Ruta,&amp;80000000 Or &amp;40000000,&amp;1 Or &amp;2,Nulo,Modo,0,0)
+		Caso "LECTURA"
+			Resultado = CreateFile(Ruta,&amp;80000000,&amp;1,Nulo,Modo,0,0)
+		Caso "ESCRITURA"
+			Resultado = CreateFile(Ruta,&amp;40000000,&amp;2,Nulo,Modo,0,0)
+		Caso "TODO"
+			Resultado = CreateFile(Ruta,&amp;10000000,0,Nulo,Modo,0,0)
+		Caso Otro
+			Resultado = CreateFile(Ruta,&amp;80000000 Or &amp;40000000,&amp;1 Or &amp;2,Nulo,Modo,0,0)
+	FinSeleccionar
+FinProc
+
+Proc ArchivoExiste(Referencia Ruta:Cadena):Booleano
+	Var Ptr:Entero
+	Ptr = CreateFile(Ruta,&amp;80000000,&amp;1 Or &amp;2,Nulo,3,0,0)
+	Si (Ptr = -1) Entonces Devolver Falso
+	CloseHandle(Ptr)	
+	Devolver Verd
+FinProc
+
+Proc ArchivoCopiar(Referencia Ruta1,Ruta2:Cadena,Opcional Reemplazar:Booleano = Verd):Booleano
+	Devolver CopyFile(Ruta1,Ruta2,Reemplazar)
+FinProc
+
+Proc ArchivoEliminar(Referencia Ruta:Cadena):Booleano
+	Devolver DeleteFile(Ruta)
+FinProc
+
+Proc ArchivoMover(Referencia Ruta1,Ruta2:Cadena):Booleano
+	Devolver MoveFile(Ruta1,Ruta2)
+FinProc
+
+Proc ArchivoEstFinal(ID:Entero):Booleano
+	Devolver SetEndOfFile(ID)
+FinProc
+
+Proc ArchivoDescargar(Referencia URL,Archivo:Cadena)
+	URLDownloadToFile(0, URL, Archivo, 0, 0)
+FinProc
+
+Proc ArchivoLeer(ID:Entero,Opcional Longitud:Entero):Cadena
+	Si ID = INVALID_HANDLE Entonces Salir
+	Resultado = Espacio(&gt;Longitud?Longitud:GetFileSize(ID,Nulo))
+	ReadFile(ID,CadPtr(Resultado),&gt;Longitud?Longitud:GetFileSize(ID,Nulo),0,Nulo)
+FinProc
+
+Proc ArchivoEscribir(ID:Entero,Referencia Datos:Cadena):Entero
+	Si ID = INVALID_HANDLE Entonces Salir
+	WriteFile(ID,CadPtr(Datos),CadLong(Datos),Resultado,Nulo)
+FinProc
+
+Proc ArchivoTama$F1o(ID:Entero):Entero
+	Si ID = INVALID_HANDLE Entonces Salir
+	Devolver GetFileSize(ID,Nulo)
+FinProc
+
+Proc ArchivoCerrar(ID:Entero)
+	Si ID = INVALID_HANDLE Entonces Salir
+	CloseHandle(ID)
+FinProc
+</Contenido></Datos>

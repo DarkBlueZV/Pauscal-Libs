@@ -1,0 +1,32 @@
+<Datos><Nombre></Nombre><Icono>AA==</Icono><Version><Mayor>0</Mayor><Menor>0</Menor><Revision>0</Revision><AutoIncr>0</AutoIncr></Version><Info/><Contenido>'Importar "Declare.prp"
+Importar "ConstIpaError.prp" ' Se obtiene en: http://www.pauscal.com.ar/foro/viewtopic.php?f=19&amp;t=295
+Importar "Macros.prp" ' Se obtiene en: http://www.pauscal.com.ar/foro/viewtopic.php?f=19&amp;t=294
+Importar "Procesos.prp" ' Se obtiene en: http://www.pauscal.com.ar/foro/viewtopic.php?f=19&amp;t=305
+
+Privado:
+	Var Puntero:Entero
+P$FAblico:
+
+Clase PscMutex
+
+	ClaseVar Nombre:Cadena ' Nombre de la instancia.
+	
+	Proc Iniciar:Entero
+		Var Prog:PscProgramaLocal
+		Crear Prog
+		Puntero = CreateMutex(0, Verd, &gt;Nombre = ""?Prog.Nombre:Nombre) ' Si el nombre es nulo utilizar el nombre del ejecutable actual.
+		Si Error = ERROR_ALREADY_EXISTS
+		   Liberar ; Prog.Terminar
+		FinSi
+		Resultado = Puntero
+		Destruir Prog
+	FinProc
+
+	Proc Liberar(Opcional h_Pun:Entero):Entero
+		Resultado = ReleaseMutex(&gt;h_Pun?h_Pun:Puntero)
+	FinProc
+	
+FinClase
+
+'Var Instancia:PscMutex
+</Contenido></Datos>

@@ -1,0 +1,150 @@
+<Datos><Nombre></Nombre><Icono>AA==</Icono><Version><Mayor>0</Mayor><Menor>0</Menor><Revision>0</Revision><AutoIncr>0</AutoIncr></Version><Info/><Contenido>$24ADV-
+$24EBC-
+
+Importar "WinCtrls.prp"
+
+Privado:
+
+Proc pscCajaTexto_wndproc(hWnd,Msg,wParam,lParam:Entero):Entero
+  Var @Eventos:PSCCAJATEXTO_EVENTINFO
+
+  Eventos@=GetProp(hWnd,"EVENT")
+  Si (Eventos@)
+    Seleccionar Msg
+      Caso WM_LBUTTONDOWN,WM_RBUTTONDOWN,WM_MBUTTONDOWN
+        Si (Eventos.AlApretarBotonMouse@) Eventos.AlApretarBotonMouse( &gt;Msg=WM_LBUTTONDOWN?1:(&gt;Msg=WM_RBUTTONDOWN?2:3) ,wParam,LoWord(lParam),HiWord(lParam))
+      Caso WM_LBUTTONUP,WM_RBUTTONUP,WM_MBUTTONUP
+        Si (Eventos.AlSoltarBotonMouse@) Eventos.AlSoltarBotonMouse( &gt;Msg=WM_LBUTTONUP?1:(&gt;Msg=WM_RBUTTONUP?2:3),wParam,LoWord(lParam),HiWord(lParam))
+        Si (Msg=WM_LBUTTONUP) And (Eventos.AlCliquear@&lt;&gt;0) Eventos.AlCliquear
+      Caso WM_LBUTTONDBLCLK,WM_RBUTTONDBLCLK,WM_MBUTTONDBLCLK
+        Si (Eventos.AlSoltarBotonMouse@) Eventos.AlSoltarBotonMouse( &gt;Msg=WM_LBUTTONDBLCLK?1:(&gt;Msg=WM_RBUTTONDBLCLK?2:3),wParam,LoWord(lParam),HiWord(lParam))
+      Caso WM_MOUSEMOVE
+        Si (Eventos.AlMoverMouse@) Eventos.AlMoverMouse(wParam,LoWord(lParam),HiWord(lParam))
+      Caso WM_KEYDOWN
+        Si (Eventos.AlApretarTecla@&lt;&gt;0) And (lParam And &amp;40000000=0) Eventos.AlApretarTecla(wParam)
+        Si (Eventos.AlTeclear@) Eventos.AlTeclear(wParam)
+      Caso WM_KEYUP
+        Si (Eventos.AlSoltarTecla@) Eventos.AlSoltarTecla(wParam)
+      Caso WM_USER
+        Seleccionar wParam
+          Caso EN_CHANGE
+            Si (Eventos.AlCambiar@) Eventos.AlCambiar
+          Caso EN_HSCROLL,EN_VSCROLL
+            Si (Eventos.AlNavegar@) Eventos.AlNavegar(wParam=EN_HSCROLL)
+          Caso EN_SETFOCUS
+            Si (Eventos.AlGanarFoco@) Eventos.AlGanarFoco
+          Caso EN_KILLFOCUS
+            Si (Eventos.AlPerderFoco@) Eventos.AlPerderFoco
+        FinSeleccionar
+        Salir
+    FinSeleccionar
+  FinSi
+  Resultado=CallWindowProc(GetProp(hWnd,"PREVHWND"),hWnd,Msg,wParam,lParam)
+FinProc
+
+P$FAblico:
+
+Clase pscCajaTexto(pscTextControl), _
+  Locked:Booleano, _
+  ObjNum:Entero
+
+  ClaseVar Eventos:PSCCAJATEXTO_EVENTINFO
+
+Privado:
+  'procs privados
+  Proc GetSoloLectura:Booleano
+    Si (ObjHwnd)
+      Devolver (GetWindowLong(ObjHwnd,GWL_STYLE) And ES_READONLY)&lt;&gt;0
+    SiNo
+      Devolver Locked
+    FinSi
+  FinProc
+  Proc SetSoloLectura(Valor:Booleano)
+    Locked=Valor
+    Si (ObjHwnd) SendMessage(ObjHwnd,EM_SETREADONLY,Locked,0)
+  FinProc
+  Proc GetSelStart:Entero
+    Var dwInicio,dwFinal:Entero
+    Si (ObjHwnd)
+      SendMessage(ObjHwnd,EM_GETSEL,dwInicio@,dwFinal@)
+      Resultado=dwInicio
+    FinSi
+  FinProc
+  Proc SetSelStart(Valor:Entero)
+    Si (ObjHwnd) SendMessage(ObjHwnd,EM_SETSEL,Valor,GetSelLen()+Valor)
+  FinProc
+  Proc GetSelLen:Entero
+    Var dwInicio,dwFinal:Entero
+    Si (ObjHwnd)
+      SendMessage(ObjHwnd,EM_GETSEL,dwInicio@,dwFinal@)
+      Resultado=dwFinal-dwInicio
+    FinSi
+  FinProc
+  Proc SetSelLen(Valor:Entero)
+    Var dwInicio:Entero
+    Si (ObjHwnd)
+      dwInicio=GetSelStart()
+      SendMessage(ObjHwnd,EM_SETSEL,dwInicio,Valor+dwInicio)
+    FinSi
+  FinProc
+  Proc GetSelText:Cadena
+    Var dwInicio,dwFinal:Entero
+    Si (ObjHwnd)
+      SendMessage(ObjHwnd,EM_GETSEL,dwInicio@,dwFinal@)
+      Si (dwFinal-dwInicio) Resultado=ParteCad(Texto,dwInicio+1,dwFinal-dwInicio)
+    FinSi
+  FinProc
+  Proc SetSelText(Valor:Cadena)
+    Si (ObjHwnd) SendMessage(ObjHwnd,EM_REPLACESEL,Verd,CadPtr(Valor))
+  FinProc
+P$FAblico:
+  'props p$FAblicos
+  Prop ComienzoSel:Entero
+    Lec:GetSelStart
+    Esc:SetSelStart
+  FinProp
+  Prop LongitudSel:Entero
+    Lec:GetSelLen
+    Esc:SetSelLen
+  FinProp
+  Prop TextoSel:Cadena
+    Lec:GetSelText
+    Esc:SetSelText
+  FinProp
+  Prop SoloLectura:Booleano
+    Lec:GetSoloLectura
+    Esc:SetSoloLectura
+  FinProp
+  'proc p$FAblicos
+  Proc CargarCajaTexto(HwndParent:Entero)
+    Var Nomb:Cadena
+    Si (ObjHwnd&lt;&gt;0) Salir
+    Nomb="EDIT"
+    ObjHwnd=CreateWindowEx(WS_EX_NOPARENTNOTIFY+512,Nomb,iTexto,ES_AUTOHSCROLL+ES_AUTOVSCROLL+WS_BORDER+WS_CLIPSIBLINGS+WS_CHILD+WS_TABSTOP+(&gt;Habil?0:WS_DISABLED)+ _
+                          (&gt;Locked?ES_READONLY:0)+(&gt;Visib?WS_VISIBLE:0),Coords.x,Coords.y,Coords.Width,Coords.Height,HwndParent,0,GetModuleHandle(""),Nulo)
+    Si (ObjHwnd=0) GenerarError errFalloWinCtrls
+    Fuente.InsertarFuente(ObjHwnd)
+    SetProp(ObjHwnd,"EVENT",Eventos@)
+    SetProp(ObjHwnd,"PREVHWND",SetWindowLong(ObjHwnd,GWL_WNDPROC,pscCajaTexto_wndproc@))
+    SetColor(Col,0)
+    ObtenerDC
+    UpdateWindow(ObjHwnd)
+  FinProc
+  Proc DescargarCajaTexto
+    Si (ObjHwnd=0) Salir
+    DestroyWindow(ObjHwnd)
+    ObjHwnd=0
+  FinProc
+  'extra
+Privado:
+  Proc Inicializar
+    Alto=25
+    Ancho=81
+    Color=COLOR_BACKGROUND+&amp;1000000
+    Habilitado=Verd
+    Visible=Verd
+  FinProc
+  Constructor:Inicializar
+  Destructor:DescargarCajaTexto
+FinClase
+</Contenido></Datos>

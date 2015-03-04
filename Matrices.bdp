@@ -1,0 +1,271 @@
+<Datos><Nombre></Nombre><Icono>AA==</Icono><Version><Mayor>0</Mayor><Menor>0</Menor><Revision>0</Revision><AutoIncr>0</AutoIncr></Version><Info/><Contenido>Importar "Utiles.prp"
+' Matrices.
+
+' #############################################################
+' Nombre       : RepartirDec
+' Funci$F3n      : Reparte un valor decimal en una matriz.
+' Devoluci$F3n   : Decimal[]
+' Autor        : PowerDeath
+' Parametros   : #1 {Decimal} Expresi$F3n a repartir.
+' #############################################################
+Proc MatRepartirDec(Referencia N$FAmeros:Decimal):Decimal[]
+Var i,Longitud:Entero,Matriz[]:Decimal,Textos:Cadena
+Textos = DecCad(N$FAmeros)
+Longitud = CadLong(Textos)
+ReDim Matriz, Longitud
+Contar i = 1 a Longitud
+   Matriz[i -1] = CadDec(ParteCad(Textos,i,1))
+Seguir
+   Resultado = Matriz
+FinProc
+
+Proc MatTruncar(Referencia Str[]:Cadena):Cadena[]
+Var i:Entero
+Contar i = 0 a L$EDmite(Str)
+	Si Str[i] = #0 Entonces ReDim Resultado,i ; Salir Contar
+Seguir
+Contar i = 0 a L$EDmite(Resultado)
+	Resultado[i] = Str[i]
+Seguir
+FinProc
+
+' #############################################################
+' Nombre       : RepartirReal
+' Funci$F3n      : Reparte un valor real en una matriz.
+' Devoluci$F3n   : Real[]
+' Autor        : PowerDeath
+' Parametros   : #1 {Real} Expresi$F3n a repartir.
+' #############################################################
+Proc MatRepartirReal(Referencia N$FAmeros:Real):Real[]
+Var i,Longitud:Entero,Matriz[]:Real,Textos:Cadena
+Textos = RealCad(N$FAmeros)
+Longitud = CadLong(Textos)
+ReDim Matriz, Longitud
+Contar i = 1 a Longitud
+   Matriz[i -1] = CadReal(ParteCad(Textos,i,1))
+Seguir
+   Resultado = Matriz
+FinProc
+
+' #############################################################
+' Nombre       : RepartirEnt
+' Funci$F3n      : Reparte una expresi$F3n dentro de una matriz.
+' Devoluci$F3n   : Entero[]
+' Autor        : PowerDeath
+' Parametros   : #1 {Cadena} Expresi$F3n a repartir.
+' #############################################################
+Proc MatRepartirEnt(Referencia N$FAmeros:Entero):Entero[]
+Var i,Longitud,Matriz[]:Entero,Textos:Cadena
+Textos = EntCad(N$FAmeros)
+Longitud = CadLong(Textos)
+ReDim Matriz, Longitud
+Contar i = 1 a Longitud
+   Matriz[i -1] = CadEnt(ParteCad(Textos,i,1))
+Seguir
+   Resultado = Matriz
+FinProc
+
+
+' #############################################################
+' Nombre       : RepartirCad
+' Funci$F3n      : Reparte una cadena dentro de una matriz.
+' Devoluci$F3n   : Cadena[]
+' Autor        : PowerDeath
+' Parametros   : #1 {Cadena} Expresi$F3n a repartir, #2 {Entero} Cantidad a repartir.
+' #############################################################
+Proc MatRepartirCad(Referencia Textos:Cadena):Cadena[]
+Var i,b:Entero
+b = CadLong(Textos)
+ReDim Resultado,b
+Contar i = 1 a b
+	Resultado[i - 1] = ParteCad(Textos,i,1) 
+Seguir
+FinProc
+
+' #############################################################
+' Nombre       : MatrizByteDeCadena
+' Funci$F3n      : Obtiene una matriz de una cadena.
+' Devoluci$F3n   : Byte[]
+' Autor        : PowerDeath
+' Parametros   : #1 {Cadena} Texto a convertir.
+' #############################################################
+Proc MatCadByte(Referencia Temp:Cadena):Byte[]
+Var i,lLen:Entero,bArr[]:Byte,Letra:Cadena
+    lLen = CadLong(Temp)
+    Redim bArr,lLen
+    Contar i = 1 a lLen
+      Letra = ParteCad(Temp,i, 1)
+      bArr[i - 1] = Ascii(Letra)
+    Seguir
+    Resultado = bArr
+FinProc
+
+' #############################################################
+' Nombre       : MatEliminar
+' Funci$F3n      : Elimina una expresi$F3n dentro de una matriz.
+' Devoluci$F3n   : Cadena[]
+' Autor        : PowerDeath
+' Parametros   : #1 {Cadena[]} Matriz completa, #2 {Cadena} Expresi$F3n a eliminar.
+' #############################################################
+Proc MatEliminar(Referencia Matriz[]:Cadena,Referencia Expresi$F3n:Cadena):Cadena[]
+Var i:Entero,Matriz2[]:Cadena,Contador:Entero
+ReDim Matriz2,1
+Contar i = 0 a L$EDmite(Matriz)
+	Si Matriz[i] &lt;&gt; Expresi$F3n Entonces
+		Si Contador = LongMat(Matriz2) Entonces ReDim Preservar Matriz2,LongMat(Matriz2) + 1
+		Matriz2[Contador] = Matriz[i]
+		Contador = Contador + 1
+	FinSi
+Seguir
+	Resultado = Matriz2
+FinProc
+
+Proc MatBuscar(Referencia Matriz[]:Cadena,Referencia Expresi$F3n:Cadena):Entero
+Var i:Entero
+	Contar i = 0 a L$EDmite(Matriz)
+			Si Matriz[i] = Expresi$F3n Entonces Devolver i
+	Seguir
+	Devolver 0
+FinProc
+
+
+' #############################################################
+' Nombre       : MatEntCad
+' Funci$F3n      : Convierte una matriz.
+' Devoluci$F3n   : Cadena[]
+' Autor        : PowerDeath
+' Parametros   : #1 {Entero[]} Matriz a convertir.
+' #############################################################
+Proc MatEntCad(Matriz[]:Entero):Cadena[]
+	Var Result[]:Cadena,i:Entero
+	Redim Result,LongMat(Matriz)
+	Contar i = 0 a L$EDmite(Matriz)
+		Result[i] = EntCad(Matriz[i])
+	Seguir
+	Resultado = Result
+FinProc
+
+' #############################################################
+' Nombre       : MatCadEnt
+' Funci$F3n      : Convierte una matriz.
+' Devoluci$F3n   : Entero[]
+' Autor        : PowerDeath
+' Parametros   : #1 {Cadena[]} Matriz a convertir.
+' #############################################################
+Proc MatCadEnt(Referencia Matriz[]:Cadena):Entero[]
+	Var Result[],i:Entero
+	Redim Result,LongMat(Matriz)
+	Contar i = 0 a L$EDmite(Matriz)
+		Result[i] = CadEnt(Matriz[i])
+	Seguir
+	Resultado = Result
+FinProc
+
+' #############################################################
+' Nombre       : UnirCad
+' Funci$F3n      : Une una matriz de cadena.
+' Devoluci$F3n   : Cadena
+' Autor        : PowerDeath
+' Parametros   : #1 {Cadena[]} Matriz de cadena a unir.
+' #############################################################
+Proc MatUnirCad(Referencia Matriz[]:Cadena):Cadena
+	Var i:Entero
+	Contar i = 0 a L$EDmite(Matriz)
+		Resultado = Resultado + Matriz[i]
+	Seguir
+FinProc
+
+' #############################################################
+' Nombre       : UnirEnt
+' Funci$F3n      : Une o suma una matriz.
+' Devoluci$F3n   : Entero
+' Autor        : PowerDeath
+' Parametros   : #1 {Entero[]} Matriz[, #2 {Booleano} Sumar la matriz.]
+' #############################################################
+Proc MatUnirEnt(Referencia Matriz[]:Entero,Opcional Sumar:Booleano = Falso):Entero
+	Var Result:Cadena,Beta:Entero,i:Entero
+	Var Matris[]:Cadena
+	'Matris = MatEntCad(Matriz)
+	Contar i = 0 a L$EDmite(Matriz)
+		Si Sumar = Verd Entonces Beta = Beta + Matriz[i]
+		Si Sumar = Falso Entonces Result = Result + EntCad(Matriz[i])
+	Seguir
+	Si Sumar = Verd Entonces Devolver Beta
+	Si Sumar = Falso Entonces Devolver CadEnt(Result)
+FinProc
+
+Proc MostrarMatrizEnt(Referencia Matriz[]:Entero)
+	Var Contenido:Cadena,i:Entero
+	Contar i = 0 a L$EDmite(Matriz)
+	Contenido = Contenido + "Matriz[" + EntCad(i) + "] = {" + EntCad(Matriz[i]) + "}" + CrLf
+	Seguir
+	Mensaje(Contenido,"Informaci$F3n")
+FinProc
+
+Proc MostrarMatrizByte(Referencia Matriz[]:Byte)
+	Var Contenido:Cadena,i:Entero
+	Contar i = 0 a L$EDmite(Matriz)
+	Contenido = Contenido + "Matriz[" + EntCad(i) + "] = {" + ByteCad(Matriz[i]) + "}" + CrLf
+	Seguir
+	Mensaje(Contenido,"Informaci$F3n")
+FinProc
+
+Proc MostrarMatrizEntSig(Referencia Matriz[]:EnteroSig)
+	Var Contenido:Cadena,i:Entero
+	Contar i = 0 a L$EDmite(Matriz)
+	Contenido = Contenido + "Matriz[" + EntCad(i) + "] = {" + EntCad(Matriz[i]) + "}" + CrLf
+	Seguir
+	Mensaje(Contenido,"Informaci$F3n")
+FinProc
+
+Proc MostrarMatrizCad(Referencia Matriz[]:Cadena)
+	Var Contenido:Cadena,i:Entero
+	Contar i = 0 a L$EDmite(Matriz)
+	Contenido = Contenido + "Matriz[" + EntCad(i) + "] = {" + Matriz[i] + "}" + CrLf
+	Seguir
+	Mensaje(Contenido,"Informaci$F3n")
+FinProc
+
+Proc MostrarMatrizReal(Referencia Matriz[]:Real)
+	Var Contenido:Cadena,i:Entero
+	Contar i = 0 a L$EDmite(Matriz)
+	Contenido = Contenido + "Matriz[" + EntCad(i) + "] = {" + RealCad(Matriz[i]) + "}" + CrLf
+	Seguir
+	Mensaje(Contenido,"Informaci$F3n")
+FinProc
+
+'Algoritmo de ordenamiento GuerraSort
+
+Proc OrdenarEnteros(Referencia Matriz[]:Entero)
+  Var i,Max,Temp:Entero
+
+  Max=L$EDmite(Matriz)
+  Mientras i&lt;Max
+    Si Matriz[i+1]&gt;Matriz[i]
+      Temp=Matriz[i]
+      Matriz[i]=Matriz[i+1]
+      Matriz[i+1]=Temp
+      Si (i) i=i-1
+    SiNo
+      i=i+1
+    FinSi
+  FinMientras
+FinProc
+
+Proc OrdenarReales(Referencia Matriz[]:Real)
+  Var i,Max:Entero
+  Var Temp:Real
+
+  Max=L$EDmite(Matriz)
+  Mientras i&lt;Max
+    Si Matriz[i+1]&gt;Matriz[i]
+      Temp=Matriz[i]
+      Matriz[i]=Matriz[i+1]
+      Matriz[i+1]=Temp
+      Si (i) i=i-1
+    SiNo
+      i=i+1
+    FinSi
+  FinMientras
+FinProc
+</Contenido></Datos>

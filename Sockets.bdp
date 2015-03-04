@@ -1,0 +1,389 @@
+<Datos><Nombre></Nombre><Icono>AA==</Icono><Version><Mayor>0</Mayor><Menor>0</Menor><Revision>0</Revision><AutoIncr>0</AutoIncr></Version><Info/><Contenido>'SOQUETES
+'Implementaci$F3n de los sockets en Pauscal
+'Autores: lukasg y Paul Guerra
+
+$24ADV-
+
+'Importar "Apis.prp"
+'Importar "Constantes.prp"
+Importar "Convertir.prp"
+
+'Funciones que convierten de Little Endian (x86) a Big Endian (TCP/IP)
+
+Proc LE2BE(d[]:Byte):Byte[]
+	Var ret[]:Byte
+	Var i:Entero
+
+	Contar i = 0 a LongMat(d) - 1
+		ret = [d[i]] + ret
+	Seguir
+	Resultado = ret
+FinProc
+
+Proc W_LE2BE(n:Word):Word
+	Var ret[]:Byte
+	Redim ret, Long(n)
+	CopyMemory(ret[0]@, n@, Long(n))
+	ret = LE2BE(ret)
+	CopyMemory(n@, ret[0]@, Long(n))
+	Resultado = n
+FinProc
+
+'Funciones que inicializan y finalizan los sockets
+
+Var CantidadInicializaciones:Entero
+
+Proc InicializarSoquetes()
+	Var wsaData:WSAData
+	
+	Const wVersionRequested = 2*256+2
+	
+	CantidadInicializaciones = CantidadInicializaciones + 1
+	Si CantidadInicializaciones &lt;&gt; 1 Entonces Salir
+	Si WSAStartup(wVersionRequested, wsaData) &lt;&gt; 0 Entonces GenerarError errSoquet
+FinProc
+
+Proc FinalizarSoquetes()
+	CantidadInicializaciones = CantidadInicializaciones - 1
+	Si CantidadInicializaciones = 0 Entonces WSACleanup() 'Es necesario dejar de usar la libreria
+FinProc
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'Clase SOQUET
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
+P$FAblico:
+
+Clase Soquet
+
+	ClaseVar handle:EnteroSig 'Identificador del Soquet
+	ClaseVar Ipv4:Cadena
+	ClaseVar Puertov4:Entero
+
+Privado:
+	'Constructor de Soquet, recibe una cadena que representa al host destino y
+	'un entero que representa al puerto al que se conecta
+	'Retorna una instancia de Soquet
+	Proc Soquet(destino:Cadena, ppuerto:Entero)
+		Var error, i:EnteroSig
+		Var addr:SOCKADDR
+		Var IPs[]:Entero
+		
+		InicializarSoquetes()
+		
+		handle = SOCKET_ERROR
+
+		handle = socket(AF_INET, SOCK_STREAM, 0)
+		Si handle = SOCKET_ERROR Entonces GenerarError errSoquet
+		
+		IPs = ObtenerIPs(destino)
+		Si LongMat(IPs) = 0 Entonces GenerarError errSoquet
+		
+		addr.sin_family = AF_INET
+		addr.sin_port = W_LE2BE(ppuerto)
+		Puertov4 = ppuerto
+		
+		Contar i = 0 a LongMat(IPs) - 1
+			addr.sin_addr = IPs[i]
+			error = connect(handle, addr, Long(addr))
+			Si error &lt;&gt; SOCKET_ERROR Entonces
+				Ipv4 = ConvertirIp(addr.sin_addr)
+				Salir
+			FinSi
+		Seguir
+		
+		GenerarError errSoquet
+	FinProc
+	
+	'Convierte una direcci$F3n en IPs
+	Proc ObtenerIPs(direcci$F3n:Cadena):Entero[]
+		Var @host:hostent
+		Var @ptr:Entero
+		Var ret[]:Entero
+		Var i:EnteroSig
+		i = inet_addr(direcci$F3n)
+		Si i &lt;&gt; SOCKET_ERROR Entonces
+			Resultado = [i]
+		SiNo
+			host@ = gethostbyname(direcci$F3n)
+			Redim ret, host.h_length
+			Contar i = 0 a host.h_length - 1
+				ptr@ = host.h_addr_list + i * Long(ptr)
+				ret[i] = ptr
+			Seguir
+			Resultado = ret
+		FinSi
+	FinProc
+	
+	'Transforma la ip de entero a cadena del tipo 255.255.255.255
+	Proc ConvertirIp(direccion:Entero):Cadena
+		Var i:Entero
+		Var res:Cadena
+		i = 0
+		Mientras i &lt; 4
+			res = res + EntCad(direccion And 255)
+			Si (i &lt; 3) Entonces res = res + "."
+			direccion = direccion shr 8
+			i = i+1
+		FinMientras
+		Resultado = res
+	FinProc
+
+	Constructor:Soquet
+
+P$FAblico:
+	''''''''''''Propiedades''''''''''''''
+	Prop Ip:Cadena
+		Lec: Ipv4
+	FinProp
+		
+	Prop Puerto:Entero
+		Lec: Puertov4
+	FinProp
+		
+	''''''''''''Metodos P$FAblicos''''''''''
+		
+	'Recibe como par$E1metro una cadena
+	'Retorna la cantidad de bytes enviados
+	Proc Escribir(c:Cadena):Entero
+		Var ret:Entero
+		
+		ret = send(handle, CadPtr(c), CadLong(c), 0)
+		'TODO: chequear ret
+		
+		Resultado = ret
+	FinProc
+	
+	'Recibe como par$E1metro un Entero
+	'Retorna la cantidad de bytes enviados
+	Proc EscribirEnt(c:Entero):Entero
+		Var ret:Entero
+		
+		ret = send(handle, c@, Long(c), 0)
+		'TODO: chequear ret
+		
+		Resultado = ret
+	FinProc
+	
+	'Recibe como par$E1metro un Real
+	'Retorna la cantidad de bytes enviados
+	Proc EscribirReal(c:Real):Entero
+		Var ret:Entero
+		
+		ret = send(handle, c@, Long(c), 0)
+		'TODO: chequear ret
+		
+		Resultado = ret
+	FinProc
+	
+	'Recibe como par$E1metro un Byte
+	'Retorna la cantidad de bytes enviados
+	Proc EscribirByte(c:Byte):Entero
+		Var ret:Entero
+		
+		ret = send(handle, c@, Long(c), 0)
+		'TODO: chequear ret
+		
+		Resultado = ret
+	FinProc
+	
+	'Recibe como par$E1metro 'n' un entero
+	'Retorna una cadena con con 'n' Bytes
+	Proc Leer(n:Entero):Cadena
+		Var buff:Cadena
+		Var ret:Entero
+		buff = Espacio(n)
+		ret = recv(handle, CadPtr(buff), n, 0)
+		Si ret = 0 Entonces GenerarError errSoquet
+		Resultado = IzquierdaCad(buff,ret)
+	FinProc
+	
+	'Leer un entero del Soquet y lo retorna
+	Proc LeerEnt():Entero
+		Var buff:Entero
+		Var ret:Entero
+		
+		ret = recv(handle, buff@, Long(buff), 0)
+		'TODO: chequear ret
+		
+		Resultado = buff
+	FinProc
+	
+	'Leer un real del Soquet y lo retorna
+	Proc LeerReal():Real
+		Var buff:Real
+		Var ret:Entero
+		
+		ret = recv(handle, buff@, Long(buff), 0)
+		'TODO: chequear ret
+		
+		Resultado = buff
+	FinProc
+	
+	'Leer un Byte del Soquet y lo retorna
+	Proc LeerByte():Byte
+		Var buff:Byte
+		Var ret:Entero
+		
+		ret = recv(handle, buff@, Long(buff), 0)
+		'TODO: chequear ret
+		
+		Resultado = buff
+	FinProc
+	
+	'Leer una linea del Soquet
+	'Retorna la cadena resultado
+	Proc LeerLn():Cadena
+		Var buff:Cadena
+		Var ret:Entero
+		Var retorno:Cadena
+		Var bandera1:Booleano
+		Var bandera2:Booleano
+		
+		bandera1 = Falso
+		bandera2 = Falso
+
+		retorno = ""
+		buff = Espacio(1)
+		
+		Repetir
+		ret = recv(handle, CadPtr(buff),1,0)
+		Si ret = -1
+			Si retorno = ""
+				GenerarError errSoquet
+			SiNo
+				Devolver retorno
+			FinSi
+		SiNo
+			retorno = retorno + buff
+			
+			Si bandera1
+				Si Ascii(buff) = 10
+					bandera2 = Verd	
+				SiNo
+					bandera1 = Falso
+				FinSi
+			SiNo
+				Si Ascii(buff) = 13
+					bandera1 = Verd
+				FinSi
+			FinSi
+		FinSi
+		HastaQue bandera2
+		
+		Devolver retorno
+	FinProc
+	
+	Proc Finalizar()
+		cerrar()
+		FinalizarSoquetes
+	FinProc
+	
+	Destructor:Finalizar
+	
+	'Cierra el Soquet
+	Proc cerrar()
+		Si handle = SOCKET_ERROR Entonces Salir
+		closesocket(handle)
+		handle = SOCKET_ERROR
+	FinProc
+
+FinClase
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'Clase SOQUET INTERNO
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
+Privado:
+
+Clase SoquetInterno(Soquet)
+
+Privado:
+	Proc SoquetInterno(h:Entero)
+		handle = h
+	FinProc
+
+	Constructor:SoquetInterno
+FinClase
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'Clase SOQUET SERVIDOR
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
+P$FAblico:
+
+Clase ServidorSoquet
+	ClaseVar handle:Entero
+	ClaseVar Sin:SOCKADDR
+
+		
+Privado:
+	'Constructor del Servidor de Soquet, recibe un entero que representa al puerto como par$E1metro
+	'Retorna una instancia de la clase ServidorSoquet
+	Proc ServidorSoquet(puerto:Entero)
+		Var error:EnteroSig
+		
+		InicializarSoquetes()
+		
+		handle = SOCKET_ERROR
+		
+		handle = socket(AF_INET, SOCK_STREAM, 0)
+		Si handle = SOCKET_ERROR Entonces GenerarError errSoquet
+
+		Sin.sin_family = AF_INET
+		Sin.sin_addr = INADDR_ANY
+		Sin.sin_port = W_LE2BE(puerto)
+		
+		bindSock()
+		escuchar()
+	FinProc
+	
+	Proc bindSock()
+		Var error:EnteroSig
+		
+		error = bind(handle, Sin, Long(Sin))
+		Si error = SOCKET_ERROR Entonces GenerarError errSoquet
+	FinProc
+	
+	Proc escuchar()
+		Var error:EnteroSig
+		
+		error = listen(handle, 50) 'una cola de 50, esto es asi porque se me ocurrio, se puede cambiar a gusto
+		Si error = SOCKET_ERROR Entonces GenerarError errSoquet
+	FinProc	
+	
+	Constructor:ServidorSoquet
+	
+	Proc Finalizar()
+		cerrar()
+		FinalizarSoquetes
+	FinProc
+	
+	Destructor:Finalizar
+
+P$FAblico:
+	'Acepta las conexiones
+	'Retorna un Soquet
+	Proc aceptar():Soquet
+		Var SinClie:SOCKADDR
+		Var SinLen:Entero
+		Var handleCliente:Entero
+		Var soquetCliente:SoquetInterno
+		
+		SinLen = Long(SinClie)
+		handleCliente = accept(handle, SinClie, SinLen)
+		Si handleCliente = SOCKET_ERROR Entonces GenerarError errSoquet
+
+		soquetCliente = Nuevo SoquetInterno(handleCliente) 'Creo la instancia del cliente
+		Resultado = soquetCliente
+	FinProc
+	
+	'Cierra el ServidorSoquet
+	Proc cerrar()
+		Si handle = SOCKET_ERROR Entonces Salir
+		closesocket(handle)
+		handle = SOCKET_ERROR
+	FinProc
+
+FinClase
+</Contenido></Datos>

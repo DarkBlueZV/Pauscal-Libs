@@ -1,0 +1,25 @@
+<Datos><Nombre></Nombre><Icono>AA==</Icono><Version><Mayor>0</Mayor><Menor>0</Menor><Revision>0</Revision><AutoIncr>0</AutoIncr></Version><Info/><Contenido>Importar "Cadena.prp"
+Importar "ConstIpaError.prp"
+
+Clase PscB$FAsqueda
+
+	'Devuelve el contenido (archivos y carpetas) de una carpeta
+	Proc Contenido(ruta:Cadena):Cadena[]
+		Var data:WIN32_FIND_DATA
+		Var handle:Entero
+		Var cnt:Entero
+		
+		Si DerechaCad(ruta, 1) = "\" Entonces ruta = ruta + "*"
+		handle = FindFirstFile(ruta, data)
+		Si handle = 0 Entonces GenerarError 0
+		Mientras FindNextFile(handle, data) &lt;&gt; Falso
+			
+			Redim Preservar Resultado, cnt + 1
+			Resultado[cnt] = CadDePtr(data.cFileName[0]@)
+			cnt = cnt + 1
+		FinMientras
+		
+	FinProc
+
+FinClase
+</Contenido></Datos>

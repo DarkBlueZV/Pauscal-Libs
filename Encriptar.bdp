@@ -1,0 +1,79 @@
+<Datos><Nombre></Nombre><Icono>AA==</Icono><Version><Mayor>0</Mayor><Menor>0</Menor><Revision>0</Revision><AutoIncr>0</AutoIncr></Version><Info/><Contenido>Importar "Cadena.prp"
+
+Privado:
+	'Proc ROT13Encrypt(sData:Cadena):Cadena
+	'	Var Result:Cadena,iTemp:Entero
+	'	Contar iTemp = 1 a CadLong(sData)
+	'	Result = Result + Carac(Ascii(ParteCad(sData,iTemp,1)) + 13)
+	'	Seguir
+	'	Devolver Result
+	'FinProc
+
+	'Proc ROT13Decrypt(sData:Cadena):Cadena
+	'	Var Result:Cadena,iTemp:Entero
+	'	Contar iTemp = 1 a CadLong(sData)
+	'	Result = Result + Carac(Ascii(ParteCad(sData,iTemp,1)) - 13)
+	'	Seguir
+	'	Devolver Result
+	'FinProc
+
+	Proc ROTNEncrypt(sData:Cadena,sValue:Entero):Cadena ' Encriptador Rot Numero. 
+		Var Result:Cadena,iTemp:Entero
+		Contar iTemp = 1 a CadLong(sData)
+		Result = Result + Carac(Ascii(ParteCad(sData,iTemp,1)) + sValue)
+		Seguir
+		Devolver Result
+	FinProc
+
+	Proc ROTNDecrypt(sData:Cadena,sValue:Entero):Cadena ' Des-Encriptador Rot Numero.
+		Var Result:Cadena,iTemp:Entero
+		Contar iTemp = 1 a CadLong(sData)
+		Result = Result + Carac(Ascii(ParteCad(sData,iTemp,1)) - sValue)
+		Seguir
+		Devolver Result
+	FinProc
+	
+	Proc BrainFuck_LetraACode(Referencia Caracter:Cadena):Cadena
+		Var i:Entero,Cad:Cadena
+		Cad = RepCarac("+",Ascii(Caracter))
+		Devolver (Cad + ".&gt;")
+	FinProc
+
+P$FAblico:
+
+Proc CadXor(Referencia Cadena1:Cadena):Cadena
+	Var Kod,X2:Cadena
+	Var X3:Entero
+	Contar X3 = 1 a CadLong(Cadena1)
+	X2 = ParteCad(Cadena1,X3,1)
+	Kod = Kod + Carac(ASCII(X2) Xor 255)
+	Seguir
+	Devolver Kod
+FinProc
+
+'Proc CadROT13(Referencia sData:Cadena,Opcional Encriptar:Booleano = Verd):Cadena
+'	Devolver &gt;Encriptar?ROT13Encrypt(sData):ROT13Decrypt(sData)
+'FinProc
+
+Proc CadROTN(Referencia sData:Cadena,Valor:Entero,Opcional Encriptar:Booleano = Verd):Cadena
+	Devolver &gt;Encriptar?ROTNEncrypt(sData,Valor):ROTNDecrypt(sData,Valor)
+FinProc
+
+Proc BrainFuck_TextoACode(Referencia Texto:Cadena):Cadena
+Var Letra,Cad:Cadena,Contador:Entero
+Contar Contador = 1 a CadLong(Texto)
+	Letra = ParteCad(Texto,Contador,1)
+	Cad = Cad  + BrainFuck_LetraACode(Letra)
+Seguir
+	Devolver Cad
+FinProc
+
+Proc BrainFuck_CodeATexto(Referencia Code:Cadena):Cadena
+	Var Matriz[]:Cadena,i:Entero
+	Matriz = Separar(Code,".&gt;")
+	Resultado = ""
+	Contar i = 0 a L$EDmite(Matriz)
+		Resultado = Resultado + Carac(CadLong(Matriz[i]))
+	Seguir
+FinProc
+</Contenido></Datos>

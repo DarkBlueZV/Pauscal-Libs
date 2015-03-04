@@ -1,0 +1,92 @@
+<Datos><Nombre></Nombre><Icono>AA==</Icono><Version><Mayor>0</Mayor><Menor>0</Menor><Revision>0</Revision><AutoIncr>0</AutoIncr></Version><Info/><Contenido>$24ADV-
+$24EBC-
+
+'Importar "DeclareW.prp"
+'Importar "Declare.prp"
+Importar "WinCtrls.prp"
+
+Privado:
+
+Proc pscTimerProc(hWnd,uMsg,idEvent,dwTime:Entero)
+  Var Obj:pscTemporizador
+
+  Obj=EnteroToControl(GetProp(hWnd,"timer"+EntCad(idEvent)))
+  Si (Obj.Eventos.AlTranscurrirIntervalo@)
+    Si (Obj.Bloquear) Obj.Habilitado = Falso
+    Obj.Eventos.AlTranscurrirIntervalo()
+    Si (Obj.Bloquear) Obj.Habilitado = Verd
+  FinSi
+FinProc
+
+Var iTmrCnt:Entero
+
+P$FAblico:
+
+Clase pscTemporizador(pscControl), _
+  iIntervalo,hTimer,iObjNum,iParentHwnd:Entero, _
+  iHabilitado,iBloquear:Booleano
+
+  ClaseVar Eventos:PSCTEMPORIZADOR_EVENTINFO
+
+Privado:
+  'procs privados
+  Proc SetIntervalo(Valor:Entero)
+    Var Hab:Booleano
+
+    Si (Valor = iIntervalo) Salir
+    Hab = iHabilitado
+    Habilitado = Falso
+    iIntervalo = Valor
+    Habilitado = Hab
+  FinProc
+  Proc SetHabilitado(Valor:Booleano)
+    Si (Valor = iHabilitado) Salir
+    iHabilitado = Valor
+    Si (iParentHwnd)
+      Si (Valor)
+        Si (hTimer) KillTimer(iParentHwnd,hTimer)
+        Si (iIntervalo)
+          hTimer = SetTimer(iParentHwnd,iObjNum,iIntervalo,pscTimerProc@)
+        SiNo
+          hTimer = 0
+        FinSi
+      SiNo
+        Si (hTimer)
+          KillTimer(iParentHwnd,hTimer)
+          hTimer = 0
+        FinSi
+      FinSi
+    FinSi
+  FinProc
+P$FAblico:
+  'props p$FAblicos
+  Prop Habilitado:Booleano
+    Lec:iHabilitado
+    Esc:SetHabilitado
+  FinProp
+  Prop Intervalo:Entero
+    Lec:iIntervalo
+    Esc:SetIntervalo
+  FinProp
+  Prop Bloquear:Booleano
+    Lec:iBloquear
+    Esc:iBloquear
+  FinProp
+  'proc p$FAblicos
+  Proc CargarTemporizador(HwndParent:Entero)
+    iParentHwnd = HwndParent
+    iTmrCnt = iTmrCnt + 1
+    iObjNum = iTmrCnt
+    SetProp(HwndParent,"timer" + EntCad(iObjNum),ObjPtr())
+    Si (iHabilitado) y (iIntervalo&lt;&gt;0)
+      hTimer = SetTimer(iParentHwnd,iObjNum,iIntervalo,pscTimerProc@)
+    FinSi
+  FinProc
+  Proc DescargarTemporizador
+    Habilitado = Falso
+  FinProc
+  'extra
+Privado:
+  Destructor:DescargarTemporizador
+FinClase
+</Contenido></Datos>

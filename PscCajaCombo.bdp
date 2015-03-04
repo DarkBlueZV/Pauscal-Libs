@@ -1,0 +1,183 @@
+<Datos><Nombre></Nombre><Icono>AA==</Icono><Version><Mayor>0</Mayor><Menor>0</Menor><Revision>0</Revision><AutoIncr>0</AutoIncr></Version><Info/><Contenido>$24ADV-
+$24EBC-
+
+'Importar "DeclareW.prp"
+'Importar "Declare.prp"
+'Importar "Utiles.prp"
+Importar "WinCtrls.prp"
+
+Privado:
+
+Proc pscCajaCombo_wndproc(hWnd,Msg,wParam,lParam:Entero):Entero
+  Var @Eventos:PSCCAJACOMBO_EVENTINFO
+  Var Rc:RECT
+
+  Eventos@=GetProp(hWnd,"EVENT")
+  Si (Eventos@)
+    Seleccionar Msg
+      Caso WM_LBUTTONDOWN,WM_RBUTTONDOWN,WM_MBUTTONDOWN
+        Si (Eventos.AlApretarBotonMouse@) Eventos.AlApretarBotonMouse( &gt;Msg=WM_LBUTTONDOWN?1:(&gt;Msg=WM_RBUTTONDOWN?2:3) ,wParam,LoWord(lParam),HiWord(lParam))
+      Caso WM_LBUTTONUP,WM_RBUTTONUP,WM_MBUTTONUP
+        Si (Eventos.AlSoltarBotonMouse@) Eventos.AlSoltarBotonMouse( &gt;Msg=WM_LBUTTONUP?1:(&gt;Msg=WM_RBUTTONUP?2:3),wParam,LoWord(lParam),HiWord(lParam))
+      Caso WM_LBUTTONDBLCLK,WM_RBUTTONDBLCLK,WM_MBUTTONDBLCLK
+        Si (Eventos.AlSoltarBotonMouse@) Eventos.AlSoltarBotonMouse( &gt;Msg=WM_LBUTTONDBLCLK?1:(&gt;Msg=WM_RBUTTONDBLCLK?2:3),wParam,LoWord(lParam),HiWord(lParam))
+      Caso WM_MOUSEMOVE
+        Si (Eventos.AlMoverMouse@) Eventos.AlMoverMouse(wParam,LoWord(lParam),HiWord(lParam))
+      Caso WM_KEYDOWN
+        Si (Eventos.AlApretarTecla@&lt;&gt;0) And (lParam And &amp;40000000=0) Eventos.AlApretarTecla(wParam)
+        Si (Eventos.AlTeclear@) Eventos.AlTeclear(wParam)
+      Caso WM_KEYUP
+        Si (Eventos.AlSoltarTecla@) Eventos.AlSoltarTecla(wParam)
+      Caso WM_USER
+        Seleccionar wParam
+          Caso CBN_SELCHANGE
+            Si (Eventos.AlSeleccionar@) Eventos.AlSeleccionar
+          Caso CBN_EDITCHANGE
+            Si (Eventos.AlCambiar@) Eventos.AlCambiar
+          Caso CBN_DBLCLK
+            Si (Eventos.AlDobleCliquear@) Eventos.AlDobleCliquear
+          Caso CBN_DROPDOWN
+            Si (Eventos.AlAparecerLista@) Eventos.AlAparecerLista
+          Caso CBN_CLOSEUP
+            Si (Eventos.AlCerrarLista@) Eventos.AlCerrarLista
+        FinSeleccionar
+        Salir
+      Caso CB_SETCURSEL
+        Si (Eventos.AlSeleccionar@) Eventos.AlSeleccionar
+    FinSeleccionar
+  FinSi
+  Resultado=CallWindowProc(GetProp(hWnd,"PREVHWND"),hWnd,Msg,wParam,lParam)
+FinProc
+
+Proc pscCajaCombo_evCambiar(hWnd,Pos:EnteroSig)
+  Var TempObj:pscCajaCombo
+  TempObj=EnteroToControl(GetProp(hWnd,"THIS"))
+  TempObj.evCambiar(Pos)
+FinProc
+
+Proc pscCajaCombo_evAdd(hWnd,Pos:EnteroSig)
+  Var TempObj:pscCajaCombo
+  TempObj=EnteroToControl(GetProp(hWnd,"THIS"))
+  TempObj.evAdd(Pos)
+FinProc
+
+Proc pscCajaCombo_evDel(hWnd,Pos:EnteroSig)
+  Var TempObj:pscCajaCombo
+  TempObj=EnteroToControl(GetProp(hWnd,"THIS"))
+  TempObj.evDel(Pos)
+FinProc
+
+P$FAblico:
+
+Clase pscCajaCombo(pscTextControl), _
+  ObjNum,iStyle:Entero, _
+  iSrt:Booleano
+
+  ClaseVar Items:pscCadenas
+  ClaseVar Eventos:PSCCAJACOMBO_EVENTINFO
+
+Privado:
+  'procs privados
+  Proc GetSel:EnteroSig
+    Si (ObjHwnd)
+      Devolver SendMessage(ObjHwnd,CB_GETCURSEL,0,0)
+    SiNo
+      Devolver -1
+    FinSi
+  FinProc
+  Proc SetSel(Valor:EnteroSig)
+    Si (ObjHwnd) SendMessage(ObjHwnd,CB_SETCURSEL,Valor,1)
+  FinProc
+  Proc GetEstilo:Entero
+    Resultado=iStyle '0: drop down; 1: simple; 2: drop list
+  FinProc
+  Proc SetEstilo(Valor:Entero)
+    Si (ObjHwnd) GenerarError errOpImposible
+    iStyle=Valor
+  FinProc
+  Proc GetSrt:Booleano
+    Resultado=iSrt
+  FinProc
+  Proc SetSrt(Valor:Booleano)
+    Si (ObjHwnd) GenerarError errOpImposible
+    iSrt=Valor
+  FinProc
+P$FAblico:
+  'props p$FAblicos
+  'Prop Eventos,Events
+  'Prop Items,Lns
+  Prop ItemSeleccionado:EnteroSig
+    Lec:GetSel
+    Esc:SetSel
+  FinProp
+  Prop Estilo:Entero
+    Lec:GetEstilo
+    Esc:SetEstilo
+  FinProp
+  Prop Ordenado:Booleano
+    Lec:GetSrt
+    Esc:SetSrt
+  FinProp
+  'proc p$FAblicos
+  Proc evCambiar(Pos:EnteroSig)
+    Var i:Entero
+    Var Act:EnteroSig
+    Var Str:Cadena
+    Act=ItemSeleccionado
+    SendMessage(ObjHwnd,CB_RESETCONTENT,0,0)
+    Contar i=1 a Items.Cantidad
+      Str=Items.Item(i-1)
+      SendMessage(ObjHwnd,CB_ADDSTRING,0,CadPtr(Str))
+      SendMessage(ObjHwnd,CB_SETITEMDATA,0,Items.Dato(i-1))
+    Seguir
+    ItemSeleccionado=Act
+  FinProc
+  Proc evAdd(Pos:EnteroSig)
+    Var Str:Cadena
+    Str=Items.Item(Pos)
+    SendMessage(ObjHwnd,CB_ADDSTRING,0,CadPtr(Str))
+  FinProc
+  Proc evDel(Pos:EnteroSig)
+    SendMessage(ObjHwnd,CB_DELETESTRING,Pos,0)
+  FinProc
+  Proc CargarCajaCombo(HwndParent:Entero)
+    Var Nomb:Cadena
+    Si (ObjHwnd) Salir
+    Nomb="COMBOBOX"
+    ObjHwnd=CreateWindowEx(WS_EX_CLIENTEDGE,Nomb,Nulo,WS_VSCROLL+CBS_AUTOHSCROLL+WS_CLIPSIBLINGS+WS_CHILD+WS_TABSTOP+WS_BORDER+(&gt;Habil?0:WS_DISABLED)+ _
+                          (&gt;iSrt?CBS_SORT:0)+(&gt;iStyle=0?CBS_DROPDOWN:(&gt;iStyle=1?CBS_SIMPLE:CBS_DROPDOWNLIST))+(&gt;Visib?WS_VISIBLE:0),Coords.x,Coords.y, + _
+                          Coords.Width,Coords.Height,HwndParent,0,Programa.hInstance,Nulo)
+    Si (ObjHwnd=0) GenerarError errFalloWinCtrls
+    Fuente.InsertarFuente(ObjHwnd)
+    Items.Hwnd=ObjHwnd
+    SetProp(ObjHwnd,"THIS",ObjPtr())
+    SetProp(ObjHwnd,"EVENT",Eventos@)
+    SetProp(ObjHwnd,"PREVHWND",SetWindowLong(ObjHwnd,GWL_WNDPROC,pscCajaCombo_wndproc@))
+    SetColor(Col,0)
+    ObtenerDC
+    UpdateWindow(ObjHwnd)
+  FinProc
+  Proc DescargarCajaCombo
+    Si (ObjHwnd=0) Salir
+    DestroyWindow(ObjHwnd)
+    ObjHwnd=0
+  FinProc
+  'extra
+Privado:
+  Proc Inicializar
+    Alto=200
+    Ancho=100
+    Color=COLOR_BTNFACE+&amp;1000000
+    Habilitado=Verd
+    Visible=Verd
+    Crear Items
+    Eval Items.Eventos
+      .AlCambiar@=pscCajaCombo_evCambiar@
+      .AlAgregar@=pscCajaCombo_evAdd@
+      .AlQuitar@=pscCajaCombo_evDel@
+    FinEval
+  FinProc
+  Constructor:Inicializar
+  Destructor:DescargarCajaCombo
+FinClase
+</Contenido></Datos>

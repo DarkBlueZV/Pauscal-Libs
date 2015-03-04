@@ -1,0 +1,471 @@
+<Datos><Nombre></Nombre><Icono>AA==</Icono><Version><Mayor>0</Mayor><Menor>0</Menor><Revision>0</Revision><AutoIncr>0</AutoIncr></Version><Info/><Contenido>Importar "Cadena.prp"
+
+$24ADV-
+$24EBC-
+$24CED-
+
+Clase pscClip
+  'Procs privados
+Privado:
+  Proc GetTexto():Cadena
+    Var hMem,Ptr:Entero, Temp:Cadena
+    Si (Neg OpenClipboard(0)) GenerarError errErrorEnPortapapeles
+    hMem=GetClipboardData(CF_TEXT)
+    Si (hMem=0) Salir
+    Ptr=GlobalLock(hMem)
+    Temp=Espacio(BuffLen(Ptr))
+    CopyBuffToStr(Temp,Ptr)
+    Resultado=Temp
+    GlobalUnlock(Ptr)
+    Si (Neg CloseClipboard) GenerarError errErrorEnPortapapeles
+  FinProc
+  Proc SetTexto(Val:Cadena)
+    Var hMem,Length,Ptr:Entero
+    Si (Neg OpenClipboard(0)) GenerarError errErrorEnPortapapeles
+    Length=CadLong(Val)+2
+    hMem=GlobalAlloc(GMEM_MOVEABLE,Length)
+    Ptr=GlobalLock(hMem)
+    CopyStrToBuff(Ptr,Val)
+    SetClipboardData(CF_TEXT,hMem)
+    GlobalUnlock(Ptr)
+    Si (Neg CloseClipboard) GenerarError errErrorEnPortapapeles
+  FinProc
+P$FAblico:
+  'Procs p$FAblicos
+  Proc Vaciar:Booleano
+    Si (Neg OpenClipboard(0)) GenerarError errErrorEnPortapapeles
+    Devolver EmptyClipboard()
+    Si (Neg CloseClipboard) GenerarError errErrorEnPortapapeles
+  FinProc
+  Proc EsValido(Formato:Entero):Booleano
+    Devolver IsClipboardFormatAvailable(Formato)
+  FinProc
+  'Props p$FAblicos
+  Prop Texto:Cadena
+    Lec:GetTexto
+    Esc:SetTexto
+  FinProp
+FinClase
+
+Clase pscArchivo, _
+  Handle:Entero
+
+P$FAblico:
+  ClaseVar Nombre:Cadena
+
+  'Procs privados
+Privado:
+  Proc Finalizar
+    Si (Handle&lt;&gt;0) CloseHandle(Handle)
+  FinProc
+  Proc GetPos():Entero
+    Resultado=SetFilePointer(Handle,0,Nulo,FILE_CURRENT)
+    Si (Resultado=-1) GenerarError errErrorEnArchivo
+  FinProc
+  Proc SetPos(Val:Entero)
+    Si (SetFilePointer(Handle, Val, Nulo, FILE_BEGIN) = -1) GenerarError errErrorEnArchivo
+  FinProc
+  Proc GetLength():Entero
+    Resultado = GetFileSize(Handle, Nulo)
+    Si (Resultado = -1) GenerarError errErrorEnArchivo
+  FinProc
+  Proc SetLength(Val:Entero)
+    SetPos(Val)
+    Si (Neg SetEndOfFile(Handle)) GenerarError errErrorEnArchivo
+  FinProc
+  Proc GetAbierto():Booleano
+    Resultado=Handle
+  FinProc
+  Destructor:Finalizar
+  'Procs p$FAblicos
+P$FAblico:
+  Proc Cerrar()
+    Si (Handle)
+      CloseHandle(Handle)
+      Handle = 0
+    FinSi
+  FinProc
+  Proc Abrir(Opcional bCrear:Booleano)
+    Si (Handle) Cerrar()
+    Handle = CreateFile(Nombre, GENERIC_READ Or GENERIC_WRITE, FILE_SHARE_READ Or FILE_SHARE_WRITE, Nulo, &gt;bCrear?OPEN_ALWAYS:OPEN_EXISTING, 0, 0)
+    Si (Handle = INVALID_HANDLE) GenerarError errErrorEnArchivo
+  FinProc
+  Proc CrearNuevo(Opcional bBorrar:Booleano)
+    Si (Handle) Cerrar()
+    Handle = CreateFile(Nombre, GENERIC_READ Or GENERIC_WRITE, FILE_SHARE_READ, Nulo, &gt;bBorrar?CREATE_ALWAYS:CREATE_NEW, 0, 0)
+    Si (Handle = INVALID_HANDLE) GenerarError errErrorEnArchivo
+  FinProc
+  Proc Leer(BuffPtr,Longitud:Entero):Entero
+    Var Temp:Entero
+    Si (Longitud=0) Salir
+    Si (Neg ReadFile(Handle, BuffPtr, Longitud, Temp, Nulo)) GenerarError errErrorEnArchivo
+    Devolver Temp
+  FinProc
+  Proc LeerCad(Longitud:Entero):Cadena
+    Var Temp:Cadena
+    Si (Longitud=0) Salir
+    Temp=Espacio(Longitud)
+    Leer(CadPtr(Temp),Longitud)
+    Resultado=Temp
+  FinProc
+  Proc LeerEnt():Entero
+    Var Temp:Entero
+    Leer(Temp@,Long(Temp))
+    Resultado=Temp
+  FinProc
+  Proc LeerReal():Real
+    Var Temp:Real
+    Leer(Temp@,Long(Temp))
+    Resultado=Temp
+  FinProc
+  Proc LeerL$EDnea:Cadena
+    Var Char:Byte
+    Repetir
+      Si (Leer(Char@,1)&lt;&gt;1) Salir
+      Seleccionar Char
+        Caso 13
+          Si (Leer(Char@,1)&lt;&gt;1) Salir
+          Si (Char=10) Salir
+        Caso 10
+          Salir
+      FinSeleccionar
+      Resultado=Resultado+Carac(Char)
+    PorSiempre
+  FinProc
+  Proc Escribir(BuffPtr,Longitud:Entero):Entero
+    Var Temp:Entero
+    Si (Neg WriteFile(Handle, BuffPtr, Longitud, Temp, Nulo)) GenerarError errErrorEnArchivo
+    Devolver Temp
+  FinProc
+  Proc EscribirCad(Texto:Cadena)
+    Var LenTxt:Entero
+    LenTxt=CadLong(Texto)
+    Si (LenTxt) Escribir(CadPtr(Texto),LenTxt)
+  FinProc
+  Proc EscribirEnt(Num:Entero)
+    Escribir(Num@,Long(Num))
+  FinProc
+  Proc EscribirReal(Num:Real)
+    Escribir(Num@,Long(Num))
+  FinProc
+  Proc EscribirL$EDnea(Texto:Cadena)
+    EscribirCad(Texto+CrLf)
+  FinProc
+  Proc FinDeArchivo:Booleano
+    Si (Handle) Resultado=Posici$F3n=Tama$F1o
+  FinProc
+  'Props p$FAblicos
+  Prop Posici$F3n:Entero
+    Lec:GetPos
+    Esc:SetPos
+  FinProp
+  Prop Tama$F1o:Entero
+    Lec:GetLength
+    Esc:SetLength
+  FinProp
+  Prop Abierto:Booleano
+    Lec:GetAbierto
+  FinProp
+FinClase
+
+Clase pscDialogo, _
+  iFiltro,iTitle,iDir:Cadena, _
+  TempBuff: OPENFILENAME, _
+  iArchivos[]:Cadena, _
+  iMulti,iOvrWrt,iFileMustExist:Booleano
+
+'Const MAXFILENAME = MAX_PATH * 3
+
+  'Procs privados
+Privado:
+  Proc ArreglarRutas
+    Var i:Entero
+    Si (DerechaCad(iArchivos[0],1)&lt;&gt;"\") iArchivos[0]=iArchivos[0]+"\"
+    Contar i=1 a L$EDmite(iArchivos)
+      iArchivos[i]=iArchivos[0]+iArchivos[i]
+    Seguir
+  FinProc
+  Proc SepararArchivos(Ret:Booleano)
+    Var Temp:Cadena,Pos:Entero
+    Si (Ret)
+      Si (iMulti)
+        Pos = BuscarEnCad(TempBuff.lpstrFile,Null+Null)
+        Si (Pos) Temp = ParteCad(TempBuff.lpstrFile,1,Pos-1); SiNo; Temp = TempBuff.lpstrFile
+        iArchivos = Separar(Temp,Null)
+        Si (L$EDmite(iArchivos)=0)
+          Redim Preservar iArchivos,2
+          iArchivos[1]=iArchivos[0]
+        SiNo
+          ArreglarRutas()
+        FinSi
+      SiNo
+        Redim iArchivos,2
+        iArchivos[1] = TruncarCadena(TempBuff.lpstrFile)
+      FinSi
+    SiNo
+      Redim iArchivos,2
+    FinSi
+  FinProc
+  Proc Init()
+    Eval TempBuff
+      .lStructSize=Long(TempBuff)
+      .lpstrFile=Espacio(MAXFILENAME)
+      .nMaxFile=MAXFILENAME
+      .lpstrFilter=Espacio(MAX_PATH)
+      .flags=OFN_NOCHANGEDIR Or OFN_EXPLORER
+    FinEval
+    Redim iArchivos,2
+  FinProc
+  Proc SetFiltro(Val:Cadena)
+    iFiltro=Val
+    TempBuff.lpstrFilter=Reemplazar(IzquierdaCad(Val+Espacio(MAX_PATH),MAX_PATH),"|",Null)+Null+Null
+  FinProc
+  Proc SetTit(Val:Cadena)
+    iTitle=Val
+    TempBuff.lpstrTitle=Val
+  FinProc
+  Proc GetArchivo():Cadena
+    Resultado = iArchivos[1]
+  FinProc
+  Proc SetArchivo(Val:Cadena)
+    Redim iArchivos,2
+    iArchivos[1] = Val
+    TempBuff.lpstrFile=IzquierdaCad(Val+Espacio(MAXFILENAME),MAXFILENAME)
+  FinProc
+  Proc GetArchivos(Indice:Entero):Cadena
+    Si ((Indice&lt;1) Or (Indice &gt; L$EDmite(iArchivos))) GenerarError errParamInv
+    Resultado = iArchivos[Indice]
+  FinProc
+  Proc GetCantArchivos:Entero
+    Resultado = &gt; (iMulti) ? (L$EDmite(iArchivos)) : (1)
+  FinProc
+  Proc GetFlag():Entero
+    Resultado=TempBuff.flags
+  FinProc
+  Proc SetFlag(Val:Entero)
+    TempBuff.flags=Val
+  FinProc
+  Proc SetMulti(Val:Booleano)
+    Si (Val = iMulti) Salir
+    iMulti = Val
+    Eval TempBuff
+      Si (Val)
+        .flags = .flags Or OFN_ALLOWMULTISELECT
+      SiNo
+        .flags = .flags And (Not OFN_ALLOWMULTISELECT)
+      FinSi
+    FinEval
+  FinProc
+  Proc SetOverwritePrompt(Val:Booleano)
+    Si (Val = iOvrWrt) Salir
+    iOvrWrt = Val
+    Eval TempBuff
+      Si (Val)
+        .flags = .flags Or OFN_OVERWRITEPROMPT
+      SiNo
+        .flags = .flags And (Not OFN_OVERWRITEPROMPT)
+      FinSi
+    FinEval
+  FinProc
+  Proc SetFileMustExist(Val:Booleano)
+    Si (Val = iFileMustExist) Salir
+    iFileMustExist = Val
+    Eval TempBuff
+      Si (Val)
+        .flags = .flags Or OFN_FILEMUSTEXIST
+      SiNo
+        .flags = .flags And (Not OFN_FILEMUSTEXIST)
+      FinSi
+    FinEval
+  FinProc
+  Proc SetDir(Val:Cadena)
+    iDir=Val
+    TempBuff.lpstrInitialDir=Val
+  FinProc
+  Proc GetArchSolo():Cadena
+    Var Longit:Entero, Arch:Cadena
+    Eval TempBuff
+      Arch=TruncarCadena(.lpstrFile)
+      Longit=CadLong(Arch)
+      Si (Longit&lt;&gt;0) And (.nFileOffset&lt;&gt;0) Resultado=DerechaCad(Arch,Longit-.nFileOffset)
+    FinEval
+  FinProc
+  Constructor:Init
+  'Procs p$FAblicos
+P$FAblico:
+  Proc MostrarAbrir():Booleano
+    Resultado=GetOpenFileName(TempBuff)
+    SepararArchivos(Resultado)
+  FinProc
+  Proc MostrarGuardar():Booleano
+    Resultado=GetSaveFileName(TempBuff)
+    SepararArchivos(Resultado)
+  FinProc
+  'Props p$FAblicos
+  Prop Filtro:Cadena
+    Lec:iFiltro
+    Esc:SetFiltro
+  FinProp
+  Prop T$EDtulo:Cadena
+    Lec:iTitle
+    Esc:SetTit
+  FinProp
+  Prop Archivos:Cadena
+    Lec:GetArchivos
+  FinProp
+  Prop CantidadArchivos:Entero
+    Lec:GetCantArchivos
+  FinProp
+  Prop Archivo:Cadena
+    Lec:GetArchivo
+    Esc:SetArchivo
+  FinProp
+  Prop ArchivoSolo:Cadena
+    Lec:GetArchSolo
+  FinProp
+  Prop Flags:Entero
+    Lec:GetFlag
+    Esc:SetFlag
+  FinProp
+  Prop DirectorioInicial:Cadena
+    Lec:iDir
+    Esc:SetDir
+  FinProp
+  Prop M$FAltipleSelecci$F3n:Booleano
+    Lec:iMulti
+    Esc:SetMulti
+  FinProp
+  Prop AdvertenciaSobreescritura:Booleano
+    Lec:iOvrWrt
+    Esc:SetOverwritePrompt
+  FinProp
+  Prop ArchivoDebeExistir:Booleano
+    Lec:iFileMustExist
+    Esc:SetFileMustExist
+  FinProp
+FinClase
+
+Clase pscThread, _
+  hThread,IdBuff:Entero, _
+  Susp,Ejec:Booleano, _
+  Info:ThreadData
+
+P$FAblico:
+  ClaseVar Direcci$F3n:Entero
+
+  'Procs privados
+Privado:
+  Proc GetPrior():Entero
+    Resultado=GetThreadPriority(hThread)
+  FinProc
+  Proc SetPrior(Valor:Entero)
+    SetThreadPriority(hThread,Valor)
+  FinProc
+  Proc GetSusp():Booleano
+    Resultado=Susp
+  FinProc
+  Proc SetSusp(Valor:Booleano)
+    Si (Susp=Valor) Salir
+    Susp=Valor
+    Si (Ejec)
+      Si (Susp)
+        SuspendThread(hThread)
+      SiNo
+        ResumeThread(hThread)
+      FinSi
+    FinSi
+  FinProc
+  Proc GetAct():Booleano
+    Resultado=Ejec
+  FinProc
+  Proc GetThrId():Entero
+    Resultado=IdBuff
+  FinProc
+P$FAblico:
+  'Props p$FAblicos
+  Prop ThreadId:Entero
+    Lec:GetThrId
+  FinProp
+  Prop Activo:Booleano
+    Lec:GetAct
+  FinProp
+  Prop Suspendido:Booleano
+    Lec:GetSusp
+    Esc:SetSusp
+  FinProp
+  Prop Prioridad:Entero
+    Lec:GetPrior
+    Esc:SetPrior
+  FinProp
+  'Procs p$FAblicos
+  Proc Iniciar():Booleano
+    Var flgs:Entero
+    Si (Ejec) Salir
+    Si (Susp) flgs=CREATE_SUSPENDED
+    Info.tdDir@=Direcci$F3n
+    Info.tdActivo@=Ejec@
+    hThread=CreateThread(Nulo,0,pscThreadAuxiliar@,Info@,flgs,IdBuff)
+    Si (hThread=0) Salir
+    Ejec=Verd
+    Resultado=Verd
+  FinProc
+  Proc Terminar
+    Si (Neg Ejec) Salir
+    Si TerminateThread(hThread,0)
+      Ejec=Falso
+      IdBuff=0
+    FinSi
+  FinProc
+  Destructor:Terminar
+FinClase
+
+Proc SimplificarRuta(Ruta:Cadena):Cadena
+  Var Pos:Entero
+
+  Pos=BuscarEnCadInv(Ruta,"\")
+  Si (Pos) Resultado=ParteCad(Ruta,Pos+1,CadLong(Ruta)); SiNo; Resultado=Ruta
+FinProc
+
+Proc ExisteArchivo(Arch:Cadena):Booleano
+  Var Temp:pscArchivo
+
+  AdmErr
+    Crear Temp
+    Temp.Nombre=Arch
+    Temp.Abrir
+    Resultado=Verd
+  Finalmente
+    Temp.Cerrar
+  FinAdmErr
+FinProc
+
+Proc BorrarArchivo(Arch:Cadena)
+  Si (Neg DeleteFile(Arch)) GenerarError errParamInv
+FinProc
+
+Proc QuitarExtensi$F3n(Arch:Cadena):Cadena
+  Var Pos:Entero
+
+  Pos=BuscarEnCadInv(Arch,".")
+  Si (Pos=0)
+    Resultado=Arch
+  SiNo
+    Resultado=IzquierdaCad(Arch,Pos-1)
+  FinSi
+FinProc
+
+'Var Archivo:pscArchivo
+'Var Portapapeles:PscClip
+'Funciones privadas
+
+Privado:
+
+Proc pscThreadAuxiliar(Referencia Info:ThreadData):Entero
+  Info.tdDir
+  Info.tdActivo=Falso
+FinProc
+
+'Proc CopyStrToBuff(lpDst:Entero,Referencia lpStr:Cadena):Entero, "Kernel32" "lstrcpy"
+'Proc CopyBuffToStr(Referencia lpDst:Cadena,lpSrc:Entero):Entero, "Kernel32" "lstrcpy"
+'Proc BuffLen(lpBuff:Entero):Entero,"Kernel32" "lstrlen"
+</Contenido></Datos>

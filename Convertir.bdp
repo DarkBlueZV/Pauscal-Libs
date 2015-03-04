@@ -1,0 +1,121 @@
+<Datos><Nombre></Nombre><Icono>AA==</Icono><Version><Mayor>0</Mayor><Menor>0</Menor><Revision>0</Revision><AutoIncr>0</AutoIncr></Version><Info/><Contenido>Importar "Cadena.prp"
+
+Proc EntHex(lNum:Entero,Opcional RellenarConCeros:Booleano):Cadena
+  Var Digit,i:Byte
+  Contar i=1 a 8
+    Si (lNum=0) And (RellenarConCeros=Falso) Salir
+    Digit=lNum And &amp;0F
+    Resultado=Carac(&gt;Digit&lt;10?Digit+48:Digit+55)+Resultado
+    lNum=lNum shr 4
+  Seguir
+FinProc
+
+Proc RealDec2(Referencia nro:Real):Decimal
+   VarCyFromR8(nro, Resultado)
+FinProc
+
+Proc CadDec2(Referencia txt:Cadena):Decimal
+   Resultado = RealDec2(CadReal(txt))
+FinProc
+
+Proc DecCad2(Referencia nro:Decimal):Cadena
+   Resultado = RealCad(DecReal(nro))
+FinProc
+
+Proc EntDec(Referencia nro:EnteroSig):Decimal
+   Var @temp:EnteroSig
+   temp@ = Resultado@
+   temp = nro
+   Resultado = Resultado * 10000
+FinProc
+
+Proc DecEnt(Referencia nro:Decimal):EnteroSig
+   Var @temp:Decimal
+   Var da[]:EnteroSig
+   da=[0,0]
+   temp@ = da[0]@
+   temp = nro/10000
+   Resultado = da[0]
+FinProc
+
+Proc CadEnt(Referencia lpStr:Cadena):EnteroSig
+  Var Temp:Cadena, LenCad:Entero, Num:EnteroSig
+  LenCad=CadLong(lpStr)
+  Temp=Espacio((LenCad+1)*2)
+  MultiByteToWideChar(0,0,lpStr,LenCad,Temp,LenCad*2)
+  Si (VarI4FromStr(Temp,0,0,Num)) Salir
+  Resultado=Num
+FinProc
+
+Proc CadReal2(Referencia lpStr:Cadena):Real
+  Var Temp:Cadena, LenCad:Entero, Num:Real
+  LenCad=CadLong(lpStr)
+  Temp=Espacio((LenCad+1)*2)
+  MultiByteToWideChar(0,0,lpStr,LenCad,Temp,LenCad*2)
+  Si (VarR8FromStr(Temp,0,0,Num)) GenerarError errTipoIncompatible
+  Resultado=Num
+FinProc
+
+Proc RealCad2(Referencia lNum:Real):Cadena
+  Var Temp,Res:Cadena, LenCad:Entero
+  $24CED-
+  VarBstrFromR8(lNum,0,0,Temp)
+  $24CED
+  LenCad=CadLong(Temp)\2
+  Res=Espacio((LenCad+1)*2)
+  WideCharToMultiByte(0,0,Temp,-1,Res,LenCad,Nulo,Nulo)
+  Resultado=Res
+FinProc
+
+'By Yuki!
+Proc WordCad(Number:WordSig):Cadena
+	Devolver UnicodeACad(vbaStrI2(Number))
+FinProc
+'By Yuki!
+Proc EntSCad(Number:EnteroSig):Cadena
+	Devolver UnicodeACad(vbaStrI4(Number))
+FinProc
+'By Yuki!
+Proc DecCad(Number:Decimal):Cadena
+	Devolver UnicodeACad(vbaStrCy(Number))
+FinProc
+'By Yuki!
+Proc RealCad(Number:Real):Cadena
+	Devolver UnicodeACad(vbaStrR8(Number))
+FinProc
+'By Yuki!
+Proc ByteCad(Number:Byte):Cadena
+	Devolver UnicodeACad(vbaStrUI1(Number))
+FinProc
+'By Yuki!
+Proc CADWord(Referencia N$FAmero:Cadena):WordSig
+	Devolver vbaI2Str(CadAUnicode(N$FAmero))
+FinProc
+'By Yuki!
+Proc CADEntS(Referencia N$FAmero:Cadena):EnteroSig
+	Devolver vbaI4Str(CadAUnicode(N$FAmero))
+FinProc
+'By Yuki!
+Proc CADDec(Referencia N$FAmero:Cadena):Decimal
+	Devolver vbaCyStr(CadAUnicode(N$FAmero))
+FinProc
+'By Yuki!
+Proc CADReal(Referencia N$FAmero:Cadena):Real
+	Devolver vbaR8Str(CadAUnicode(N$FAmero))
+FinProc
+'By Yuki!
+Proc CADByte(Referencia N$FAmero:Cadena):Byte
+	Devolver vbaUI1Str(CadAUnicode(N$FAmero))
+FinProc
+
+Proc EntCad(lNum:EnteroSig):Cadena
+  Var Temp,Res:Cadena,LenCad:Entero
+  $24CED-
+  VarBstrFromI4(lNum,0,0,Temp)
+  $24CED
+  LenCad=CadLong(Temp)\2
+  Res=Espacio((LenCad+1)*2)
+  WideCharToMultiByte(0,0,Temp,-1,Res,LenCad,Nulo,Nulo)
+  Resultado=UnicodeACad(Res)
+FinProc
+</Contenido></Datos>

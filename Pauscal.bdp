@@ -1,0 +1,105 @@
+<Datos><Nombre></Nombre><Icono>AA==</Icono><Version><Mayor>0</Mayor><Menor>0</Menor><Revision>0</Revision><AutoIncr>0</AutoIncr></Version><Info/><Contenido>Importar "AutoWindows.prp"
+Importar "B$FAsqueda.prp"
+'Importar "Conversi$F3n.prp"
+Importar "Matrices.prp"
+Importar "Apis.prp"
+Importar "Constantes.prp"
+Importar "Estructuras.prp"
+Importar "Cadena.prp"
+Importar "Dos.prp"
+Importar "Fechas.prp"
+Importar "Graficos.prp"
+Importar "Multimedia.prp"
+Importar "MySQL.prp"
+Importar "Pantalla.prp"
+Importar "Utiles.prp"
+Importar "Rnd.prp"
+Importar "Sockets.prp"
+Importar "Procesos.prp"
+Importar "FTP.prp"
+Importar "Macros.prp"
+Importar "INI.prp"
+Importar "Instancias.prp"
+Importar "Registros.prp"
+Importar "BrainFuck.prp"
+Importar "Archivos.prp"
+Importar "Win.prp"
+
+Var Pauscal:PscPauscal
+Var Portapapeles:PscClip
+Var Dialogo:PscDialogo
+Var BrainFuck:PscBrainFuck
+Var Soquete:Soquet
+Var B$FAsqueda:PscB$FAsqueda
+Var Dos:PscDos
+Var Multimedia:PscMultimedia
+Var Dibujo:PscZonaDibujo
+Var Pantalla:PscPantalla
+Var MySQL:PscMySQL
+Var Instancia:PscMutex
+Var Rutas:PscRutas
+Var Usuario:PscUsuario
+Var Programa:PscProgramaLocal
+Var Sistema:PscSistema
+Var Procesador:PscProcesador
+Var Archivo:PscArchivo
+
+Clase PscPauscal
+	P$FAblico:
+		ClaseVar Portapapeles:PscClip
+		ClaseVar Archivos:PscArchivo
+		'ClaseVar Macros:PscMacros
+		ClaseVar Dialogo:pscDialogo
+		ClaseVar BrainFuck:PscBrainFuck
+		ClaseVar Soquete:Soquet
+		ClaseVar B$FAsqueda:PscB$FAsqueda
+		ClaseVar Dos:pscDos
+		ClaseVar Multimedia:pscMultimedia
+		ClaseVar Dibujo:pscZonaDibujo
+		ClaseVar Pantalla:pscPantalla
+		ClaseVar MySQL:PscMySQL
+		ClaseVar Instancia:PscMutex
+		ClaseVar Rutas:PscRutas
+		ClaseVar Usuario:PscUsuario
+		ClaseVar Programa:PscProgramaLocal
+		ClaseVar Sistema:PscSistema
+		ClaseVar Procesador:PscProcesador
+	Privado:
+		Proc InicioPauscal
+			Crear _
+				Portapapeles,_
+				Archivos,_
+				Dialogo,_
+				BrainFuck,_
+				B$FAsqueda,_
+				Multimedia,_
+				Dibujo,_
+				Pantalla,_
+				Instancia,_
+				Rutas,_
+				Usuario,_
+				Programa, _
+				Sistema, _
+				Procesador
+		FinProc
+		Proc FinPauscal
+			Destruir _
+				Portapapeles,_
+				Archivos,_
+				Dialogo,_
+				BrainFuck,_
+				B$FAsqueda,_
+				Multimedia,_
+				Dibujo,_
+				Pantalla,_
+				Instancia,_
+				Rutas,_
+				Usuario,_
+				Programa, _
+				Sistema, _
+				Procesador
+		FinProc
+		Constructor:InicioPauscal
+		Destructor: FinPauscal
+FinClase
+</Contenido></Datos>

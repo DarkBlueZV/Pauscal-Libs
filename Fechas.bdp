@@ -1,0 +1,115 @@
+<Datos><Nombre></Nombre><Icono>AA==</Icono><Version><Mayor>0</Mayor><Menor>0</Menor><Revision>0</Revision><AutoIncr>0</AutoIncr></Version><Info/><Contenido>'Importar "Cadena.prp"
+Importar "Utiles.prp"
+
+$24ADV-
+$24EBC-
+
+Estruc pscFecha, _
+  Dia, _
+  Mes, _
+  A$F1o, _
+  Hora, _
+  Minutos, _
+  Segundos:Word
+
+Proc DiaDeSemana(Fecha:pscFecha):ByteSig
+  Var Dia,Mes,A$F1o,Sig:Real
+  Var Temp:Cadena
+  Eval Fecha
+    Dia=EntReal(.Dia)
+    Mes=MesEspecial(.Mes)
+    Si (.A$F1o&lt;100)
+      A$F1o=EntReal(.A$F1o)
+    SiNo
+      Temp=EntCad(.A$F1o)
+      A$F1o=CadReal(DerechaCad(Temp,2))
+      Sig=CadReal(IzquierdaCad(Temp,CadLong(Temp)-2))
+    FinSi
+  FinEval
+  Resultado=RealEnt(Dia+TruncReal((13.0*Mes-1.0)/5.0)+A$F1o+TruncReal(A$F1o/4.0)+TruncReal(Sig/4.0)-2*Sig)
+  Resultado=Resultado Mod 7
+  Si (Resultado&lt;0) Resultado=Resultado+7
+FinProc
+
+Proc FechaEnCadena(Fecha:pscFecha,Opcional FechaLarga:Booleano):Cadena
+  Eval Fecha
+    Si (Neg FechaLarga)
+      Resultado=EntCad(.Dia)+"/"+EntCad(.Mes)+"/"+EntCad(.A$F1o)
+    SiNo
+      Resultado=DiaStr(DiaDeSemana(Fecha))+", "+EntCad(.Dia)+" de "+MesStr(.Mes)+" de "+EntCad(.A$F1o)
+    FinSi
+  FinEval
+FinProc
+
+Proc FechaActual:pscFecha
+  Var Temp:SYSTEMTIME
+  GetLocalTime(Temp)
+  Eval Resultado
+    .Dia=Temp.wDay
+    .Mes=Temp.wMonth
+    .A$F1o=Temp.wYear
+    .Hora=Temp.wHour
+    .Minutos=Temp.wMinute
+    .Segundos=Temp.wSecond
+  FinEval
+FinProc
+
+Privado:
+
+Proc MesEspecial(Mes:Entero):Real
+  Resultado=EntReal(Mes)-2
+  Si (Resultado&lt;1) Resultado=Resultado+12
+FinProc
+
+Proc MesStr(Mes:Entero):Cadena
+  Seleccionar Mes
+    Caso 1
+      Resultado="Enero"
+    Caso 2
+      Resultado="Febrero"
+    Caso 3
+      Resultado="Marzo"
+    Caso 4
+      Resultado="Abril"
+    Caso 5
+      Resultado="Mayo"
+    Caso 6
+      Resultado="Junio"
+    Caso 7
+      Resultado="Julio"
+    Caso 8
+      Resultado="Agosto"
+    Caso 9
+      Resultado="Septiembre"
+    Caso 10
+      Resultado="Octubre"
+    Caso 11
+      Resultado="Noviembre"
+    Caso 12
+      Resultado="Diciembre"
+    Caso Otro
+      GenerarError errParamInv
+  FinSeleccionar
+FinProc
+
+Proc DiaStr(Dia:Entero):Cadena
+  Seleccionar Dia
+    Caso 0
+      Resultado="Domingo"
+    Caso 1
+      Resultado="Lunes"
+    Caso 2
+      Resultado="Martes"
+    Caso 3
+      Resultado="Mi$E9rcoles"
+    Caso 4
+      Resultado="Jueves"
+    Caso 5
+      Resultado="Viernes"
+    Caso 6
+      Resultado="S$E1bado"
+    Caso Otro
+      GenerarError errParamInv
+  FinSeleccionar
+FinProc
+</Contenido></Datos>

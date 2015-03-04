@@ -1,0 +1,286 @@
+<Datos><Nombre></Nombre><Icono>AA==</Icono><Version><Mayor>0</Mayor><Menor>0</Menor><Revision>0</Revision><AutoIncr>0</AutoIncr></Version><Info/><Contenido>Importar "Win.prp"
+Importar "Utiles.prp"
+Importar "Procesos.prp"
+
+$24ADV-
+
+Proc ObtCarpEsp(csidl:Entero):Cadena
+	Resultado = Espacio(260)
+	SHGetSpecialFolderPath(0,CadPtr(Resultado),csidl,Falso)
+FinProc
+
+'Clase PscMacros
+'	ClaseVar Rutas:PscRutas
+'	ClaseVar Usuario:PscUsuario
+'FinClase
+
+Clase PscUsuario
+	Proc Nombre:Cadena
+		Resultado = ObtCarpEsp(CSIDL_APPDATA)
+		Devolver DerechaCad(ObtCarpEsp(CSIDL_PROFILE),CadLong(Resultado) - BuscarEnCadInv(Resultado,"\"))
+	FinProc
+FinClase
+
+Clase PscSistema
+	ClaseVar Procesador:PscProcesador
+	Proc SO:Cadena
+		Resultado = Espacio(1000)
+		GetEnvironmentVariable("OS",Resultado,1000)
+		Devolver TruncarCadena(Resultado)
+	FinProc
+	Proc Init
+		Crear Procesador
+	FinProc
+FinClase
+
+Clase PscProcesador
+
+	Proc Arquitectura:Cadena
+		Resultado = Espacio(1000)
+		GetEnvironmentVariable("PROCESSOR_ARCHITECTURE",Resultado,1000)
+		Devolver TruncarCadena(Resultado)
+	FinProc
+	
+	Proc Nivel:Cadena
+		Resultado = Espacio(1000)
+		GetEnvironmentVariable("PROCESSOR_LEVEL",Resultado,1000)
+		Devolver TruncarCadena(Resultado)
+	FinProc
+	
+	Proc Identificador:Cadena
+		Resultado = Espacio(1000)
+		GetEnvironmentVariable("PROCESSOR_IDENTIFIER",Resultado,1000)
+		Devolver TruncarCadena(Resultado)
+	FinProc
+
+	Proc Revisi$F3n:Cadena
+		Resultado = Espacio(1000)
+		GetEnvironmentVariable("PROCESSOR_REVISION",Resultado,1000)
+		Devolver TruncarCadena(Resultado)
+	FinProc
+
+	Proc Cantidad:Cadena
+		Resultado = Espacio(1000)
+		GetEnvironmentVariable("NUMBER_OF_PROCESSORS",Resultado,1000)
+		Devolver TruncarCadena(Resultado)
+	FinProc
+FinClase
+
+Clase PscProgramaLocal,h_int:Entero
+	P$FAblico:
+' Declaramos variables que contendran los datos.
+' Consumimos 40 Bytes de memoria, pero aumentamos el rendimiento neto de la clase evitando que los procedimientos se llamen continuamente.
+		ClaseVar Nombre,NombreExe,L$EDneaDeComandos:Cadena,Instancia,ProcesoID,Hilo,HiloID,Proceso,Tama$F1o:Entero
+		
+	Privado:
+		Proc HiloPrioridadEst(Valor:Entero)
+			Si h_int Entonces h_int = 0
+			h_int = OpenThread(&amp;0020 or &amp;0400,Falso,Hilo)
+			SetThreadPriority(h_int,Valor)
+			CloseHandle(h_int)
+		FinProc
+
+		Proc HiloPrioridadDev():Entero
+			Devolver GetThreadPriority(Hilo)
+		FinProc
+
+		Proc ProgPrioridadEst(Valor:Entero)
+			Si h_int Entonces h_int = 0
+			h_int = OpenProcess(PROCESS_SET_INFORMATION,Falso,Proceso)
+			SetPriorityClass(h_int,Valor)
+			CloseHandle(h_int) ; h_int = 0
+		FinProc
+
+		Proc ProgPrioridadDev():Entero
+			Devolver GetPriorityClass(Proceso)
+		FinProc
+		
+		Proc Inicializar
+		   Nombre = Espacio(255)
+		   Nombre = ParteCad(Nombre, 1,GetModuleFileName(0, CadPtr(Nombre), 255))
+		   Nombre = DerechaCad(Nombre,CadLong(Nombre) - BuscarEnCadInv(Nombre, "\"))
+		   AdmErr
+		   Nombre = IzquierdaCad(Nombre,BuscarEnCad(Nombre,".") - 1)
+		   Controlar
+		   
+		   FinAdmErr
+		   Instancia = GetModuleHandle("")
+		   
+		   NombreExe = Espacio(255)
+		   NombreExe = ParteCad(NombreExe, 1, GetModuleFileName(0, CadPtr(NombreExe), 255))
+		   NombreExe = DerechaCad(NombreExe,CadLong(NombreExe) - BuscarEnCadInv(NombreExe, "\"))
+		   
+		   L$EDneaDeComandos = CadDePtr(GetCommandLine())
+		   
+		   ProcesoID = GetCurrentProcessId()
+		   
+		   Hilo = GetCurrentThread()
+		   
+		   HiloID = GetCurrentThreadID()
+		   
+		   Proceso = GetCurrentProcess
+		   
+		   'Ruta = Espacio(255)
+		   'Ruta = ParteCad(Ruta, 1, GetModuleFileName(0, CadPtr(Ruta), 255))
+			'Ruta = ParteCad(Ruta, 1, BuscarEnCadInv(Ruta, "\") - 1)
+			
+			
+			h_int = CreateFile(RutaCompleta,&amp;80000000 Or &amp;40000000,&amp;1 Or &amp;2,Nulo,3,0,0)
+			Tama$F1o = GetFileSize(h_int,Nulo)
+			CloseHandle(h_int)
+			
+			'RutaCompleta = Espacio(255)
+		   'RutaCompleta = ParteCad(RutaCompleta, 1,GetModuleFileName(0, CadPtr(RutaCompleta), 255))
+		FinProc
+		Constructor:Inicializar
+	P$FAblico:
+		'Proc Nombre:Cadena
+		'   Resultado = Espacio(255)
+		'   Resultado = ParteCad(Resultado, 1,GetModuleFileName(0, CadPtr(Resultado), 255))
+		'   Resultado = DerechaCad(Resultado,CadLong(Resultado) - BuscarEnCadInv(Resultado, "\"))
+		'   Resultado = IzquierdaCad(Resultado,BuscarEnCad(Resultado,".") - 1)
+		'FinProc
+		
+		'Proc Instancia:Entero
+		'	Devolver GetModuleHandle("")
+		'FinProc
+
+		'Proc NombreExe:Cadena
+		'   Resultado = Espacio(255)
+		'   Resultado = ParteCad(Resultado, 1, GetModuleFileName(0, CadPtr(Resultado), 255))
+		'   Resultado = DerechaCad(Resultado,CadLong(Resultado) - BuscarEnCadInv(Resultado, "\"))
+		'FinProc
+		
+		Prop HiloPrioridad:Entero
+			Lec:HiloPrioridadDev
+			Esc:HiloPrioridadEst
+		FinProp
+		
+		'Proc L$EDneaDeComandos:Cadena
+	   '   Devolver CadenaDePtrCad(GetCommandLine())
+		'FinProc
+		
+		'Proc ProcesoID:Entero
+		'	Devolver GetCurrentProcessId()
+		'FinProc
+		
+		'Proc Hilo:Entero
+		'	Devolver GetCurrentThread()
+		'FinProc
+		
+		'Proc HiloID:Entero
+		'	Devolver GetCurrentThreadID()
+		'FinProc
+		
+		Prop Prioridad:Entero
+			Esc:ProgPrioridadEst
+			Lec:ProgPrioridadDev
+		FinProp
+		
+		Proc Eliminar
+			Ejecutar("CMD.exe","/C DEL " + #34 + RutaCompleta + #34,0)
+			Terminar
+		FinProc
+
+		Proc Mover(Referencia NuevaRuta:Cadena)
+			MoveFileEx(RutaCompleta,NuevaRuta,1)
+		FinProc
+
+		Proc Copiar(Referencia NuevaRuta:Cadena,Opcional SobreEscribir:Booleano = Falso)
+			CopyFile(RutaCompleta,NuevaRuta,SobreEscribir)
+		FinProc
+
+		'Proc Proceso:Entero
+		'	Devolver GetCurrentProcess
+		'FinProc
+
+		Proc Ruta:Cadena
+			Resultado = Espacio(255)
+			Devolver IzquierdaCad(Resultado,GetCurrentDirectory(255,Resultado))
+		FinProc
+
+		Proc RutaCompleta:Cadena
+		   Resultado = Espacio(255)
+		   Devolver ParteCad(Resultado, 1,GetModuleFileName(0, CadPtr(Resultado), 255))
+		FinProc
+
+		Proc Terminar
+			AdmErr
+				ProcesoTerminar("",GetCurrentProcess)
+			Finalmente
+				Mensaje("Error al intentar cerrar el programa","Error",PscCr$EDtico)
+			FinAdmErr
+		FinProc
+FinClase
+
+Clase PscRutas
+
+P$FAblico:
+' Declaramos variables que contendran los datos.
+' Consumimos 92 Bytes de memoria, pero aumentamos el rendimiento neto de la clase evitando que los procedimientos se llamen continuamente.
+ClaseVar Temp,Comando,MenuDePrograma,Usuario,CommonFiles,Windows,ArchivosDePrograma,Escritorio,Roaming,AppData,Fuentes,Sistema,_
+Documentos,Cache,SendTo,EnviarA,Historial,Cookies,Local,Favoritos,Recientes,AutoInicio,StartUP:Cadena
+
+Privado:
+	Proc Inicializar
+
+	   Temp = Espacio(255)
+	   Temp = ParteCad(Temp,1,GetTempPath(255,CadPtr(Temp)) - 1)
+
+		Comando = Espacio(1000)
+		GetEnvironmentVariable("ComSpec",Comando,1000)
+		Comando = TruncarCadena(Comando)
+
+		MenuDePrograma = TruncarCadena(ObtCarpEsp(CSIDL_PROGRAMS))
+		
+		Usuario = TruncarCadena(ObtCarpEsp(CSIDL_PROFILE))
+		
+		CommonFiles = TruncarCadena(ObtCarpEsp(CSIDL_PROGRAM_FILES_COMMON))
+		
+		Windows = TruncarCadena(ObtCarpEsp(CSIDL_WINDOWS))
+		
+		ArchivosDePrograma = TruncarCadena(ObtCarpEsp(CSIDL_PROGRAM_FILES))
+		
+		Escritorio = TruncarCadena(ObtCarpEsp(CSIDL_DESKTOP))
+		
+		Roaming = TruncarCadena(ObtCarpEsp(CSIDL_APPDATA))
+		
+		AppData = IzquierdaCad(Roaming,CadLong(Roaming) - 8)
+		
+		Fuentes = TruncarCadena(ObtCarpEsp(CSIDL_FONTS))
+		
+		Sistema = TruncarCadena(ObtCarpEsp(CSIDL_SYSTEM))
+		
+		Documentos = TruncarCadena(ObtCarpEsp(CSIDL_PERSONAL))
+		
+		Cache = TruncarCadena(ObtCarpEsp(CSIDL_INTERNET_CACHE))
+		
+		SendTo = TruncarCadena(ObtCarpEsp(CSIDL_SENDTO))
+		
+		EnviarA = TruncarCadena(ObtCarpEsp(CSIDL_SENDTO))
+		
+		Historial = TruncarCadena(ObtCarpEsp(CSIDL_HISTORY))
+		
+		Cookies = TruncarCadena(ObtCarpEsp(CSIDL_COOKIES))
+		
+		Local = TruncarCadena(ObtCarpEsp(CSIDL_LOCAL_APPDATA))
+		
+		Favoritos = TruncarCadena(ObtCarpEsp(CSIDL_FAVORITES))
+		
+		Recientes = TruncarCadena(ObtCarpEsp(CSIDL_RECENT))
+		
+		AutoInicio = TruncarCadena(ObtCarpEsp(CSIDL_STARTUP))
+		
+		StartUp = TruncarCadena(ObtCarpEsp(CSIDL_STARTUP))
+	FinProc
+
+	'Proc RutaDescargas:Cadena
+	'   Devolver ParteCad(RutaTemp,1,BuscarEnCad(RutaTemp,NombreUsuario) + CadLong(NombreUsuario)) + "Downloads\"
+	'FinProc
+
+	'Proc RutaDocumentos:Cadena
+	'Devolver ObtCarpEsp(CSIDL_COMMON_DOCUMENTS)
+	'FinProc
+	Constructor: Inicializar
+FinClase
+</Contenido></Datos>

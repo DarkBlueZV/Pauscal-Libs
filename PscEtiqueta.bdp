@@ -1,0 +1,121 @@
+<Datos><Nombre></Nombre><Icono>AA==</Icono><Version><Mayor>0</Mayor><Menor>0</Menor><Revision>0</Revision><AutoIncr>0</AutoIncr></Version><Info/><Contenido>$24ADV-
+$24EBC-
+
+'Importar "DeclareW.prp"
+'Importar "Declare.prp"
+'Importar "Utiles.prp"
+Importar "WinCtrls.prp"
+
+Privado:
+
+Var pscEtCount:Entero
+
+Proc pscEtiqueta_wndproc(hWnd,Msg,wParam,lParam:Entero):Entero
+  Var Rc:RECT,Pnt:PAINTSTRUCT
+  Var Obj:pscEtiqueta
+  Var TmpStr:Cadena
+  Var Temp:Entero
+
+  Obj=EnteroToControl(GetProp(hWnd,"THIS"))
+  Seleccionar Msg
+    Caso WM_PAINT
+      Si (GetUpdateRect(hWnd,Rc,Verd))
+        Temp=BeginPaint(hWnd,Pnt)
+        Si (Obj.Visible)
+          GetClientRect(hWnd,Rc)
+          TmpStr=Obj.StTexto
+          SelectObject(Temp,Obj.Fuente.hFont)
+          SetBkColor(Temp,ColorReal(Obj.Color))
+          DrawText(Temp,TmpStr,CadLong(TmpStr),Rc,DT_WORDBREAK+DT_EXPANDTABS)
+        FinSi
+        EndPaint(hWnd,Pnt)
+      FinSi
+      Devolver 0
+    Caso WM_GETTEXT
+      TmpStr=Obj.StTexto
+      Temp=CadLong(TmpStr)
+      Si (wParam&gt;Temp) wParam=Temp
+      CopyMemory(lParam,CadPtr(TmpStr),wParam)
+      Devolver wParam
+    Caso WM_GETTEXTLENGTH
+      Devolver CadLong(Obj.StTexto)
+    Caso WM_SETTEXT
+      Temp=lstrlen2(lParam)
+      Si (Temp=0)
+        Obj.StTexto=""
+      SiNo
+        TmpStr=Espacio(Temp)
+        CopyMemory(CadPtr(TmpStr),lParam,Temp)
+        Obj.StTexto=TmpStr
+      FinSi
+      GetClientRect(hWnd,Rc)
+      InvalidateRect(hWnd,Rc,Verd)
+      Devolver 0
+    Caso WM_LBUTTONUP
+      Si (Obj.Habilitado)
+        Si (Obj.Eventos.AlCliquear@) Obj.Eventos.AlCliquear
+      FinSi
+      Devolver 0
+  FinSeleccionar
+  Resultado=DefWindowProc(hWnd,Msg,wParam,lParam)
+FinProc
+
+P$FAblico:
+
+Clase pscEtiqueta(pscTextControl), _
+  ObjNum:Entero, _
+  ClassNomb:Cadena
+
+  ClaseVar StTexto:Cadena
+  ClaseVar Eventos:PSCETIQUETA_EVENTINFO
+
+P$FAblico:
+  'proc p$FAblicos
+  Proc CargarEtiqueta(HwndParent:Entero)
+    Si (ObjHwnd) Salir
+    ObjHwnd=CreateWindowEx(0,ClassNomb,iTexto,SS_NOTIFY+WS_CHILD+WS_CLIPSIBLINGS+WS_TABSTOP+(&gt;Habil?0:WS_DISABLED)+ _
+                           (&gt;Visib?WS_VISIBLE:0),Coords.x,Coords.y,Coords.Width,Coords.Height,HwndParent,0,Programa.hInstance,Nulo)
+    Si (ObjHwnd=0) GenerarError errFalloWinCtrls
+    Fuente.InsertarFuente(ObjHwnd)
+    SetProp(ObjHwnd,"THIS",ObjPtr())
+    SetColor(Col,0)
+    ObtenerDC
+    Texto=iTexto
+    UpdateWindow(ObjHwnd)
+  FinProc
+  Proc DescargarEtiqueta
+    Si (ObjHwnd=0) Salir
+    DestroyWindow(ObjHwnd)
+    ObjHwnd=0
+  FinProc
+  'extra
+Privado:
+  Proc Registrar
+    Var wndcls:WNDCLASS
+    wndcls.style = CS_PARENTDC
+    wndcls.lpfnwndproc = pscEtiqueta_wndproc@
+    wndcls.hInstance = Programa.hInstance
+    wndcls.hCursor = LoadCursorNum(0, IDC_ARROW)
+    wndcls.hbrBackground = COLOR_WINDOW
+    wndcls.lpszMenuName = ""
+    wndcls.lpszClassName = ClassNomb
+    Si (RegisterClass(wndcls)=0) GenerarError errFalloWinCtrls
+  FinProc
+  Proc Inicializar
+    Alto=25
+    Ancho=81
+    Color=COLOR_BTNFACE+&amp;1000000
+    Habilitado=Verd
+    Visible=Verd
+    pscEtCount=pscEtCount+1
+    ClassNomb="pscEt"+EntCad(pscEtCount)
+    Registrar
+  FinProc
+  Proc Finalizar
+    DescargarEtiqueta
+    UnregisterClass(ClassNomb,Programa.hInstance)
+  FinProc
+  Constructor:Inicializar
+  Destructor:Finalizar
+FinClase
+</Contenido></Datos>
