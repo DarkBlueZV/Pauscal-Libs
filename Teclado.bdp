@@ -1,11 +1,43 @@
 <Datos><Nombre></Nombre><Icono>AA==</Icono><Version><Mayor>0</Mayor><Menor>0</Menor><Revision>0</Revision><AutoIncr>0</AutoIncr></Version><Info/><Contenido>Importar "Utiles.prp"
-Importar "Win.prp"
+Importar "WinCtrls.prp"
 
 $24ADV-
 $24EBC-
 
+Privado:
+	Prototipo HookProcedimiento(VkCode,ScanCode,Flags,Time,DwExtraInfo:Entero)
+	Var HookPtr:Entero
+	Var @PtrEstruc:KBDLLHOOKSTRUCT
+	Var @PtrProt:HookProcedimiento
 
-Proc TeclasTraducir(i:Byte):Cadena
+	' Se llama cada vez que se oprime una tecla, este procedimiento llama al procedimiento establecido en TecladoIniciar _
+	' y le establece los datos de la estructura en su orden original.
+	Proc KeyboardHook(nCode:Entero,wParam:Word,lParam:Entero):Entero
+		Si PtrEstruc@ = 0 Entonces PtrEstruc@ = lParam
+		Si nCode = 0 Entonces
+			PtrProt(PtrEstruc.VkCode,PtrEstruc.ScanCode,PtrEstruc.Flags,PtrEstruc.Time,PtrEstruc.DwExtraInfo)
+		SiNo
+			HookPtr = CallNextHookEx(0,HookPtr, wParam, lParam)
+		FinSi
+	FinProc
+	
+P$FAblico:
+
+' Inicia el registro de teclas.
+' ATENCI$D3N!: Llamar a [Programa.Ejecutar] para que el sistema procese los registros de teclas.
+Proc TecladoIniciar(PtrProc:Entero)
+	PtrProt@ = PtrProc
+	HookPtr = SetWindowsHookEx(13, KeyboardHook@, GetModuleHandle(""), 0)
+FinProc
+
+' Termina el registro de teclas.
+Proc TecladoTerminar()
+	PtrProt@ = 0
+	UnhookWindowsHookEx(HookPtr)
+FinProc
+
+
+Proc TecladoTraducir(i:Byte):Cadena
 Seleccionar i
 	Caso 13  ; Devolver "[ENTER]"
 	Caso 81  ; Devolver &gt;GetAsyncKeyState(160) Or GetKeyState(20)?"Q":"q"

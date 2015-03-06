@@ -17,7 +17,6 @@ Privado:
 	Var ContadorCombo:Entero
 	Var ContadorImagen:Entero
 
-	Var Evento[]:Entero
 P$FAblico:
 
 	Var Formulario[]:PscForm
@@ -28,7 +27,7 @@ P$FAblico:
 	Var Combo[]:PscCajaCombo
 	Var Imagen[]:PscImagen
 
-Proc VentanaCrear(Referencia T$EDtulo:Cadena,Evento[]:Entero,Opcional X1,Y1:Entero = 0,_
+Proc VentanaCrear(Referencia T$EDtulo:Cadena,Evento:PSCFORM_EVENTINFO,Opcional X1,Y1:Entero = 0,_
 														 Opcional Anchor,Altura:Entero = 500,_
 														 Opcional Visible1:Booleano = Verd,_
 														 Opcional SiempreVisible1,Centrar1:Booleano = Falso,_
@@ -52,42 +51,18 @@ Crear Formulario[Contador-1]
 	    .Centrar=Centrar1
 		 .SiempreVisible=SiempreVisible1
 	    Eval .Eventos
-			Si (L$EDmite(Evento) = 0)
-				Si Evento[0] &gt; 0 Entonces .AlCliquear@=Evento[0]
-			FinSi
-			Si (L$EDmite(Evento) = 1)
-				Si Evento[1] &gt; 0 Entonces .AlMoverMouse@=Evento[1]
-			FinSi
-			Si L$EDmite(Evento) = 2
-				Si Evento[2] &gt; 0 Entonces .AlDobleCliquear@=Evento[2]
-			FinSi
-			Si L$EDmite(Evento) = 3
-				Si  Evento[3] &gt; 0 Entonces .AlApretarBotonMouse@=Evento[3]
-			FinSi
-			Si L$EDmite(Evento) = 4
-				Si Evento[4] &gt; 0 Entonces .AlSoltarBotonMouse@=Evento[4]
-			FinSi
-			Si L$EDmite(Evento) = 5
-				Si Evento[5] &gt; 0 Entonces .AlApretarTecla@=Evento[5]
-			FinSi
-			Si L$EDmite(Evento) = 6
-				Si Evento[6] &gt; 0 Entonces .AlTeclear@=Evento[6]
-			FinSi
-			Si L$EDmite(Evento) = 7
-				Si Evento[7] &gt; 0 Entonces .AlSoltarTecla@=Evento[7]
-			FinSi
-			Si L$EDmite(Evento) = 8
-				Si Evento[8] &gt; 0 Entonces .AlGanarFoco@=Evento[8]
-			FinSi
-			Si L$EDmite(Evento) = 9
-				Si Evento[9] &gt; 0 Entonces .AlPerderFoco@=Evento[9]
-			FinSi
-			Si L$EDmite(Evento) = 10
-				Si Evento[10] &gt; 0 Entonces .AlCerrarse@=Evento[10]
-			FinSi
-			Si L$EDmite(Evento) = 11
-				Si Evento[11] &gt; 0 Entonces .AlCargarse@=Evento[11]
-			FinSi
+			.AlCliquear@=Evento.AlCliquear@
+			.AlMoverMouse@=Evento.AlMoverMouse@
+			.AlDobleCliquear@=Evento.AlDobleCliquear@
+			.AlApretarBotonMouse@=Evento.AlApretarBotonMouse@
+			.AlSoltarBotonMouse@=Evento.AlSoltarBotonMouse@
+			.AlApretarTecla@=Evento.AlApretarTecla@
+			.AlTeclear@=Evento.AlTeclear@
+			.AlSoltarTecla@=Evento.AlSoltarTecla@
+			.AlGanarFoco@=Evento.AlGanarFoco@
+			.AlPerderFoco@=Evento.AlPerderFoco@
+			.AlCerrarse@=Evento.AlCerrarse@
+			.AlCargarse@=Evento.AlCargarse@
 	    FinEval
 	    .CrearForm
 	    .FormCargado
@@ -97,18 +72,7 @@ Crear Formulario[Contador-1]
 	Devolver Contador-1
 FinProc
 
-'Proc VentanaEstTexto(ID:Entero,Referencia Texto:Cadena)
-'			SetWindowText(Formulario[ID].Hwnd,Texto)
-'FinProc
-'Proc VentanaObtTexto(ID:Entero):Cadena
-'			Resultado = Espacio(500)
-'			GetWindowText(Formulario[ID].Hwnd,Resultado,500)
-'			Resultado = TruncarCadena(Resultado)
-'FinProc
-
-' FIN VENTANA #########
-
-Proc Bot$F3nCrear(Referencia Texto:Cadena,Padre1,Evento[]:Entero,Opcional X1,Y1:Entero = 0,_
+Proc BotonCrear(Referencia Texto:Cadena,Padre1:Entero,Evento:PSCBOTON_EVENTINFO,Opcional X1,Y1:Entero = 0,_
 																	  Opcional Anchor,Altura:Entero = 20,_
 																	  Opcional Visible1,Habilitado1:Booleano = Verd):Entero
 ContadorBoton = ContadorBoton + 1
@@ -123,54 +87,23 @@ ReDim Preservar Bot$F3n,ContadorBoton
       .Visible=Visible1
       .Habilitado=Habilitado1
       Eval .Eventos
-			Si (L$EDmite(Evento) = 0)
-				Si Evento[0] &gt; 0 Entonces .AlCliquear@=Evento[0]
-			FinSi
-			Si (L$EDmite(Evento) = 1)
-				Si Evento[1] &gt; 0 Entonces .AlMoverMouse@=Evento[1]
-			FinSi
-			Si L$EDmite(Evento) = 2
-				Si Evento[2] &gt; 0 Entonces .AlDobleCliquear@=Evento[2]
-			FinSi
-			Si L$EDmite(Evento) = 3
-				Si  Evento[3] &gt; 0 Entonces .AlApretarBotonMouse@=Evento[3]
-			FinSi
-			Si L$EDmite(Evento) = 4
-				Si Evento[4] &gt; 0 Entonces .AlSoltarBotonMouse@=Evento[4]
-			FinSi
-			Si L$EDmite(Evento) = 5
-				Si Evento[5] &gt; 0 Entonces .AlApretarTecla@=Evento[5]
-			FinSi
-			Si L$EDmite(Evento) = 6
-				Si Evento[6] &gt; 0 Entonces .AlTeclear@=Evento[6]
-			FinSi
-			Si L$EDmite(Evento) = 7
-				Si Evento[7] &gt; 0 Entonces .AlSoltarTecla@=Evento[7]
-			FinSi
-			Si L$EDmite(Evento) = 8
-				Si Evento[8] &gt; 0 Entonces .AlGanarFoco@=Evento[8]
-			FinSi
-			Si L$EDmite(Evento) = 9
-				Si Evento[9] &gt; 0 Entonces .AlPerderFoco@=Evento[9]
-			FinSi
+				.AlCliquear@=Evento.AlCliquear@
+				.AlMoverMouse@=Evento.AlMoverMouse@
+				.AlDobleCliquear@=Evento.AlDobleCliquear@
+				.AlApretarBotonMouse@=Evento.AlApretarBotonMouse@
+				.AlSoltarBotonMouse@=Evento.AlSoltarBotonMouse@
+				.AlApretarTecla@=Evento.AlApretarTecla@
+				.AlTeclear@=Evento.AlTeclear@
+				.AlSoltarTecla@=Evento.AlSoltarTecla@
+				.AlGanarFoco@=Evento.AlGanarFoco@
+				.AlPerderFoco@=Evento.AlPerderFoco@
       FinEval
       .CargarBoton(Formulario[Padre1].Hwnd)
     FinEval
     Devolver ContadorBoton-1
 FinProc
 
-'Proc BotonEstTexto(ID:Entero,Referencia Texto:Cadena)
-'			SetWindowText(Boton[ID].Hwnd,Texto)
-'FinProc
-'Proc BotonObtTexto(ID:Entero):Cadena
-'			Resultado = Espacio(500)
-'			GetWindowText(Boton[ID].Hwnd,Resultado,500)
-'			Resultado = TruncarCadena(Resultado)
-'FinProc
-
-' FIN BOTON #########
-
-Proc TextoCrear(Referencia Texto1:Cadena,Padre1:Entero,Evento[]:Entero,Opcional X1,Y1:Entero = 0,_
+Proc TextoCrear(Referencia Texto1:Cadena,Padre1:Entero,Evento:PSCCAJATEXTO_EVENTINFO,Opcional X1,Y1:Entero = 0,_
 																	  Opcional Anchor,Altura:Entero = 50,_
 																	  Opcional Visible1,Habilitado1:Booleano = Verd):Entero
 ContadorTexto = ContadorTexto + 1
@@ -186,60 +119,25 @@ ReDim Preservar CajaTexto,ContadorTexto
       .Visible=Visible1
       .Habilitado=Habilitado1
       Eval .Eventos
-			Si (L$EDmite(Evento) = 0)
-				Si Evento[0] &gt; 0 Entonces .AlCliquear@=Evento[0]
-			FinSi
-			Si (L$EDmite(Evento) = 1)
-				Si Evento[1] &gt; 0 Entonces .AlMoverMouse@=Evento[1]
-			FinSi
-			Si L$EDmite(Evento) = 2
-				Si Evento[2] &gt; 0 Entonces .AlDobleCliquear@=Evento[2]
-			FinSi
-			Si L$EDmite(Evento) = 3
-				Si  Evento[3] &gt; 0 Entonces .AlApretarBotonMouse@=Evento[3]
-			FinSi
-			Si L$EDmite(Evento) = 4
-				Si Evento[4] &gt; 0 Entonces .AlSoltarBotonMouse@=Evento[4]
-			FinSi
-			Si L$EDmite(Evento) = 5
-				Si Evento[5] &gt; 0 Entonces .AlApretarTecla@=Evento[5]
-			FinSi
-			Si L$EDmite(Evento) = 6
-				Si Evento[6] &gt; 0 Entonces .AlTeclear@=Evento[6]
-			FinSi
-			Si L$EDmite(Evento) = 7
-				Si Evento[7] &gt; 0 Entonces .AlSoltarTecla@=Evento[7]
-			FinSi
-			Si L$EDmite(Evento) = 8
-				Si Evento[8] &gt; 0 Entonces .AlGanarFoco@=Evento[8]
-			FinSi
-			Si L$EDmite(Evento) = 9
-				Si Evento[9] &gt; 0 Entonces .AlPerderFoco@=Evento[9]
-			FinSi
-			Si L$EDmite(Evento) = 10
-				Si Evento[10] &gt; 0 Entonces .AlCambiar@=Evento[10]
-			FinSi
-			Si L$EDmite(Evento) = 11
-				Si Evento[11] &gt; 0 Entonces .AlNavegar@=Evento[11]
-			FinSi
+				.AlCliquear@=Evento.AlCliquear@
+				.AlMoverMouse@=Evento.AlMoverMouse@
+				.AlDobleCliquear@=Evento.AlDobleCliquear@
+				.AlApretarBotonMouse@=Evento.AlApretarBotonMouse@
+				.AlSoltarBotonMouse@=Evento.AlSoltarBotonMouse@
+				.AlApretarTecla@=Evento.AlApretarTecla@
+				.AlTeclear@=Evento.AlTeclear@
+				.AlSoltarTecla@=Evento.AlSoltarTecla@
+				.AlGanarFoco@=Evento.AlGanarFoco@
+				.AlPerderFoco@=Evento.AlPerderFoco@
+				.AlCambiar@=Evento.AlCambiar@
+				.AlNavegar@=Evento.AlNavegar@
       FinEval
       .CargarCajaTexto(Formulario[Padre1].hWnd)
     FinEval
     Devolver ContadorTexto-1
 FinProc
 
-'Proc TextoEstTexto(ID:Entero,Referencia Texto:Cadena)
-'			SetWindowText(CajaTexto[ID].Hwnd,Texto)
-'FinProc
-'Proc TextoObtTexto(ID:Entero):Cadena
-'			Resultado = Espacio(500)
-'			GetWindowText(CajaTexto[ID].Hwnd,Resultado,500)
-'			Resultado = TruncarCadena(Resultado)
-'FinProc
-
-' FIN TEXTO #########
-
-Proc EtiquetaCrear(Referencia Texto:Cadena,Padre1:Entero,Evento[]:Entero,Opcional X1,Y1:Entero = 0,_
+Proc EtiquetaCrear(Referencia Texto:Cadena,Padre1:Entero,Evento:PSCETIQUETA_EVENTINFO,Opcional X1,Y1:Entero = 0,_
 																	  Opcional Anchor,Altura:Entero = 50,_
 																	  Opcional Visible1,Habilitado1:Booleano = Verd):Entero
 ContadorEtiqueta = ContadorEtiqueta + 1
@@ -254,30 +152,15 @@ ReDim Preservar Etiqueta,ContadorEtiqueta
       .Visible=Visible1
       .Habilitado=Habilitado1
       Eval .Eventos
-			Si (L$EDmite(Evento) = 0)
-				Si Evento[0] &gt; 0 Entonces .AlCliquear@=Evento[0]
-			FinSi
-			Si (L$EDmite(Evento) = 1)
-				Si Evento[1] &gt; 0 Entonces .AlDobleCliquear@=Evento[1]
-			FinSi
+				.AlCliquear@=Evento.AlCliquear@
+				.AlDobleCliquear@=Evento.AlDobleCliquear@
       FinEval
       .CargarEtiqueta(Formulario[Padre1].Hwnd)
     FinEval
     Devolver ContadorEtiqueta-1
 FinProc
 
-'Proc EtiquetaEstTexto(ID:Entero,Referencia Texto:Cadena)
-'			SetWindowText(Etiqueta[ID].Hwnd,Texto)
-'FinProc
-'Proc EtiquetaObtTexto(ID:Entero):Cadena
-'			Resultado = Espacio(500)
-'			GetWindowText(Etiqueta[ID].Hwnd,Resultado,500)
-'			Resultado = TruncarCadena(Resultado)
-'FinProc
-
-' FIN ETIQUETA #########
-
-Proc ListaCrear(Padre1:Entero,Evento[]:Entero,Opcional X1,Y1:Entero = 0,_
+Proc ListaCrear(Padre1:Entero,Evento:PSCCAJALISTA_EVENTINFO,Opcional X1,Y1:Entero = 0,_
 																	  Opcional Anchor,Altura:Entero = 50,_
 																	  Opcional Visible1,Habilitado1:Booleano = Verd,_
 																	  Opcional Ordenado1,Multil$EDnea1:Booleano = Falso):Entero
@@ -295,54 +178,24 @@ ReDim Preservar CajaLista,ContadorLista
       .Ordenado=Ordenado1
       .Multil$EDnea=Multil$EDnea1
       Eval .Eventos
-			Si (L$EDmite(Evento) = 0)
-				Si Evento[0] &gt; 0 Entonces .AlSeleccionar@=Evento[0]
-			FinSi
-			Si (L$EDmite(Evento) = 1)
-				Si Evento[1] &gt; 0 Entonces .AlMoverMouse@=Evento[1]
-			FinSi
-			Si L$EDmite(Evento) = 2
-				Si Evento[2] &gt; 0 Entonces .AlDobleCliquear@=Evento[2]
-			FinSi
-			Si L$EDmite(Evento) = 3
-				Si  Evento[3] &gt; 0 Entonces .AlApretarBotonMouse@=Evento[3]
-			FinSi
-			Si L$EDmite(Evento) = 4
-				Si Evento[4] &gt; 0 Entonces .AlSoltarBotonMouse@=Evento[4]
-			FinSi
-			Si L$EDmite(Evento) = 5
-				Si Evento[5] &gt; 0 Entonces .AlApretarTecla@=Evento[5]
-			FinSi
-			Si L$EDmite(Evento) = 6
-				Si Evento[6] &gt; 0 Entonces .AlTeclear@=Evento[6]
-			FinSi
-			Si L$EDmite(Evento) = 7
-				Si Evento[7] &gt; 0 Entonces .AlSoltarTecla@=Evento[7]
-			FinSi
-			Si L$EDmite(Evento) = 8
-				Si Evento[8] &gt; 0 Entonces .AlGanarFoco@=Evento[8]
-			FinSi
-			Si L$EDmite(Evento) = 9
-				Si Evento[9] &gt; 0 Entonces .AlPerderFoco@=Evento[9]
-			FinSi
+				.AlSeleccionar@=Evento.AlSeleccionar@
+				.AlMoverMouse@=Evento.AlMoverMouse@
+				.AlDobleCliquear@=Evento.AlDobleCliquear@
+				.AlApretarBotonMouse@=Evento.AlApretarBotonMouse@
+				.AlSoltarBotonMouse@=Evento.AlSoltarBotonMouse@
+				.AlApretarTecla@=Evento.AlApretarTecla@
+				.AlTeclear@=Evento.AlTeclear@
+				.AlSoltarTecla@=Evento.AlSoltarTecla@
+				.AlGanarFoco@=Evento.AlGanarFoco@
+				.AlPerderFoco@=Evento.AlPerderFoco@
       FinEval
       .CargarCajaLista(Formulario[Padre1].Hwnd)
     FinEval
     Devolver ContadorLista-1
 FinProc
 
-'Proc ListaEstTexto(ID:Entero,Referencia Texto:Cadena)
-'			SetWindowText(CajaLista[ID].Hwnd,Texto)
-'FinProc
-'Proc ListaObtTexto(ID:Entero):Cadena
-'			Resultado = Espacio(500)
-'			GetWindowText(CajaLista[ID].Hwnd,Resultado,500)
-'			Resultado = TruncarCadena(Resultado)
-'FinProc
 
-' FIN LISTA #########
-
-Proc ComboCrear(Referencia Textos:Cadena,Padre1:Entero,Evento[]:Entero,Opcional X1,Y1:Entero = 0,_
+Proc ComboCrear(Referencia Textos:Cadena,Padre1:Entero,Evento:PSCCAJACOMBO_EVENTINFO,Opcional X1,Y1:Entero = 0,_
 																	  Opcional Anchor,Altura:Entero = 50,_
 																	  Opcional Visible1,Habilitado1:Booleano = Verd,_
 																	  Opcional Estilo1:Entero = 0,_
@@ -362,84 +215,46 @@ ReDim Preservar Combo,ContadorCombo
       .Estilo=Estilo1
       .Ordenado=Ordenado1
       Eval .Eventos
-				Si (L$EDmite(Evento) = 0)
-					Si Evento[0] &gt; 0 Entonces .AlSeleccionar@=Evento[0]
-				FinSi
-				Si (L$EDmite(Evento) = 1)
-					Si Evento[1] &gt; 0 Entonces .AlCambiar@=Evento[1]
-				FinSi
-				Si (L$EDmite(Evento) = 2)
-					Si Evento[2] &gt; 0 Entonces .AlAparecerLista@=Evento[2]
-				FinSi	
-				Si (L$EDmite(Evento) = 3) 
-					Si Evento[3] &gt; 0 Entonces .AlCerrarLista@=Evento[3]
-				FinSi	
-				Si (L$EDmite(Evento) = 4)
-					Si Evento[4] &gt; 0 Entonces .AlMoverMouse@=Evento[4]
-				FinSi	
-				Si (L$EDmite(Evento) = 5)
-					Si Evento[5] &gt; 0 Entonces .AlDobleCliquear@=Evento[5]
-				FinSi	
-				Si (L$EDmite(Evento) = 6) 
-					Si Evento[6] &gt; 0 Entonces .AlApretarBotonMouse@=Evento[6]
-				FinSi	
-				Si (L$EDmite(Evento) = 7) 
-					Si Evento[7] &gt; 0 Entonces .AlSoltarBotonMouse@=Evento[7]
-				FinSi	
-				Si (L$EDmite(Evento) = 8) 
-					Si Evento[8] &gt; 0 Entonces .AlApretarTecla@=Evento[8]
-				FinSi	
-				Si (L$EDmite(Evento) = 9)
-					Si Evento[9] &gt; 0 Entonces .AlTeclear@=Evento[9]
-				FinSi	
-				Si (L$EDmite(Evento) = 10)
-					Si Evento[10] &gt; 0 Entonces .AlSoltarTecla@=Evento[10]
-				FinSi
-				Si (L$EDmite(Evento) = 11)
-					Si Evento[11] &gt; 0 Entonces .AlGanarFoco@=Evento[11]
-				FinSi
-				Si (L$EDmite(Evento) = 12)
-					Si Evento[12] &gt; 0 Entonces .AlPerderFoco@=Evento[12]
-				FinSi
+					.AlSeleccionar@=Evento.AlSeleccionar@
+					.AlCambiar@=Evento.AlCambiar@
+					.AlAparecerLista@=Evento.AlAparecerLista@
+					.AlCerrarLista@=Evento.AlCerrarLista@
+					.AlMoverMouse@=Evento.AlMoverMouse@
+					.AlDobleCliquear@=Evento.AlDobleCliquear@
+					.AlApretarBotonMouse@=Evento.AlApretarBotonMouse@
+					.AlSoltarBotonMouse@=Evento.AlSoltarBotonMouse@
+					.AlApretarTecla@=Evento.AlApretarTecla@
+					.AlTeclear@=Evento.AlTeclear@
+					.AlSoltarTecla@=Evento.AlSoltarTecla@
+					.AlGanarFoco@=Evento.AlGanarFoco@
+					.AlPerderFoco@=Evento.AlPerderFoco@
       FinEval
       .CargarCajaCombo(Formulario[Padre1].Hwnd)
     FinEval
     Devolver ContadorCombo-1
 FinProc
-'Proc ComboEstTexto(ID:Entero,Referencia Texto:Cadena)
-'			SetWindowText(Combo[ID].Hwnd,Texto)
-'FinProc
-'Proc ComboObtTexto(ID:Entero):Cadena
-'			Resultado = Espacio(500)
-'			GetWindowText(Combo[ID].Hwnd,Resultado,500)
-'			Resultado = TruncarCadena(Resultado)
-'FinProc
-' FIN COMBO #########
 
-Proc ImagenCrear(Padre1,Evento[]:Entero,Opcional X1,Y1:Entero = 0,_
-										 Opcional Anchor,Altura:Entero = 250,_
-										 Opcional Visible1,Habilitado1:Booleano = Verd):Entero
-ContadorImagen = ContadorImagen + 1
-ReDim Imagen,ContadorImagen
-    Crear Imagen[ContadorImagen-1]
-    Eval Imagen[ContadorImagen-1]
-      .Padre = Formulario[Padre1]
-      .X=10
-      .Y=16
-      .Ancho=400
-      .Alto=312
-      .Visible=Verd
-      .Habilitado=Verd
-      Eval .Eventos
-			Si (L$EDmite(Evento) = 0)
-				Si Evento[0] &gt; 0 Entonces .AlCliquear@=Evento[0]
-			FinSi
-			Si (L$EDmite(Evento) = 1)
-				Si Evento[1] &gt; 0 Entonces .AlDobleCliquear@=Evento[1]
-			FinSi
-      FinEval
-      .CargarImagen(Formulario[Padre1].Hwnd)
-    FinEval
-    Devolver ContadorImagen-1
-FinProc
+
+'Proc ImagenCrear(Padre1,Evento[]:Entero,Opcional X1,Y1:Entero = 0,_
+'										 Opcional Anchor,Altura:Entero = 250,_
+'										 Opcional Visible1,Habilitado1:Booleano = Verd):Entero
+'ContadorImagen = ContadorImagen + 1
+'ReDim Preservar Imagen,ContadorImagen
+'    Crear Imagen[ContadorImagen-1]
+'    Eval Imagen[ContadorImagen-1]
+'      .Padre = Formulario[Padre1]
+'      .X=10
+'      .Y=16
+'      .Ancho=400
+'      .Alto=312
+'      .Visible=Verd
+'      .Habilitado=Verd
+'      Eval .Eventos
+'			.AlCliquear@=Evento.AlCliquear@
+'			.AlDobleCliquear@=Evento.AlDobleCliquear@
+'      FinEval
+'      .CargarImagen(Formulario[Padre1].Hwnd)
+'    FinEval
+'    Devolver ContadorImagen-1
+'FinProc
 </Contenido></Datos>
