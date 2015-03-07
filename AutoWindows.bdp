@@ -21,8 +21,8 @@ Const Mezclar = &amp;00080000,Mezcla = &amp;00080000,Mezclado = &amp;00080000,Ve
 Const Centrar = &amp;15,Centrada = &amp;15,VenanaCentrar = &amp;15,VentanaCentrada = &amp;15,VentanaCentrado = &amp;15,CentrarVentana = &amp;15,CentradoVentana = &amp;15,CentradaVentana = &amp;15
 
 Privado:
-	Var h_ControlF:Entero
 	Var v_Seleccionada:Entero
+	Var Matriz[]:Entero
 P$FAblico:
 
 Proc VentanaSeleccionar(T$EDtulo:Cadena,Opcional ClaseT$EDtulo:Cadena):Booleano
@@ -84,20 +84,24 @@ Proc VentanaObtT$EDtuloClase(HWND:Entero):Cadena
 	Si CadLong(Variable) &gt; 0 Devolver Variable
 FinProc
 
+Proc MousePosInicio
+	Matriz = MousePosici$F3n
+FinProc
+
+Proc MousePosFin:Entero[]
+	Resultado = MousePosici$F3n
+	ReDim Preservar Resultado,4
+	Resultado[2] = Resultado[0] - Matriz[0]
+	Resultado[3] = Resultado[1] - Matriz[1]
+	Resultado[0] = Matriz[0]
+	Resultado[1] = Matriz[1]
+FinProc
+
+'Optimizada a 3 lineas :)
 Proc MousePosici$F3n:Entero[]
 	Var Variable:POINTAPI
-	Var Matriz[],Check:Entero
-	ReDim Matriz,2
-	   Check = GetCursorPos(Variable)
-	Si Check = 0 Entonces
-	   Matriz[0] = 0
-	   Matriz[1] = 0
-	   Resultado = Matriz
-	SiNo
-	   Matriz[0] = Variable.X
-	   Matriz[1] = Variable.Y
-	   Resultado = Matriz
-	FinSi
+	Si GetCursorPos(Variable) = 0 Entonces Salir
+	Resultado = [Variable.X,Variable.Y]
 FinProc
 
 Proc MouseMover(X,Y:EnteroSig):Booleano
@@ -134,24 +138,12 @@ Proc VentanaHabilitar(TituloVentana:Cadena,Opcional Estado:Booleano = Verd, Opci
 	Resultado = EnableWindow(&gt;HWND?HWND:(&gt;v_Seleccionada?v_Seleccionada:VentanaBuscar(TituloVentana)),Estado)
 FinProc
 
+'Optimizado a 3 lineas :D
 Proc VentanaDimenci$F3n(TituloVentana:Cadena, Opcional HWND:Entero):Entero[]
    Var Variable:RECT
-   Var Matriz[],Check:Entero
-   ReDim Matriz,4
-   Check = GetWindowRect(&gt;HWND?HWND:(&gt;v_Seleccionada?v_Seleccionada:VentanaBuscar(TituloVentana)),Variable)
-   Si Check &lt;&gt; 0 Entonces
-      Matriz[0] = Variable.Left 		'Izquierda
-      Matriz[1] = Variable.Top  		'Arriba
-      Matriz[2] = Variable.Right 	'Derecha
-      Matriz[3] = Variable.Bottom	'Abajo
-      Resultado = Matriz
-   SiNo
-      Matriz[0] = 0
-      Matriz[1] = 0
-      Matriz[2] = 0
-      Matriz[3] = 0
-      Resultado = Matriz
-   FinSi
+   Si GetWindowRect(&gt;HWND?HWND:(&gt;v_Seleccionada?v_Seleccionada:VentanaBuscar(TituloVentana)),Variable) = 0 Entonces Salir
+					'Izquierda		'Arriba		'Derecha			'Abajo
+   Resultado = [Variable.Left,Variable.Top,Variable.Right,Variable.Bottom]
 FinProc
 
 Proc VentanaEstado(TituloVentana:Cadena,Estado:Entero, Opcional HWND:Entero = 0):Booleano
@@ -161,15 +153,6 @@ FinProc
 Proc VentanaObtT$EDtuloLong(HWND:Entero):Entero
    Resultado = GetWindowTextLength(HWND)
 FinProc
-
-'Proc VentEs(TituloVentana:Cadena,Opcional Tipo:Byte = 0,Opcional HWND:Entero = 0):Booleano
-'	Seleccionar Tipo
-'		Caso 0 ; Devolver IsWindow(&gt;HWND?HWND:(&gt;v_Seleccionada?v_Seleccionada:VentanaBuscar(TituloVentana)))
-'		Caso 1 ; Devolver IsWindowEnabled(&gt;HWND?HWND:(&gt;v_Seleccionada?v_Seleccionada:VentanaBuscar(TituloVentana)))
-'		Caso 2 ; Devolver IsWindowVisible(&gt;HWND?HWND:(&gt;v_Seleccionada?v_Seleccionada:VentanaBuscar(TituloVentana)))
-'		Caso 3 ; Devolver IsWindowUnicode(&gt;HWND?HWND:(&gt;v_Seleccionada?v_Seleccionada:VentanaBuscar(TituloVentana)))
-'	FinSeleccionar
-'FinProc
 
 Proc PantallaApagar(Opcional Estado:Booleano = Verd):Booleano
 	EstablecerError(ERROR_SUCCESS)
@@ -183,13 +166,12 @@ Proc ControlBuscar(VentanaPadre,TituloControl:Cadena,Opcional ClaseVentanaPadre,
 					0,_
 					ClaseVentanaPadre,_
 					TituloControl)
-	h_ControlF = Resultado
 FinProc
 
-Proc ControlClic(Opcional Puntero:Entero,Opcional Cantidad:Entero = 1,Opcional Tiempo:Entero = 0)
+Proc ControlClic(Puntero:Entero,Opcional Cantidad:Entero = 1,Opcional Tiempo:Entero = 0)
 	Var i:Entero
 	Contar i = 1 a Cantidad
-	      SendMessage(&gt;Puntero?Puntero:h_ControlF,BM_CLICK,0,0)
+	      SendMessage(Puntero,BM_CLICK,0,0)
 	      Sleep(Tiempo)
 	Seguir
 FinProc
@@ -197,7 +179,7 @@ FinProc
 Proc ControlEnviar(Texto:Cadena,Opcional Puntero:Entero,Opcional Cantidad:Entero = 1,Opcional Tiempo:Entero = 0)
 	Var i:Entero
 	Contar i = 1 a Cantidad
-	       SendMessage(&gt;Puntero?Puntero:h_ControlF,WM_SETTEXT,0,CadPtr(Texto))
+	       SendMessage(Puntero,WM_SETTEXT,0,CadPtr(Texto))
 	       Sleep(Tiempo)
 	Seguir
 FinProc
@@ -206,22 +188,22 @@ Proc ControlRecibir(Puntero:Entero,Opcional Longitud:Entero = 50,Opcional Cantid
 	Var i:Entero,Texto:Cadena
 	Texto = Espacio(Longitud)
 	Contar i = 1 a Cantidad
-	       SendMessage(&gt;Puntero?Puntero:h_ControlF,WM_GETTEXT,Longitud,CadPtr(Texto))
+	       SendMessage(Puntero,WM_GETTEXT,Longitud,CadPtr(Texto))
 	       Sleep(Tiempo)
 	Seguir
 	Devolver Texto
 FinProc
 
 Proc ControlHabilitar(Opcional Puntero:Entero)
-     EnableWindow(&gt;Puntero?Puntero:h_ControlF,Verd)
+     EnableWindow(Puntero,Verd)
 FinProc
 
 Proc ControlDeshabilitar(Opcional Puntero:Entero)
-     EnableWindow(&gt;Puntero?Puntero:h_ControlF,Falso)
+     EnableWindow(Puntero,Falso)
 FinProc
 
-Proc ControlEstado(Estado:Entero,Opcional Ptr:Entero)
-	 ShowWindow(&gt;Ptr?Ptr:h_ControlF,Estado)
+Proc ControlEstado(Ptr,Estado:Entero)
+	 ShowWindow(Ptr,Estado)
 FinProc
 
 Proc ClicIzquierdo(Opcional Cantidad:Entero = 1,Opcional Velocidad:Entero = 0)
