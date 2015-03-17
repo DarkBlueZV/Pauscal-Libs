@@ -35,7 +35,7 @@ Privado:
 	
 	Proc BrainFuck_LetraACode(Referencia Caracter:Cadena):Cadena
 		Var i:Entero,Cad:Cadena
-		Cad = RepCarac("+",Ascii(Caracter))
+		Cad = RepCarac(43,Ascii(Caracter))
 		Devolver (Cad + ".&gt;")
 	FinProc
 

@@ -67,6 +67,14 @@ Proc RealCad2(Referencia lNum:Real):Cadena
   Resultado=Res
 FinProc
 
+Proc EntMatByte(Int:Entero):Byte[]
+	Var Matriz[]:Byte
+	ReDim Matriz,4
+	Matriz@ = Int@
+	ReDim Preservar Matriz,4
+	Resultado = Matriz
+FinProc
+
 'By Yuki!
 Proc WordCad(Number:WordSig):Cadena
 	Devolver UnicodeACad(vbaStrI2(Number))

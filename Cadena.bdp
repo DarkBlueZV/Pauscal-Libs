@@ -23,27 +23,12 @@ Privado:
 P$FAblico:
 
 'By Yuki!
-'Este procedimiento fue creado para asignar los datos de una variable de cade a otra.
-'Agradecimientos a Jmetin por ense$F1arme el funcionamiento de las cadenas.
-'Este procedimiento se utiliza al igual que el operador "=", pero funciona mas rapido.
-'Ejemplo, Cadena1 = Cadena2
-'Cadena1 obtiene los datos de cadena 2, con el operador "=" se tarda mas que con este procedimiento.
-'Se acabo el problema al trabajar con cadenas! :D
-'Nota: Se recomienda el uso de este procedimiento cuando se trabaje con cadenas de grandes longitudes.
-'Nota2: Parece que esta funci$F3n AVECES (AVECES &lt;&lt;&lt;) Causa un error al acceder en la memoria, usar con precauci$F3n.
-'Nota3: Procedimiento experimental.
-Proc CadAsignar(Referencia Str1,Str2:Cadena)
-	Var @Ptr1:Entero
-	Ptr1@ = Str1@
-	Ptr1 = CadPtr(Str2)
-FinProc
-
-'By Yuki!
 Proc RepCarac(Crc:Byte,Longitud:Entero):Cadena
 	Resultado = Espacio(Longitud)
 	FillMemory(CadPtr(Resultado),Longitud,Crc)
 FinProc
 
+'By Paul Guerra
 Proc CadLong(Referencia lpStr:Cadena):Entero
   Var @Ptr,Ret:Entero
   Ret=CadPtr(lpStr)
@@ -64,7 +49,7 @@ FinProc
 'FinProc
 
 ' Este es el anterior, parece ser que el metodo de arriba es mas eficiente con la velocidad,
-' Pero como alarga la longitud de la cadena "invalidamente" podria generar errores grabes.
+' Pero como alarg$E1r la longitud de la cadena "invalidamente" podria generar errores graves.
 Proc Espacio(Longitud:Entero):Cadena
    Var Ptr:StrAndIntToArrayByte
    ReDim Ptr.Bite,Longitud
@@ -104,8 +89,6 @@ Proc Ascii(Referencia lpStr:Cadena):Byte
   FinSi
 FinProc
 
-' Esta funci$F3n se podria realizar de manera mas nativa, pero Pauscal tiene serios problemas
-' Al liberar matrices, por lo que se deja en defecto.
 Proc IzquierdaCad(Referencia Texto:Cadena,Longit:EnteroSig):Cadena
   Si (CadLong(Texto)&lt;=Longit) Devolver Texto
   Devolver ParteCad(Texto,1,Longit)
@@ -155,6 +138,24 @@ Proc ParteCad(Referencia Texto:Cadena, Comienzo:EnteroSig, Opcional Longit:Enter
 	Resultado = Espacio(Longit)
 	CopyMemory(Ptr,ln+Comienzo-1,Longit)
 FinProc
+
+'ExtraerCad - ParteCad Alternativo By Yuki
+Proc ExtraerCad(Referencia Texto:Cadena,Comienzo:Entero,Opcional Longitud:Entero):Cadena
+	Var Matriz[],Arreglo[]:Byte,i,l,Longitudinal:Entero
+	Si (Texto = "") Entonces Salir ; SiNo ; Longitudinal = CadLong(Texto)
+	Si (Comienzo &lt;= 0) Entonces Comienzo = 1
+	Si (Comienzo &gt; Longitudinal) Entonces Salir
+	Si (Longitud &lt;= 0) Entonces Longitud = Longitudinal
+	Matriz = MatrizByteDeCadena(Texto)
+	ReDim Arreglo,Longitud
+	Comienzo = Comienzo - 1
+	Contar i = (Comienzo) a Comienzo+Longitud
+		Arreglo[l] = Matriz[i]
+		l = l + 1
+	Seguir
+	Devolver CadenaDeMatrizByte(Arreglo)
+FinProc
+
 
 ' BuscarEnCad Alternativo by Yuki
 ' No son necesarias tantas sentencias, el procedimient parteCad ya hace el trabajo.

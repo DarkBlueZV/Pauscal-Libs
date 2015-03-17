@@ -1,7 +1,4 @@
-<Datos><Nombre></Nombre><Icono>AA==</Icono><Version><Mayor>0</Mayor><Menor>0</Menor><Revision>0</Revision><AutoIncr>0</AutoIncr></Version><Info/><Contenido>'Importar "Apis.prp"
-'Importar "Constantes.prp"
-Importar "Cadena.prp"
-'Importar "Macros.prp"
+<Datos><Nombre></Nombre><Icono>AA==</Icono><Version><Mayor>0</Mayor><Menor>0</Menor><Revision>0</Revision><AutoIncr>0</AutoIncr></Version><Info/><Contenido>Importar "Cadena.prp"
 
 $24ADV-
 
@@ -58,13 +55,19 @@ FinProc
 
 Proc ArchivoLeer(ID:Entero,Opcional Longitud:Entero):Cadena
 	Si ID = INVALID_HANDLE Entonces Salir
+	Si SetFilePointer(ID,0,Nulo,FILE_CURRENT)=-1 Salir
+	Si SetFilePointer(ID,0,Nulo,FILE_BEGIN)&lt;&gt;0 Salir
 	Resultado = Espacio(&gt;Longitud?Longitud:GetFileSize(ID,Nulo))
 	ReadFile(ID,CadPtr(Resultado),&gt;Longitud?Longitud:GetFileSize(ID,Nulo),0,Nulo)
+	SetFilePointer(Id,0,Nulo,FILE_BEGIN)
 FinProc
 
 Proc ArchivoEscribir(ID:Entero,Referencia Datos:Cadena):Entero
 	Si ID = INVALID_HANDLE Entonces Salir
+	Si SetFilePointer(ID,0,Nulo,FILE_CURRENT)=-1 Salir
+	Si SetFilePointer(ID,0,Nulo,FILE_BEGIN)&lt;&gt;0 Salir
 	WriteFile(ID,CadPtr(Datos),CadLong(Datos),Resultado,Nulo)
+	SetFilePointer(Id,0,Nulo,FILE_BEGIN)
 FinProc
 
 Proc ArchivoTama$F1o(ID:Entero):Entero

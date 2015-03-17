@@ -207,6 +207,7 @@ Estruc POINTAPI _
 ,x:Entero _
 ,y:Entero
 
+
 Estruc MSG _
 ,hwnd:Entero _
 ,message:Entero _
@@ -373,10 +374,6 @@ Estruc PROCESSENTRY32,_
     szExeFile[260]:Byte
 
 Estruc SECURITY_ATTRIBUTES_B,nLength,lpSecurityDescriptor:Entero,bInheritHandle:Booleano
-'typedef struct _FILETIME {
-  'DWORD dwLowDateTime;
-  'DWORD dwHighDateTime;
-'Estruc FILETIME, dwLowDateTime,dwHighDateTime:Entero
 
 Estruc GdiplusStartupInput _
  ,GdiplusVersion:Entero _

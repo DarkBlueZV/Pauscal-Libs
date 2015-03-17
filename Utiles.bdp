@@ -7,9 +7,7 @@ Privado:
 
 Const DivVal=1000000000
 Var Time:Entero
-
-Prototipo EjecutarProc():Entero
-
+Prototipo EjecutarProc:Entero
 Uni$F3n Union, Union_e:Entero, Union_b[4]:Byte, Union_w[2]:Word
 
 P$FAblico:
@@ -37,16 +35,6 @@ Proc EsPar(N$FAmero:Entero):Booleano
 	SiNo
 		Devolver Falso
 	FinSi
-FinProc
-
-'Decrementa el valor de una variable.
-Proc Decrementar(i_Valor:Entero,Opcional i_b_Valor:Entero = 1)
-   i_Valor = i_Valor - i_b_Valor
-FinProc
-
-'Incrementa el valor de una variable.
-Proc Incrementar(i_Valor:Entero,Opcional i_b_Valor:Entero = 1)
-   i_Valor = i_Valor + i_b_Valor
 FinProc
 
 Proc RGB(Rojo,Verde,Azul:Byte):Entero
@@ -182,7 +170,6 @@ Proc HiloCrear(Ptr:Entero,Opcional Datos:Entero)
 	SHCreateThread(Ptr,Datos,&amp;00000001,0)
 FinProc
 
-
 Proc LlamarAPI(Referencia Libreria:Cadena,Referencia Funci$F3n:Cadena,Referencia Parametros[]:Entero):Entero
 	Var Matriz[]:Byte,EjecutarProc:EjecutarProc
 	Var PtrProc,PtrDll:Entero ' Punteros a las Dll y Procedimientos
@@ -192,27 +179,26 @@ Proc LlamarAPI(Referencia Libreria:Cadena,Referencia Funci$F3n:Cadena,Referencia
 	Si PtrDll = 0 Entonces Salir
 	PtrProc = GetProcAddress(PtrDll, Funci$F3n) 'PtrProc = CargarProc
 	Si PtrProc = 0 Entonces Salir
-	'PunteroMatriz = Matriz[0]@
+	FreeLibrary(PtrDll) ' Liberamos la dll (No la necesitamos ya que tenemos el puntero a la funci$F3n)
 	Ptr@ = Matriz[0]@
-	Ptr.Union_e = &amp;59595958
+	Ptr.Union_e = &amp;59595958 ' = 1499027800
 	Ptr@ = Ptr@ + 4
-	Ptr.Union_w[0] = &amp;5059
+	Ptr.Union_w[0] = &amp;5059  ' = 20569
 	Ptr@ = Ptr@ + 2
 	Contar i = L$EDmite(Parametros) A 0 Dec
 		Si i = -1 Salir Contar
-		Ptr.Union_b[0] = &amp;68
-		Ptr@ = Ptr@ + 1
-		Ptr.Union_e = Parametros[i]
-		Ptr@ = Ptr@ + 4
+		Ptr.Union_b[0] = &amp;68 ' PUSH 
+		Ptr@ = Ptr@ + 1 ' PUSH + 
+		Ptr.Union_e = Parametros[i] ' PUSH + PARAMETRO@
+		Ptr@ = Ptr@ + 4 ' Siguiente parametro...
 	Seguir
-	Ptr.Union_b[0] = &amp;E8
-	Ptr@ = Ptr@ + 1
-	Ptr.Union_e = PtrProc - Ptr@ - 4
+	Ptr.Union_b[0] = &amp;E8 ' CALL
+	Ptr@ = Ptr@ + 1 ' CALL +
+	Ptr.Union_e = PtrProc - Ptr@ - 4 ' CALL + PTRPROC
 	Ptr@ = Ptr@ + 4
-	Ptr.Union_b[0] = &amp;C3
-	Ptr@ = Ptr@ + 1
+	Ptr.Union_b[0] = &amp;C3 ' RETN
+	'Ptr@ = Ptr@ + 1 ' &lt; L$EDnea de c$F3digo basura...
 	EjecutarProc@ = Matriz[0]@
 	Resultado = EjecutarProc()
-	FreeLibrary(PtrDll)
 FinProc
 </Contenido></Datos>

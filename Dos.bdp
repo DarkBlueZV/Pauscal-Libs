@@ -182,4 +182,10 @@ P$FAblico:
     Esc:SetY
   FinProp
 FinClase
+
+Proc ConsolaEscribir(Referencia Texto:Cadena):Entero
+	AttachConsole(-1)
+	WriteConsole(GetStdHandle(-11),Crlf + Texto,CadLong(Texto),Resultado,0)
+	FreeConsole()
+FinProc
 </Contenido></Datos>

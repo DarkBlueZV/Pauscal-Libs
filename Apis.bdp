@@ -1,5 +1,6 @@
 <Datos><Nombre></Nombre><Icono>AA==</Icono><Version><Mayor>0</Mayor><Menor>0</Menor><Revision>0</Revision><AutoIncr>0</AutoIncr></Version><Info/><Contenido>Importar "Estructuras.prp"
 
+Proc AttachConsole(dwProcessId:Entero):Booleano, "Kernel32.dll"
 Proc GetExitCodeProcess(hProcess,lpExitCode:Entero):Entero, "Kernel32.dll"
 Proc GetNextWindow(hWnd,wCmd:Entero):Entero, "User32.dll" "GetWindow"
 Proc GetTopWindow(hWnd:Entero):Entero, "User32.dll"
