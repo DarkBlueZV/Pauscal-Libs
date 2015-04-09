@@ -25,19 +25,19 @@ P$FAblico:
 
 ' Inicia el registro de teclas.
 ' ATENCI$D3N!: Llamar a [Programa.Ejecutar] para que el sistema procese los registros de teclas.
-Proc TecladoIniciar(PtrProc:Entero)
+Proc Teclado_Iniciar(PtrProc:Entero)
 	PtrProt@ = PtrProc
 	HookPtr = SetWindowsHookEx(13, KeyboardHook@, GetModuleHandle(""), 0)
 FinProc
 
 ' Termina el registro de teclas.
-Proc TecladoTerminar()
+Proc Teclado_Terminar()
 	PtrProt@ = 0
 	UnhookWindowsHookEx(HookPtr)
 FinProc
 
 
-Proc TecladoTraducir(i:Byte):Cadena
+Proc Teclado_Traducir(i:Byte):Cadena
 Seleccionar i
 	Caso 13  ; Devolver "[ENTER]"
 	Caso 81  ; Devolver &gt;GetAsyncKeyState(160) Or GetKeyState(20)?"Q":"q"

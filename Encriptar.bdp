@@ -56,20 +56,23 @@ FinProc
 'FinProc
 
 Proc CadROTN(Referencia sData:Cadena,Valor:Entero,Opcional Encriptar:Booleano = Verd):Cadena
+	Si sData = "" Entonces GenerarError 0,"Error: primer parametro es vacio."
 	Devolver &gt;Encriptar?ROTNEncrypt(sData,Valor):ROTNDecrypt(sData,Valor)
 FinProc
 
 Proc BrainFuck_TextoACode(Referencia Texto:Cadena):Cadena
-Var Letra,Cad:Cadena,Contador:Entero
-Contar Contador = 1 a CadLong(Texto)
-	Letra = ParteCad(Texto,Contador,1)
-	Cad = Cad  + BrainFuck_LetraACode(Letra)
-Seguir
+	Var Letra,Cad:Cadena,Contador:Entero
+	Si Texto = "" Entonces GenerarError 0,"Error: primer parametro es vacio."
+	Contar Contador = 1 a CadLong(Texto)
+		Letra = ParteCad(Texto,Contador,1)
+		Cad = Cad  + BrainFuck_LetraACode(Letra)
+	Seguir
 	Devolver Cad
 FinProc
 
 Proc BrainFuck_CodeATexto(Referencia Code:Cadena):Cadena
 	Var Matriz[]:Cadena,i:Entero
+	Si Code = "" Entonces GenerarError 0,"Error: primer parametro es vacio."
 	Matriz = Separar(Code,".&gt;")
 	Resultado = ""
 	Contar i = 0 a L$EDmite(Matriz)

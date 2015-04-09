@@ -9,6 +9,7 @@ $24ADV-
 Importar "Convertir.prp"
 
 'Funciones que convierten de Little Endian (x86) a Big Endian (TCP/IP)
+Const wVersionRequested = 2*256+2
 
 Proc LE2BE(d[]:Byte):Byte[]
 	Var ret[]:Byte
@@ -17,7 +18,7 @@ Proc LE2BE(d[]:Byte):Byte[]
 	Contar i = 0 a LongMat(d) - 1
 		ret = [d[i]] + ret
 	Seguir
-	Resultado = ret
+	Resultado = ret	
 FinProc
 
 Proc W_LE2BE(n:Word):Word
@@ -30,14 +31,12 @@ Proc W_LE2BE(n:Word):Word
 FinProc
 
 'Funciones que inicializan y finalizan los sockets
+'Establecen que solo puede haber una inicializaci$F3n de sockets por programa.
 
 Var CantidadInicializaciones:Entero
 
 Proc InicializarSoquetes()
 	Var wsaData:WSAData
-	
-	Const wVersionRequested = 2*256+2
-	
 	CantidadInicializaciones = CantidadInicializaciones + 1
 	Si CantidadInicializaciones &lt;&gt; 1 Entonces Salir
 	Si WSAStartup(wVersionRequested, wsaData) &lt;&gt; 0 Entonces GenerarError errSoquet
@@ -63,7 +62,7 @@ Clase Soquet
 Privado:
 	'Constructor de Soquet, recibe una cadena que representa al host destino y
 	'un entero que representa al puerto al que se conecta
-	'Retorna una instancia de Soquet
+	'Retorna una instancia de Soquet en handle.
 	Proc Soquet(destino:Cadena, ppuerto:Entero)
 		Var error, i:EnteroSig
 		Var addr:SOCKADDR
@@ -83,7 +82,7 @@ Privado:
 		addr.sin_port = W_LE2BE(ppuerto)
 		Puertov4 = ppuerto
 		
-		Contar i = 0 a LongMat(IPs) - 1
+		Contar i = 0 a L$EDmite(IPs)
 			addr.sin_addr = IPs[i]
 			error = connect(handle, addr, Long(addr))
 			Si error &lt;&gt; SOCKET_ERROR Entonces
@@ -146,45 +145,8 @@ P$FAblico:
 	'Recibe como par$E1metro una cadena
 	'Retorna la cantidad de bytes enviados
 	Proc Escribir(c:Cadena):Entero
-		Var ret:Entero
-		
-		ret = send(handle, CadPtr(c), CadLong(c), 0)
-		'TODO: chequear ret
-		
-		Resultado = ret
-	FinProc
-	
-	'Recibe como par$E1metro un Entero
-	'Retorna la cantidad de bytes enviados
-	Proc EscribirEnt(c:Entero):Entero
-		Var ret:Entero
-		
-		ret = send(handle, c@, Long(c), 0)
-		'TODO: chequear ret
-		
-		Resultado = ret
-	FinProc
-	
-	'Recibe como par$E1metro un Real
-	'Retorna la cantidad de bytes enviados
-	Proc EscribirReal(c:Real):Entero
-		Var ret:Entero
-		
-		ret = send(handle, c@, Long(c), 0)
-		'TODO: chequear ret
-		
-		Resultado = ret
-	FinProc
-	
-	'Recibe como par$E1metro un Byte
-	'Retorna la cantidad de bytes enviados
-	Proc EscribirByte(c:Byte):Entero
-		Var ret:Entero
-		
-		ret = send(handle, c@, Long(c), 0)
-		'TODO: chequear ret
-		
-		Resultado = ret
+		Resultado = send(handle, CadPtr(c), CadLong(c), 0)
+		Si Resultado &lt;= 0 Entonces GenerarError errSoquet
 	FinProc
 	
 	'Recibe como par$E1metro 'n' un entero
@@ -194,45 +156,10 @@ P$FAblico:
 		Var ret:Entero
 		buff = Espacio(n)
 		ret = recv(handle, CadPtr(buff), n, 0)
-		Si ret = 0 Entonces GenerarError errSoquet
+		Si ret &lt;= 0 Entonces GenerarError errSoquet
 		Resultado = IzquierdaCad(buff,ret)
 	FinProc
-	
-	'Leer un entero del Soquet y lo retorna
-	Proc LeerEnt():Entero
-		Var buff:Entero
-		Var ret:Entero
-		
-		ret = recv(handle, buff@, Long(buff), 0)
-		'TODO: chequear ret
-		
-		Resultado = buff
-	FinProc
-	
-	'Leer un real del Soquet y lo retorna
-	Proc LeerReal():Real
-		Var buff:Real
-		Var ret:Entero
-		
-		ret = recv(handle, buff@, Long(buff), 0)
-		'TODO: chequear ret
-		
-		Resultado = buff
-	FinProc
-	
-	'Leer un Byte del Soquet y lo retorna
-	Proc LeerByte():Byte
-		Var buff:Byte
-		Var ret:Entero
-		
-		ret = recv(handle, buff@, Long(buff), 0)
-		'TODO: chequear ret
-		
-		Resultado = buff
-	FinProc
-	
-	'Leer una linea del Soquet
-	'Retorna la cadena resultado
+
 	Proc LeerLn():Cadena
 		Var buff:Cadena
 		Var ret:Entero
@@ -287,7 +214,6 @@ P$FAblico:
 		closesocket(handle)
 		handle = SOCKET_ERROR
 	FinProc
-
 FinClase
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''

@@ -1,7 +1,10 @@
 <Datos><Nombre></Nombre><Icono>AA==</Icono><Version><Mayor>0</Mayor><Menor>0</Menor><Revision>0</Revision><AutoIncr>0</AutoIncr></Version><Info/><Contenido>Const CrLf=#13#10
+Const Cr = #13
+Const Lf = #10
 Const Null=#0
 Const Verdad = &amp;1,Verdadero = &amp;1
-Const Defecto = &amp;0
+Const Defecto = 0
+Const S_OK = 0
 
 ' SHAutoComplete
 Const SHACF_AUTOAPPEND_FORCE_OFF = &amp;80000000
@@ -445,7 +448,7 @@ Const EM_SETSEL = 177
 Const EM_SETTABSTOPS = 203
 Const EM_SETWORDBREAKPROC = 208
 Const EM_UNDO = 199
-
+Const CW_USEDEFAULT = &amp;80000000
 'Const EM_FMTLINES= &amp;C8
 'Const EM_LINEFROMCHAR= &amp;C9
 'Const EM_SETTABSTOPS= &amp;CB
@@ -627,14 +630,29 @@ Const DT_EXPANDTABS = &amp;40
 ' SOQUETES
 
 Const errSoquet = &amp;C4861000
-
+Const INVALID_SOCKET = -1
 Const SOCKET_ERROR = -1
-
-Const AF_INET = 2		'Familia de Direcciones de Internet
-Const INADDR_ANY = 0	'Se usa para que el sistema determine una direcci$F3n local (Se utiliza mucho en procesos servidores)
-Const SOCK_STREAM = 1	'Servicio de flujo confiable
-Const SOCK_DGRAM = 2 	'Servicio de Datagramas (no confiable)
-
+Const AF_UNSPEC = 0      'The address family is unspecified.
+Const AF_INET = 2		    'Familia de Direcciones de Internet
+Const AF_IPX = 6			 '
+Const AF_APPLETALK = 16	 '
+Const AF_NETBIOS = 17	 '
+Const AF_INET6 = 23		 '
+Const AF_IRDA = 26		 '
+Const AF_BTH = 32			 '
+Const INADDR_ANY = 0	    'Se usa para que el sistema determine una direcci$F3n local (Se utiliza mucho en procesos servidores)
+Const SOCK_STREAM = 1	 'Servicio de flujo confiable [TCP]
+Const SOCK_DGRAM = 2 	 'Servicio de Datagramas (no confiable) [UDP]
+Const SOCK_RAW = 3		 '
+Const SOCK_RDM = 4		 '
+Const SOCK_SEQPACKET = 5 '
+Const IPPROTO_ICMP = 1	 '
+Const IPPROTO_IGMP = 2   '
+Const BTHPROTO_RFCOMM = 3'
+Const IPPROTO_TCP = 6	 '
+Const IPPROTO_UDP = 17	 '
+Const IPPROTO_ICMPV6 = 58'
+Const IPPROTO_RM = 113	 '
 'Las siguientes constantes se utilizan unicamente en la declaraci$F3n del tipo de dato
 'WSAData_Type (ver declaraciones de tipos)
 Const WSADESCRIPTION_LEN = 256

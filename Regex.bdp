@@ -1,0 +1,168 @@
+<Datos><Nombre></Nombre><Icono>AA==</Icono><Version><Mayor>0</Mayor><Menor>0</Menor><Revision>0</Revision><AutoIncr>0</AutoIncr></Version><Info/><Contenido>'Importar "Utiles.prp"
+Importar "Matrices.prp"
+'extern pcre *pcre_compile(const char *, int, const char **, int *, const unsigned char *);
+'extern int  pcre_config(int, void *);
+'extern int  pcre_copy_named_substring(const pcre *, const char *, int *, int, const char *, char *, int);
+'extern int  pcre_copy_substring(const char *, int *, int, int, char *, int);
+'extern int  pcre_exec(const pcre *, const pcre_extra *, const char *, int, int, int, int *, int);
+'extern void pcre_free_substring(const char *);
+'extern void pcre_free_substring_list(const char **);
+'extern int  pcre_fullinfo(const pcre *, const pcre_extra *, int, void *);
+'extern int  pcre_get_named_substring(const pcre *, const char *, int *, int,  const char *, const char **);
+'extern int  pcre_get_stringnumber(const pcre *, const char *);
+'extern int  pcre_get_substring(const char *, int *, int, int, const char **);
+'extern int  pcre_get_substring_list(const char *, int *, int, const char ***);
+'extern int  pcre_info(const pcre *, int *, int *);
+'extern const unsigned char *pcre_maketables(void);
+'extern pcre_extra *pcre_study(const pcre *, int, const char **);
+'extern const char *pcre_version(void);
+
+Const PCRE_CASELESS				= &amp;0001
+Const PCRE_MULTILINE				= &amp;0002
+Const PCRE_DOTALL					= &amp;0004
+Const PCRE_EXTENDED				= &amp;0008
+Const PCRE_ANCHORED				= &amp;0010
+Const PCRE_DOLLAR_ENDONLY		= &amp;0020
+Const PCRE_EXTRA					= &amp;0040
+Const PCRE_NOTBOL					= &amp;0080
+Const PCRE_NOTEOL					= &amp;0100
+Const PCRE_UNGREEDY				= &amp;0200
+Const PCRE_NOTEMPTY				= &amp;0400
+Const PCRE_UTF8					= &amp;0800
+Const PCRE_NO_AUTO_CAPTURE		= &amp;1000
+Const PCRE_NO_UTF8_CHECK		= &amp;2000
+
+'/* Exec-time and get/set-time error codes */
+
+Const PCRE_ERROR_NOMATCH        = (-1)
+Const PCRE_ERROR_NULL           = (-2)
+Const PCRE_ERROR_BADOPTION      = (-3)
+Const PCRE_ERROR_BADMAGIC       = (-4)
+Const PCRE_ERROR_UNKNOWN_NODE   = (-5)
+Const PCRE_ERROR_NOMEMORY       = (-6)
+Const PCRE_ERROR_NOSUBSTRING    = (-7)
+Const PCRE_ERROR_MATCHLIMIT     = (-8)
+Const PCRE_ERROR_CALLOUT        = (-9)  '/* Never used by PCRE itself */
+Const PCRE_ERROR_BADUTF8        = (-10)
+Const PCRE_ERROR_BADUTF8_OFFSET = (-11)
+
+'1_ Patron a compilar.
+'2_ Opci$F3n a utilizar.
+'3_ Variable que almacenara un puntero al mensaje de error si se produce.
+'4_ Valor del offset que genera error.
+'5_ ??
+Proc pcre_compile(Referencia Pattern:Cadena,Option:Entero,Referencia PtrToErrorMsg,PtrToErrorOffset:Entero,CaracterTable:Entero):Entero, "pcre3.dll"
+'  sd = pcre_study(
+'    re,             /* result of pcre_compile() */
+'    0,              /* no options */
+'    &amp;error);        /* set to NULL or points to a message */
+Proc pcre_study(PtrCompiled,Option:Entero,Referencia PtrError:Entero):Entero, "pcre3.dll"
+Proc pcre_free(PtrCompiled:Entero):Entero,"pcre.dll"
+
+Estruc pcre_extra,_
+		 flags,_ 						' /* Bits for which fields are set */			'
+		 study_data,_					' /* Opaque data from pcre_study() */			'
+		 match_limit,_					' /* Maximum number of calls to match() */	'
+		 callout_data,_				' /* Data passed back in callouts */			'
+		 tables:Entero					' /* Pointer to character tables */				'
+		 
+'int pcre_copy_substring (const char * sujeto, int * ovector, int stringcount, int stringnumber, char * buffer, int buffersize); 
+Proc pcre_copy_substring(Referencia sujeto:Cadena,PtrVector,StrContador,StrNumero:Entero,Referencia Buffer:Cadena,BuffSize:Entero):Entero, "pcre3.dll"
+Proc pcre_version:Entero, "pcre3.dll"
+
+'rc = pcre_exec(
+'re, /* el patr$F3n compilado */
+'NULL, /* sin datos adicionales - que no estudiamos el patr$F3n */
+'data, /* la cadena de asunto */
+'strlen(data), /* la longitud del sujeto */
+'0, /* Comience en la posici$F3n 0 en el sujeto */
+'0, /* default options */
+'ovector, /* vector de salida para subcadena informaci$F3n */
+'OVECCOUNT); /* n$FAmero de elementos en la salida vector */
+
+'void pcre_free_study(pcre_extra *extra);
+Proc pcre_free_study(ptrExtra:Entero),"pcre3.dll"
+'void pcre_free_substring(const char *stringptr);
+Proc pcre_free_substring(stringptr:Entero),"pcre3.dll"
+Proc pcre_exec(PtrComile:Entero,Referencia:pcre_extra,Referencia:Cadena,,,,,:Entero):Entero, "pcre3.dll"
+
+'Var Regex_Error[]:Cadena
+Proc Regex_Versi$F3n:Cadena
+	Devolver CadDePtr(pcre_version)
+FinProc
+
+Proc Regex_Escanear(Referencia Texto,Patron:Cadena,Opcional InicioReg,Opciones:Entero):Cadena[]
+	Var PtrCompile,PtrExec,PtrStringError,OffsetErrorValue,LenTxt,IntSubString,PtrStudy,i,Vector[]:Entero,@Extra:pcre_extra',Str[]:Cadena
+	Si Patron = "" Entonces GenerarError 0,"[Regex_Escanear] el primer parametro es vacio." ; Salir
+	Si Texto = "" Entonces GenerarError 1,"[Regex_Escanear] el segundo parametro es vacio." ; Salir
+	LenTxt = CadLong(Texto)
+	' Compilamos el patron.
+	PtrCompile = pcre_compile(Patron,Opciones,PtrStringError,OffsetErrorValue,0)
+	Si PtrStringError &gt; 0 Entonces
+		' Devolvemos el c$F3digo del error [0] y el offset del error en el patron [1].
+		Resultado = [CadDePtr(PtrStringError),EntCad(OffsetErrorValue)]
+		GenerarError 2,"[Regex_Escanear] patron invalido."
+		Salir
+	FinSi
+	' Si no existe un error, continuamos el trabajo.
+	Si PtrCompile &lt;&gt; 0 Entonces
+		ReDim Vector,3 * LenTxt
+		'ReDim Resultado,1
+		PtrStudy = pcre_study(PtrCompile,0,0)
+		Si PtrStudy &lt;&gt; 0 Entonces
+			Extra@ = PtrStudy
+			PtrExec = pcre_exec(PtrCompile,Extra,Texto,LenTxt,InicioReg,Opciones,Vector[0]@,LongMat(Vector))
+			IrHacia ProcesarExec
+		SiNo
+			' Ejecutamos el patron.
+			PtrExec = pcre_exec(PtrCompile,Nulo,Texto,LenTxt,InicioReg,Opciones,Vector[0]@,LongMat(Vector))
+ProcesarExec:
+			Si PtrExec &lt; 0 Entonces
+				' Si se produjo un error, salir sin hacer nada.
+				Salir
+			SiNo
+				' Esta secci$F3n de c$F3digo recupera la longitud requerida del buffer.
+				AdmErr
+					Resultado = [" "]
+					Repetir
+						IntSubString = pcre_copy_substring(Texto,Vector[0]@,PtrExec,i,Resultado[i],CadLong(Resultado[i]))
+						Seleccionar IntSubString
+							Caso PCRE_ERROR_NOMEMORY
+								Resultado[i] = Resultado[i] + " "
+							Caso PCRE_ERROR_NOSUBSTRING
+								Salir Repetir
+							Caso Otro
+								'Mensaje(EntCad(IntSubString))
+								Resultado[i] = ParteCad(Resultado[i],1,IntSubString)
+								i = i + 1
+								ReDim Preservar Resultado,i + 1
+						FinSeleccionar
+					PorSiempre
+					Salir
+				Controlar
+					Mensaje("Error inesperado al ejecutar Regex." + CrLf + _
+					"Esto lamentablemente no es una falla de c$F3digo, es un error del lenguaje de programaci$F3n." + CrLf + _
+					"Posiblemente en futuras versiones pueda ser solucionado.","Error",48)
+					Salir
+				FinAdmErr
+			FinSi
+		FinSi
+	FinSi
+FinProc
+
+'Clase Regex,Result[]:Cadena
+'	ClaseVar Texto:Cadena
+'	ClaseVar Patron:Cadena
+'	ClaseVar Longitud:Cadena
+'	ClaseVar Resultados[]:Cadena
+'	ClaseVar Error:Booleano
+'	Proc Buscar
+'		AdmErr
+'			Resultados = Regex_Escanear(Texto,Patron)
+'		Controlar
+'			Error = Verd ; Salir
+'		FinAdmErr
+'			Longitud = L$EDmite(Resultados)
+'	FinProc
+'FinClase
+</Contenido></Datos>

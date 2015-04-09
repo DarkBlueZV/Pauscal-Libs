@@ -8,194 +8,128 @@ $24ADV-
 ' # REGLeerClave # ========================================================================
 ' Estado: Funci$F3nal
 ' Autor: PowerDeath
+' Optimizaci$F3n: PowerDeath
 ' # FIN # =================================================================================
-Proc REGLeerClave(s_Registro:Entero,Seccion,Clave:Cadena):Cadena
-Var h_ValueOpen,s_Check,c_Value,Tipo,c_Ent_Return:Entero,c_Cad_Return:Cadena
-s_Check = RegOpenKey(s_Registro,Seccion,0,KEY_READ,h_ValueOpen)
-Si (s_Check &lt;&gt; ERROR_SUCCESS) Salir
-'c_Cad_Return = RepCarac(0,255)
-s_Check = RegQueryValueEx(h_ValueOpen,Clave,0,Tipo,c_Cad_Return,c_Value)
-Si (s_Check &lt;&gt; ERROR_SUCCESS) Salir
-Seleccionar Tipo
-   Caso REG_SZ
-      c_Cad_Return = Espacio(c_Value)
-      s_Check = RegQueryValueEx(h_ValueOpen,Clave,0,0,c_Cad_Return,c_Value)
-      Si (s_Check &lt;&gt; ERROR_SUCCESS) Salir
-      RegCloseKey(h_ValueOpen)
-      Devolver c_Cad_Return
-   Caso REG_EXPAND_SZ
-      c_Cad_Return = Espacio(c_Value)
-      s_Check = RegQueryValueEx(h_ValueOpen,Clave,0,0,c_Cad_Return,c_Value)
-      Si (s_Check &lt;&gt; ERROR_SUCCESS) Salir
-      RegCloseKey(h_ValueOpen)
-      Devolver c_Cad_Return
-   Caso REG_BINARY
-      s_Check = RegQueryValueExEnt(h_ValueOpen,Clave,0,0,c_Ent_Return,c_Value)
-      Si (s_Check &lt;&gt; ERROR_SUCCESS) Salir
-      RegCloseKey(h_ValueOpen)
-      Devolver EntCad(c_Ent_Return)
-   Caso REG_DWORD
-      s_Check = RegQueryValueExEnt(h_ValueOpen,Clave,0,0,c_Ent_Return,c_Value)
-      Si (s_Check &lt;&gt; ERROR_SUCCESS) Salir
-      RegCloseKey(h_ValueOpen)
-      Devolver EntCad(c_Ent_Return)
-   Caso 4
-      s_Check = RegQueryValueExEnt(h_ValueOpen,Clave,0,0,c_Ent_Return,c_Value)
-      Si (s_Check &lt;&gt; ERROR_SUCCESS) Salir
-      RegCloseKey(h_ValueOpen)
-      Devolver EntCad(c_Ent_Return)
-   Caso REG_DWORD_BIG_ENDIAN
-      s_Check = RegQueryValueExEnt(h_ValueOpen,Clave,0,0,c_Ent_Return,c_Value)
-      Si (s_Check &lt;&gt; ERROR_SUCCESS) Salir
-      RegCloseKey(h_ValueOpen)
-      Devolver EntCad(c_Ent_Return)
-   Caso REG_LINK
-      c_Cad_Return = Espacio(c_Value)
-      s_Check = RegQueryValueEx(h_ValueOpen,Clave,0,0,c_Cad_Return,c_Value)
-      Si (s_Check &lt;&gt; ERROR_SUCCESS) Salir
-      RegCloseKey(h_ValueOpen)
-      Devolver c_Cad_Return
-   Caso REG_MULTI_SZ
-      c_Cad_Return = Espacio(c_Value)
-      s_Check = RegQueryValueEx(h_ValueOpen,Clave,0,0,c_Cad_Return,c_Value)
-      Si (s_Check &lt;&gt; ERROR_SUCCESS) Salir
-      RegCloseKey(h_ValueOpen)
-      Devolver c_Cad_Return
-   Caso REG_QWORD
-      s_Check = RegQueryValueExEnt(h_ValueOpen,Clave,0,0,c_Ent_Return,c_Value)
-      Si (s_Check &lt;&gt; ERROR_SUCCESS) Salir
-      RegCloseKey(h_ValueOpen)
-      Devolver EntCad(c_Ent_Return)
-   Caso REG_QWORD_LITTLE_ENDIAN
-      s_Check = RegQueryValueExEnt(h_ValueOpen,Clave,0,0,c_Ent_Return,c_Value)
-      Si (s_Check &lt;&gt; ERROR_SUCCESS) Salir
-      RegCloseKey(h_ValueOpen)
-      Devolver EntCad(c_Ent_Return)
-   Caso Otro
-   RegCloseKey(h_ValueOpen)
-   Devolver c_Cad_Return
-FinSeleccionar
+Proc Registro_LeerClave(s_Registro:Entero,Seccion,Clave:Cadena):Cadena
+	Var h_ValueOpen,s_Check,c_Value,Tipo,c_Ent_Return:Entero,c_Cad_Return:Cadena
+	s_Check = RegOpenKey(s_Registro,Seccion,0,KEY_READ,h_ValueOpen)
+	Si (s_Check &lt;&gt; ERROR_SUCCESS) GenerarError 0,"[Registro_LeerClave] error al abrir el registro."
+	s_Check = RegQueryValueEx(h_ValueOpen,Clave,0,Tipo,c_Cad_Return,c_Value)
+	Si (s_Check &lt;&gt; ERROR_SUCCESS) GenerarError 1,"[Registro_LeerClave] error al abrir clave."
+	Seleccionar Tipo
+	   Caso REG_EXPAND_SZ,REG_LINK,REG_MULTI_SZ,REG_SZ
+	      c_Cad_Return = Espacio(c_Value)
+	      s_Check = RegQueryValueEx(h_ValueOpen,Clave,0,0,c_Cad_Return,c_Value)
+	      Si (s_Check &lt;&gt; ERROR_SUCCESS) GenerarError 2,"[Registro_LeerClave] Cadena - error al abrir clave."
+	      RegCloseKey(h_ValueOpen)
+	      Devolver c_Cad_Return
+	   Caso REG_BINARY,REG_DWORD,4,REG_DWORD_BIG_ENDIAN,REG_QWORD,REG_QWORD_LITTLE_ENDIAN
+	      s_Check = RegQueryValueExEnt(h_ValueOpen,Clave,0,0,c_Ent_Return,c_Value)
+	      Si (s_Check &lt;&gt; ERROR_SUCCESS) GenerarError 2,"[Registro_LeerClave] Entero - error al abrir clave."
+	      RegCloseKey(h_ValueOpen)
+	      Devolver EntCad(c_Ent_Return)
+	   Caso Otro
+	   RegCloseKey(h_ValueOpen)
+	   Devolver c_Cad_Return
+	FinSeleccionar
 FinProc
 
 ' # REGBorrarClave # ======================================================================
 ' Estado: Funci$F3nal
 ' Autor: PowerDeath
 ' # FIN # =================================================================================
-Proc REGBorrarClave(s_Registro:Entero,s_Secci$F3n,s_Clave:Cadena):Booleano
-Var h_ValueOpen,s_Check:Entero
-s_Check = RegOpenKey(s_Registro,s_Secci$F3n,0,KEY_SET_VALUE,h_ValueOpen)
-Si (s_Check &lt;&gt; 0) Devolver Falso
-s_Check = RegDeleteValue(h_ValueOpen,s_Clave)
-RegCloseKey(h_ValueOpen)
-Si (s_Check &lt;&gt; 0) Devolver Falso
-Devolver Verd
+Proc Registro_BorrarClave(s_Registro:Entero,s_Secci$F3n,s_Clave:Cadena):Booleano
+	Var h_ValueOpen,s_Check:Entero
+	s_Check = RegOpenKey(s_Registro,s_Secci$F3n,0,KEY_SET_VALUE,h_ValueOpen)
+	Si (s_Check &lt;&gt; ERROR_SUCCESS) GenerarError 0,"[Registro_BorrarClave] error al abrir el registro."
+	s_Check = RegDeleteValue(h_ValueOpen,s_Clave)
+	Si (s_Check &lt;&gt; ERROR_SUCCESS) GenerarError 1,"[Registro_BorrarClave] error al borrar clave."
+	RegCloseKey(h_ValueOpen)
+	Devolver Verd
 FinProc
 
 ' # REGCrearClave # =======================================================================
 ' Estado: Funci$F3nal
 ' Autor: PowerDeath
 ' # FIN # =================================================================================
-Proc RegCrearClave(s_Registro,s_Tipo:Entero,S_Secci$F3n,s_Clave,s_Contenido:Cadena):Booleano
-Var h_ValueOpen,s_Check,Estado,h_result:Entero,Estructura:SECURITY_ATTRIBUTES_B
-Estructura.lpSecurityDescriptor = 0
-Estructura.bInheritHandle = Verd
-Estructura.nLength = Long(Estructura)
-s_Check = RegCreateKey(s_Registro,s_Secci$F3n, 0,"", 0, KEY_WRITE,Estructura, h_result, Estado)
-Si (s_Check &lt;&gt; 0) Salir
-'Proc RegSetValueEx(hKey:Entero,lpValueName:Cadena,Reserver:Entero,dwType:Entero,Referencia lpData:Cadena,cbData:Entero)
-s_Check = RegSetValueEx(h_result,s_Clave,0,s_Tipo,s_Contenido,CadLong(s_Contenido))
-Si (s_Check &lt;&gt; ERROR_SUCCESS) Salir
-Seleccionar Estado
-Caso 1
-   Resultado = h_result
-Caso 2
-   Resultado = 0
-Caso Otro
-   Resultado = 0
-FinSeleccionar
-RegCloseKey(h_result)
+Proc Registro_CrearClave(s_Registro,s_Tipo:Entero,S_Secci$F3n,s_Clave,s_Contenido:Cadena):Booleano
+	Var h_ValueOpen,s_Check,Estado,h_result:Entero,Estructura:SECURITY_ATTRIBUTES_B
+	Estructura.lpSecurityDescriptor = 0
+	Estructura.bInheritHandle = Verd
+	Estructura.nLength = Long(Estructura)
+	s_Check = RegCreateKey(s_Registro,s_Secci$F3n, 0,"", 0, KEY_WRITE,Estructura, h_result, Estado)
+	Si (s_Check &lt;&gt; 0) GenerarError 0,"[Registro_CrearClave] error al crear clave."
+	s_Check = RegSetValueEx(h_result,s_Clave,0,s_Tipo,s_Contenido,CadLong(s_Contenido))
+	Si (s_Check &lt;&gt; ERROR_SUCCESS) GenerarError 0,"[Registro_CrearClave] error al modificar clave."
+	Seleccionar Estado
+	Caso 1
+	   Resultado = h_result
+	Caso 2
+	   Resultado = 0
+	Caso Otro
+	   Resultado = 0
+	FinSeleccionar
+	RegCloseKey(h_result)
 FinProc
 
 ' # REGEscribirClave # ======================================================================
 ' Estado: Funci$F3nal
 ' Autor: PowerDeath
 ' # FIN # ===================================================================================
-Proc RegEscribirClave(s_Registro,s_Tipo:Entero,S_Secci$F3n,s_Clave,s_Contenido:Cadena):Booleano
-Var h_ValueOpen,s_Check,c_Value,Tipo,c_Ent_Return:Entero,c_Cad_Return:Cadena,c_Real_Return:Real
-s_Check = RegOpenKey(s_Registro,s_Secci$F3n,0,KEY_WRITE,h_ValueOpen)
-Si (s_Check &lt;&gt; ERROR_SUCCESS) Salir
-Seleccionar s_Tipo
-Caso REG_SZ
-s_Check = RegSetValueEx(h_ValueOpen,s_Clave,0,s_Tipo,s_Contenido,CadLong(s_Contenido))
-Si (s_Check &lt;&gt; ERROR_SUCCESS) Salir
-RegCloseKey(h_ValueOpen)
-Devolver 1
-Caso Otro
-'Si EsDecimal(s_Contenido)
-'   c_Ent_Return = CadEnt(s_Contenido)
-'   s_Check = RegSetValueExEnt(h_ValueOpen,s_Clave,0,s_Tipo,c_Ent_Return,Long(c_Ent_Return))
-'   Si (s_Check &lt;&gt; ERROR_SUCCESS) Salir
-'   RegCloseKey(h_ValueOpen)
-'   Devolver 1
-'FinSi
-'Si EsN$FAmero(s_Contenido)
-'   c_Real_Return = CadReal(s_Contenido)
-'   s_Check = RegSetValueExReal(h_ValueOpen,s_Clave,0,s_Tipo,c_Real_Return,Long(c_Real_Return))
-'   Si (s_Check &lt;&gt; ERROR_SUCCESS) Salir
-'   RegCloseKey(h_ValueOpen)
-'   Devolver 1
-'FinSi
-FinSeleccionar
+Proc Registro_EscribirClave(s_Registro,s_Tipo:Entero,S_Secci$F3n,s_Clave,s_Contenido:Cadena):Booleano
+	Var h_ValueOpen,s_Check,c_Value,Tipo,c_Ent_Return:Entero,c_Cad_Return:Cadena,c_Real_Return:Real
+	s_Check = RegOpenKey(s_Registro,s_Secci$F3n,0,KEY_WRITE,h_ValueOpen)
+	Si (s_Check &lt;&gt; ERROR_SUCCESS) GenerarError 0,"[Registro_EscribirClave] error al abrir el registro."
+	Seleccionar s_Tipo
+		Caso REG_EXPAND_SZ,REG_LINK,REG_MULTI_SZ,REG_SZ
+			s_Check = RegSetValueEx(h_ValueOpen,s_Clave,0,s_Tipo,s_Contenido,CadLong(s_Contenido))
+			Si (s_Check &lt;&gt; ERROR_SUCCESS) GenerarError 1,"[Registro_EscribirClave] error al escribir clave."
+			RegCloseKey(h_ValueOpen)
+			Devolver 1
+	FinSeleccionar
 FinProc
 
 ' # RegEnumerar # ===========================================================================
 ' Estado: Funci$F3nal
 ' Autor: PowerDeath
+' Optimizaci$F3n: PowerDeath
 ' # FIN # ===================================================================================
-Proc RegEnumerar(s_Registro:Entero,S_Secci$F3n:Cadena):Cadena[]
-Var c_i,s_Contedor,h_ValueOpen,s_Long:Entero,s_Matriz[]:Cadena
-	c_i = RegOpenKey(s_Registro,s_Secci$F3n,0,KEY_ENUMERATE_SUB_KEYS,h_ValueOpen)
-	Si (c_i &lt;&gt; ERROR_SUCCESS) Salir
-   s_Contedor = 0
-   ReDim s_Matriz,1
-   s_Matriz[s_Contedor] = Espacio(255)
+Proc Registro_Enumerar(s_Registro:Entero,S_Secci$F3n:Cadena):Cadena[]
+	Var s_Contedor,h_ValueOpen,s_Long:Entero
+	Si (RegOpenKey(s_Registro,s_Secci$F3n,0,KEY_ENUMERATE_SUB_KEYS,h_ValueOpen) &lt;&gt; ERROR_SUCCESS) GenerarError 0,"[Registro_Enumerar] error al abrir el registro."
+   ReDim Resultado,1
+   Resultado[0] = Espacio(255)
    s_Long = 255
-Mientras RegEnumKeyEx(h_ValueOpen,s_Contedor,s_Matriz[s_Contedor],s_Long,0,0,0,0) &lt;&gt; ERROR_NO_MORE_ITEMS
-	'Si c_i =  Entonces Salir Repetir
-	s_Matriz[s_Contedor] = IzquierdaCad(s_Matriz[s_Contedor],s_Long)
-	ReDim Preservar s_Matriz,LongMat(s_Matriz) + 1
-	s_Contedor = s_Contedor + 1
-	s_Long = 255
-	s_Matriz[s_Contedor] = Espacio(255)
-FinMientras
-   's_Matriz[L$EDmite(s_Matriz)] = EntCad(L$EDmite(s_Matriz))
-   RegCloseKey(h_ValueOpen)
-   'MostrarMatrizCad(s_Matriz)
-   Resultado = s_Matriz
+	Mientras RegEnumKeyEx(h_ValueOpen,s_Contedor,Resultado[s_Contedor],s_Long,0,0,0,0) &lt;&gt; ERROR_NO_MORE_ITEMS
+		'Si c_i =  Entonces Salir Repetir
+		Resultado[s_Contedor] = ParteCad(Resultado[s_Contedor],1,s_Long)
+		s_Contedor = s_Contedor + 1
+		ReDim Preservar Resultado,s_Contedor + 1
+		s_Long = 255
+		Resultado[s_Contedor] = Espacio(255)
+	FinMientras
+	ReDim Preservar Resultado,s_Contedor
+	RegCloseKey(h_ValueOpen)
 FinProc
 
 ' # RegEnumerar # ===========================================================================
-' Estado: No Funci$F3nal
+' Estado: Funci$F3nal
 ' Autor: PowerDeath
+' Optimizaci$F3n: PowerDeath
 ' # FIN # ===================================================================================
-Proc RegEnumerarValores(s_Registro:Entero,S_Secci$F3n:Cadena):Cadena[]
-Var c_i,s_Contedor,h_ValueOpen,s_Long,Error:Entero,s_Matriz[]:Cadena
-	c_i = RegOpenKey(s_Registro,s_Secci$F3n,0,KEY_QUERY_VALUE,h_ValueOpen)
-	Si (c_i &lt;&gt; ERROR_SUCCESS) Salir
-   s_Contedor = 0
-   ReDim s_Matriz,1
-   s_Matriz[s_Contedor] = Espacio(255)
+Proc Registro_EnumerarValores(s_Registro:Entero,S_Secci$F3n:Cadena):Cadena[]
+	Var s_Contedor,h_ValueOpen,s_Long:Entero
+	Si (RegOpenKey(s_Registro,s_Secci$F3n,0,KEY_QUERY_VALUE,h_ValueOpen) &lt;&gt; ERROR_SUCCESS) GenerarError 0,"[Registro_EnumerarValores] error al abrir el registro."
+   ReDim Resultado,1
+   Resultado[0] = Espacio(255)
    s_Long = 255
-Mientras RegEnumValue(h_ValueOpen,s_Contedor,s_Matriz[s_Contedor],s_Long,0,0,0,0) &lt;&gt; ERROR_NO_MORE_ITEMS
-	'Si c_i =  Entonces Salir Repetir
-	s_Matriz[s_Contedor] = IzquierdaCad(s_Matriz[s_Contedor],s_Long)
-	ReDim Preservar s_Matriz,LongMat(s_Matriz) + 1
-	s_Contedor = s_Contedor + 1
-	s_Long = 255
-	s_Matriz[s_Contedor] = Espacio(255)
-FinMientras
-   ReDim Preservar s_Matriz,LongMat(s_Matriz) - 1
+	Mientras RegEnumValue(h_ValueOpen,s_Contedor,Resultado[s_Contedor],s_Long,0,0,0,0) &lt;&gt; ERROR_NO_MORE_ITEMS
+		Resultado[s_Contedor] = ParteCad(Resultado[s_Contedor],1,s_Long)
+		s_Contedor = s_Contedor + 1 ; s_Long = 255
+		ReDim Preservar Resultado,s_Contedor + 1
+		Resultado[s_Contedor] = Espacio(255)
+	FinMientras
+   ReDim Preservar Resultado,s_Contedor
    RegCloseKey(h_ValueOpen)
-   Resultado = s_Matriz
 FinProc
 </Contenido></Datos>

@@ -12,13 +12,14 @@ Uni$F3n Union, Union_e:Entero, Union_b[4]:Byte, Union_w[2]:Word
 
 P$FAblico:
 
-Proc Error:Entero
-	Resultado = GetLastError()
-FinProc
+Proc Error:Entero, "Kernel32.dll" "GetLastError"
+'	Resultado = GetLastError()
+'FinProc
 
 Proc EstablecerError(dwErrCode:Entero), "Kernel32.dll" "SetLastError"
 
 Proc Ejecutar(Referencia Ruta_Programa:Cadena,Opcional Parametros:Cadena = "",Opcional Modo:Entero = 1):Entero
+	Si Ruta_Programa = "" Entonces GenerarError 0
    Devolver ShellExecute(0,"open",Ruta_Programa,Parametros,"",Modo)
 FinProc
 
@@ -28,7 +29,7 @@ FinProc
 
 'EsPar By Yuki!
 Proc EsPar(N$FAmero:Entero):Booleano
-	Si N$FAmero &lt;= 1 Entonces Devolver Falso
+	Si N$FAmero &lt;= 1 Entonces Salir
 	Resultado = N$FAmero Mod 2
 	Si Resultado = 0 Entonces
 		Devolver Verd
@@ -42,7 +43,7 @@ Proc RGB(Rojo,Verde,Azul:Byte):Entero
 FinProc
 
 Proc ObtenerRGB(Color:Entero,R,V,A:Byte)
-  Si (Color&gt;&amp;FFFFFF) GenerarError errParamInv
+  Si (Color&gt;&amp;FFFFFF) GenerarError 0
   R=Color And &amp;FF
   V=(Color shr 8) And &amp;FF
   A=(Color shr 16) And &amp;FF
@@ -63,6 +64,13 @@ Proc TruncReal(Referencia Num:Real):Real
   Resultado=EntReal(Trunc(Num))
 FinProc
 
+Proc Promedio(Matriz[]:Entero):Real
+	Var i,l:Entero
+	Contar i = 0 a L$EDmite(Matriz)
+		l = l + Matriz[i]
+	Seguir
+	Devolver (EntReal(l) / 2.0)
+FinProc
 
 Proc Rnd():Real
   Var Num:EnteroSig
@@ -146,9 +154,9 @@ Resultado = CadEnt(h_Left)
 FinProc
 
 
-Proc Pausar(Milisegundos:Entero)
-  Sleep(Milisegundos)
-FinProc
+Proc Pausar(Milisegundos:Entero), "Kernel32" "Sleep"
+'  Sleep(Milisegundos)
+'FinProc
 
 Proc PausarSeg(Seg:Entero)
   Sleep(1000 * Seg)
@@ -170,15 +178,15 @@ Proc HiloCrear(Ptr:Entero,Opcional Datos:Entero)
 	SHCreateThread(Ptr,Datos,&amp;00000001,0)
 FinProc
 
-Proc LlamarAPI(Referencia Libreria:Cadena,Referencia Funci$F3n:Cadena,Referencia Parametros[]:Entero):Entero
+Proc LlamarAPI2(Referencia Libreria,Funci$F3n:Cadena,Referencia Parametros[]:Entero):Entero
 	Var Matriz[]:Byte,EjecutarProc:EjecutarProc
 	Var PtrProc,PtrDll:Entero ' Punteros a las Dll y Procedimientos
 	Var i:EnteroSig,@Ptr:Union ' i Contador, Ptr es un puntero a la uni$F3n.
 	ReDim Matriz, 60415
 	PtrDll = LoadLibrary(Libreria) ' PtrDll = CargarDll
-	Si PtrDll = 0 Entonces Salir
+	Si PtrDll = 0 Entonces GenerarError 0
 	PtrProc = GetProcAddress(PtrDll, Funci$F3n) 'PtrProc = CargarProc
-	Si PtrProc = 0 Entonces Salir
+	Si PtrProc = 0 Entonces GenerarError 1
 	FreeLibrary(PtrDll) ' Liberamos la dll (No la necesitamos ya que tenemos el puntero a la funci$F3n)
 	Ptr@ = Matriz[0]@
 	Ptr.Union_e = &amp;59595958 ' = 1499027800
@@ -200,5 +208,28 @@ Proc LlamarAPI(Referencia Libreria:Cadena,Referencia Funci$F3n:Cadena,Referencia
 	'Ptr@ = Ptr@ + 1 ' &lt; L$EDnea de c$F3digo basura...
 	EjecutarProc@ = Matriz[0]@
 	Resultado = EjecutarProc()
+FinProc
+
+Proc LLamarAPI(Referencia Lib,Func:Cadena,Parametros[]:Entero):Entero
+	Var Matriz[]:Byte,Ptr,i:Entero,l:EjecutarProc
+	Ptr = LoadLibrary(Lib)
+	Si i = 0 Entonces GenerarError 0, "Error al cargar la libreria."
+	Ptr = GetProcAddress(Ptr,Func)
+	Si i = 0 Entonces GenerarError 1, "Funci$F3n no encontrada."
+	FreeLibrary(Ptr)
+	Contar i = L$EDmite(Parametros) a 0 Dec
+		'Si i = (-1) Entonces Salir Contar
+		Matriz = Matriz + [&amp;68] + EntMatByte(Parametros[i]) ' PUSH Parametro[i]
+	Seguir
+	Matriz = Matriz + [&amp;B8] + EntMatByte(Ptr) + [&amp;FF,&amp;D0,&amp;C3] ' Push CALL Funci$F3n
+	l@ = Matriz[0]@ ; Devolver l
+FinProc
+
+Proc MakeWord(LoByte,HiByte:Byte):Entero
+	Si HiByte And &amp;80 Entonces
+		Devolver ((HiByte * &amp;100) + LoByte) Or &amp;FFFF0000
+	SiNo
+		Devolver (HiByte * &amp;100) + LoByte
+	FinSi
 FinProc
 </Contenido></Datos>

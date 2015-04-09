@@ -1,0 +1,124 @@
+<Datos><Nombre></Nombre><Icono>AA==</Icono><Version><Mayor>0</Mayor><Menor>0</Menor><Revision>0</Revision><AutoIncr>0</AutoIncr></Version><Info/><Contenido>Importar "Utiles.prp"
+
+$24ADV-
+
+Privado:	
+
+	Var wsaData:WSAData
+	
+	'Convierte una direcci$F3n en IPs
+	Proc ObtenerIPs(direcci$F3n:Cadena):Entero[]
+		Var @host:hostent
+		Var @ptr:Entero
+		'Var ret[]:Entero
+		Var i:EnteroSig
+		i = inet_addr(direcci$F3n)
+		Si i &lt;&gt; SOCKET_ERROR Entonces
+			Resultado = [i]
+		SiNo
+			host@ = gethostbyname(direcci$F3n)
+			Redim Resultado, host.h_length
+			Contar i = 0 a host.h_length - 1
+				ptr@ = host.h_addr_list + i * Long(ptr)
+				Resultado[i] = ptr
+			Seguir
+			'Resultado = ret
+		FinSi
+	FinProc
+	
+	'Transforma la ip de entero a cadena del tipo 255.255.255.255
+	Proc ConvertirIp(direccion:Entero):Cadena
+		Var i:Entero
+		'Var res:Cadena
+		i = 0
+		Mientras i &lt; 4
+			Resultado = Resultado + EntCad(direccion And 255)
+			Si (i &lt; 3) Entonces Resultado = Resultado + "."
+			direccion = direccion shr 8
+			i = i+1
+		FinMientras
+		'Resultado = res
+	FinProc
+	
+	Proc LE2BE(d[]:Byte):Byte[]
+		'Var ret[]:Byte
+		Var i:Entero
+		Contar i = 0 a LongMat(d) - 1
+			Resultado = [d[i]] + Resultado
+		Seguir
+		'Resultado = ret	
+	FinProc
+
+	Proc W_LE2BE(n:Word):Word
+		Var ret[]:Byte
+		Redim ret, Long(n)
+		CopyMemory(ret[0]@, n@, Long(n))
+		ret = LE2BE(ret)
+		CopyMemory(n@, ret[0]@, Long(n))
+		Devolver n
+	FinProc
+	
+	Var Prot:Entero
+	Var Domi:Entero
+	Var Cone:Booleano
+P$FAblico:
+
+Proc Socket_Iniciar(Opcional V1,V2:Entero = 2,Opcional Protocolo:Entero = 1,Opcional Dominio:Entero = 2)
+	Si Cone = Verd Entonces GenerarError 0,"[Socket_Iniciar] sockets ya inicializados."
+	WSAStartup(MakeWord(V1,V2), wsaData)
+	Prot = Protocolo
+	Domi = Dominio
+	Cone = Verd
+FinProc
+
+Proc Socket_Escuchar(Puerto:Word,Opcional Longitud:Entero = 200):Entero
+	Var Bnd:sockaddr,Sckt:Entero
+	Sckt = socket(Domi,Prot,0)
+	Bnd.sin_family = AF_INET
+	Bnd.sin_addr = INADDR_ANY
+	Bnd.sin_port = W_LE2BE(Puerto)
+	Si bind(Sckt,Bnd,Long(Bnd)) = SOCKET_ERROR Entonces GenerarError 0,"[Socket_Escuchar] error al intentar escuchar."
+	Si listen(Sckt,Longitud) = SOCKET_ERROR Entonces GenerarError 1,"[Socket_Escuchar] error al escuchar."
+	Devolver Sckt
+FinProc
+
+Proc Socket_Conectar(Referencia IP:Cadena,Puerto:Word,Opcional Protocolo:Entero = 1):Entero
+	Var Bnd:sockaddr,MatrizIP[],i:Entero,Sckt:Entero
+		Sckt = socket(Domi,Prot,0)
+		MatrizIP = ObtenerIPs(IP)
+		Bnd.sin_family = Protocolo
+		Bnd.sin_port = W_LE2BE(Puerto)
+		Contar i = 0 a L$EDmite(MatrizIP)
+			Bnd.sin_addr = MatrizIP[i]
+			Si connect(Sckt, Bnd, Long(Bnd)) = 0 Entonces Devolver Sckt
+		Seguir
+	GenerarError 0,"[Socket_Conectar] error al conectar."
+FinProc
+
+Proc Socket_Enviar(Socket:Entero,Datos:Cadena):Entero
+	Resultado = send(Socket, CadPtr(Datos), CadLong(Datos), 0)
+	Si Resultado = SOCKET_ERROR Entonces GenerarError 0,"[Socket_Enviar] error al enviar datos."
+FinProc
+
+Proc Socket_Recibir(Socket:Entero,Opcional Tama$F1o:Entero = 1024):Cadena
+	Var ret:Entero
+	Resultado = Espacio(Tama$F1o)
+	ret = recv(Socket,CadPtr(Resultado), Tama$F1o, 0)
+	Si (ret = SOCKET_ERROR) Entonces GenerarError 0,"[Socket_Recibir] error al recibir datos."
+	Devolver IzquierdaCad(Resultado,ret)
+FinProc
+
+Proc Socket_Aceptar(Sckt:Entero):Entero
+	Resultado = Accept(Sckt,Nulo,Nulo)
+	Si Resultado = SOCKET_ERROR Entonces GenerarError 0,"[Socket_Aceptar] error al aceptar socket."
+FinProc
+
+Proc Socket_Cerrar(Sckt:Entero)
+	Si Sckt = SOCKET_ERROR Entonces GenerarError 0,"[Socket_Cerrar] socket invalido."
+	CloseSocket(Sckt)
+FinProc
+
+Proc Socket_Terminar()
+	Si Cone = Verd Entonces WSACleanup() ; Cone = Falso
+FinProc
+</Contenido></Datos>

@@ -1,12 +1,12 @@
-<Datos><Nombre></Nombre><Icono>AA==</Icono><Version><Mayor>0</Mayor><Menor>0</Menor><Revision>0</Revision><AutoIncr>0</AutoIncr></Version><Info/><Contenido>Importar "Win.prp"
-Importar "Cadena.prp"
+<Datos><Nombre></Nombre><Icono>AA==</Icono><Version><Mayor>0</Mayor><Menor>0</Menor><Revision>0</Revision><AutoIncr>0</AutoIncr></Version><Info/><Contenido>Importar "Archivos.prp"
 
 Privado:
 	Var c_RutaFile:Cadena
 P$FAblico:
 
-Proc INIAbrir(l_Ruta:Cadena):Booleano
-	Si ExisteArchivo(l_Ruta)
+Proc INI_Abrir(Referencia l_Ruta:Cadena):Booleano
+	Si l_Ruta = "" Entonces GenerarError 0,"[INI_Abrir] primer parametro es vacio."
+	Si Archivo_Existe(l_Ruta)
 	   c_RutaFile = l_Ruta
 	   Devolver Verd
 	SiNo
@@ -15,7 +15,7 @@ Proc INIAbrir(l_Ruta:Cadena):Booleano
 	FinSi
 FinProc
 
-Proc INISecci$F3nes(Opcional Archivo:Cadena = "Defecto"):Cadena[]
+Proc INI_Secci$F3nes(Opcional Archivo:Cadena = "Defecto"):Cadena[]
 	Var lp_String,Matriz[],Str:Cadena,lp_Result:Entero
 	lp_String = Espacio((MAX_PATH * 2)+2)
 	lp_Result = GetPrivateProfileSectionNames(lp_String,CadLong(lp_String),&gt;Archivo = "Defecto"?c_RutaFile:Archivo)
@@ -30,14 +30,19 @@ Proc INISecci$F3nes(Opcional Archivo:Cadena = "Defecto"):Cadena[]
 FinProc
 
 
-Proc INILeer(Referencia Secci$F3n,Clave:Cadena,Opcional Defecto:Cadena = "",Opcional Archivo:Cadena = "Defecto"):Cadena
+Proc INI_Leer(Referencia Secci$F3n,Clave:Cadena,Opcional Defecto:Cadena = "",Opcional Archivo:Cadena = "Defecto"):Cadena
 	Var Texto:Cadena
+	Si Secci$F3n = "" Entonces GenerarError 0,"[INI_Leer] primer parametro es vacio."
+	Si Clave = "" Entonces GenerarError 1,"[INI_Leer] segundo parametro es vacio."
 	Texto = Espacio(3155)
 	Si GetPrivateProfileString(Secci$F3n,Clave,Defecto,Texto,CadLong(Texto),&gt;Archivo = "Defecto"?c_RutaFile:Archivo) Devolver Texto
 FinProc
 
 
-Proc INIEscribir(Referencia Secci$F3n,Clave,Texto:Cadena,Opcional Archivo:Cadena = "Defecto"):Booleano
+Proc INI_Escribir(Referencia Secci$F3n,Clave,Texto:Cadena,Opcional Archivo:Cadena = "Defecto"):Booleano
+	Si Secci$F3n = "" Entonces GenerarError 0,"[INI_Escribir] primer parametro es vacio."
+	Si Clave = "" Entonces GenerarError 1,"[INI_Escribir] segundo parametro es vacio."
+	Si Texto = "" Entonces GenerarError 2,"[INI_Escribir] tercer parametro es vacio."
 	Resultado = WritePrivateProfileString(Secci$F3n,Clave,Texto,&gt;Archivo = "Defecto"?c_RutaFile:Archivo)
 FinProc
 </Contenido></Datos>

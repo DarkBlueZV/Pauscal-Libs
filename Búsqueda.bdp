@@ -8,7 +8,7 @@ Clase PscB$FAsqueda
 		Var data:WIN32_FIND_DATA
 		Var handle:Entero
 		Var cnt:Entero
-		
+		Si Ruta = "" Entonces GenerarError 0,"Error: primer parametro es vacio."
 		Si DerechaCad(ruta, 1) = "\" Entonces ruta = ruta + "*"
 		handle = FindFirstFile(ruta, data)
 		Si handle = 0 Entonces GenerarError 0

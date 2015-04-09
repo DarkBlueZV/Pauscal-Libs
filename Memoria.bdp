@@ -1,10 +1,3 @@
-<Datos><Nombre></Nombre><Icono>AA==</Icono><Version><Mayor>0</Mayor><Menor>0</Menor><Revision>0</Revision><AutoIncr>0</AutoIncr></Version><Info/><Contenido>Importar "Utiles.prp"
-
-Proc MemoriaCopiar(Ptr1,Ptr2,Longitud:Entero)
-	CopyMemory(Ptr1,Ptr2,Longitud)
-FinProc
-
-Proc MemoriaMover(Ptr1,Ptr2,Longitud:Entero)
-	MoveMemory(Ptr1,Ptr2,Longitud)
-FinProc
+<Datos><Nombre></Nombre><Icono>AA==</Icono><Version><Mayor>0</Mayor><Menor>0</Menor><Revision>0</Revision><AutoIncr>0</AutoIncr></Version><Info/><Contenido>Proc Memoria_Copiar(Destino,Fuente,Longitud:Entero), "Kernel32.dll" "RtlMoveMemory"
+Proc Memoria_Mover(Destino,Fuente,Longitud:Entero), "Kernel32.dll" "RtlMoveMemory"
 </Contenido></Datos>

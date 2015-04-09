@@ -1,5 +1,7 @@
 <Datos><Nombre></Nombre><Icono>AA==</Icono><Version><Mayor>0</Mayor><Menor>0</Menor><Revision>0</Revision><AutoIncr>0</AutoIncr></Version><Info/><Contenido>Importar "Cadena.prp"
 
+$24ADV-
+
 Proc EntHex(lNum:Entero,Opcional RellenarConCeros:Booleano):Cadena
   Var Digit,i:Byte
   Contar i=1 a 8
@@ -40,6 +42,7 @@ FinProc
 
 Proc CadEnt(Referencia lpStr:Cadena):EnteroSig
   Var Temp:Cadena, LenCad:Entero, Num:EnteroSig
+  Si lpStr = "" Entonces GenerarError 0,"[CadEnt] primer parametro es vacio."
   LenCad=CadLong(lpStr)
   Temp=Espacio((LenCad+1)*2)
   MultiByteToWideChar(0,0,lpStr,LenCad,Temp,LenCad*2)
@@ -49,6 +52,7 @@ FinProc
 
 Proc CadReal2(Referencia lpStr:Cadena):Real
   Var Temp:Cadena, LenCad:Entero, Num:Real
+  Si lpStr = "" Entonces GenerarError 0,"[CADReal2] primer parametro es vacio."
   LenCad=CadLong(lpStr)
   Temp=Espacio((LenCad+1)*2)
   MultiByteToWideChar(0,0,lpStr,LenCad,Temp,LenCad*2)
@@ -68,11 +72,7 @@ Proc RealCad2(Referencia lNum:Real):Cadena
 FinProc
 
 Proc EntMatByte(Int:Entero):Byte[]
-	Var Matriz[]:Byte
-	ReDim Matriz,4
-	Matriz@ = Int@
-	ReDim Preservar Matriz,4
-	Resultado = Matriz
+	Resultado = [Int And &amp;FF,(Int And 65280) \ &amp;100,(Int And &amp;FF0000) \ &amp;10000,((Int And &amp;FF000000) \ &amp;1000000) And &amp;FF]
 FinProc
 
 'By Yuki!
@@ -97,22 +97,27 @@ Proc ByteCad(Number:Byte):Cadena
 FinProc
 'By Yuki!
 Proc CADWord(Referencia N$FAmero:Cadena):WordSig
+	Si N$FAmero = "" Entonces GenerarError 0,"[CadWord] primer parametro es vacio."
 	Devolver vbaI2Str(CadAUnicode(N$FAmero))
 FinProc
 'By Yuki!
-Proc CADEntS(Referencia N$FAmero:Cadena):EnteroSig
+Proc CadEntS(Referencia N$FAmero:Cadena):EnteroSig
+	Si N$FAmero = "" Entonces GenerarError 0,"[CadEntS] primer parametro es vacio."
 	Devolver vbaI4Str(CadAUnicode(N$FAmero))
 FinProc
 'By Yuki!
-Proc CADDec(Referencia N$FAmero:Cadena):Decimal
+Proc CadDec(Referencia N$FAmero:Cadena):Decimal
+	Si N$FAmero = "" Entonces GenerarError 0,"[CadDec] primer parametro es vacio."
 	Devolver vbaCyStr(CadAUnicode(N$FAmero))
 FinProc
 'By Yuki!
-Proc CADReal(Referencia N$FAmero:Cadena):Real
+Proc CadReal(Referencia N$FAmero:Cadena):Real
+	Si N$FAmero = "" Entonces GenerarError 0,"[CadReal] primer parametro es vacio."
 	Devolver vbaR8Str(CadAUnicode(N$FAmero))
 FinProc
 'By Yuki!
-Proc CADByte(Referencia N$FAmero:Cadena):Byte
+Proc CadByte(Referencia N$FAmero:Cadena):Byte
+	Si N$FAmero = "" Entonces GenerarError 0,"[CadByte] primer parametro es vacio."
 	Devolver vbaUI1Str(CadAUnicode(N$FAmero))
 FinProc
 

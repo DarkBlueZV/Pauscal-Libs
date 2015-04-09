@@ -14,15 +14,14 @@ Proc EnumFontsProc(Referencia lplf:LOGFONT,Referencia lptm:TEXTMETRIC,dwType:Ent
     Redim Preservar .Fnts,.MaxFnt
     .Fnts[.MaxFnt-1]=TruncarCadena(Temp)
   FinEval
-  Resultado=1
+  Devolver 1
 FinProc
 
 P$FAblico:
 
 'Var Pantalla:pscPantalla
 
-Clase pscPantalla, _
-  Fnts[]:Cadena, FntOk:Booleano
+Clase pscPantalla, Fnts[]:Cadena, FntOk:Booleano
 
 Privado:
   Proc GetCursorX:EnteroSig
@@ -40,7 +39,7 @@ Privado:
   FinProc
   Proc SetCursorY(Valor:EnteroSig)
     SetCursorPos(GetCursorX(),Valor)
-  FinProc  
+  FinProc
   Proc GetAncho:EnteroSig
     Resultado=GetSystemMetrics(SM_CXSCREEN)
   FinProc

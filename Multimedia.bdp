@@ -13,20 +13,16 @@ Var iAlias:Cadena
 
 P$FAblico:
 
-Proc AbrirMultimedia(Referencia Archivo,Alias:Cadena,Opcional Tipo:Cadena = "MPEGVideo", Opcional hWnd:Entero):Cadena
+Proc Multimedia_Abrir(Referencia Archivo,Alias:Cadena,Opcional Tipo:Cadena = "MPEGVideo", Opcional hWnd:Entero):Cadena
   Var cmdToDo,ret,tmp,ShortPath:Cadena
   Var dwReturn,lenShort:Entero
-
   Si (hWnd=0) hWnd = GetDesktopWindow()
   tmp = Espacio(255)
   ret = Espacio(128)
-
   lenShort = GetShortPathName(Archivo,tmp,255)
   ShortPath = IzquierdaCad(tmp,lenShort)
-
   cmdToDo = "open " + ShortPath + " type " + Tipo + " Alias " + Alias + " parent " + EntCad(hWnd) + " Style " + EntCad(&amp;40000000)
   dwReturn = mciSendString(cmdToDo, Nulo, 0, 0)
-
   Si (dwReturn)
     mciGetErrorString(dwReturn, Ret, 128)
     Resultado = TruncarCadena(Ret)
@@ -35,21 +31,17 @@ Proc AbrirMultimedia(Referencia Archivo,Alias:Cadena,Opcional Tipo:Cadena = "MPE
   FinSi
 FinProc
 
-Proc ReproducirMultimedia(Referencia Alias:Cadena, Opcional Desde:EnteroSig, Opcional Hasta:EnteroSig=-1):Cadena
+Proc Multimedia_Reproducir(Referencia Alias:Cadena, Opcional Desde:EnteroSig, Opcional Hasta:EnteroSig=-1):Cadena
   Var cmdToDo,ret:Cadena
   Var dwReturn:Entero
-
   Si (Hasta=-1) Hasta = CantidadDeCuadros(Alias)
   Si (Alias=iAlias)
     iDesde = Desde
     iHasta = Hasta
   FinSi
-
   ret = Espacio(128)
-
   cmdToDo = "play " + Alias + " from " + EntCad(Desde) + " to " + EntCad(Hasta)
   dwReturn = mciSendString(cmdToDo, Nulo, 0, 0)
-
   Si (dwReturn)
     mciGetErrorString(dwReturn, Ret, 128)
     Resultado = TruncarCadena(Ret)
@@ -58,14 +50,12 @@ Proc ReproducirMultimedia(Referencia Alias:Cadena, Opcional Desde:EnteroSig, Opc
   FinSi
 FinProc
 
-Proc DetenerMultimedia(Referencia Alias:Cadena):Cadena
+Proc Multimedia_Detener(Referencia Alias:Cadena):Cadena
   Var cmdToDo,ret:Cadena
   Var dwReturn:Entero
-
   ret = Espacio(128)
   cmdToDo = "stop " + Alias
   dwReturn = mciSendString(cmdToDo, Nulo, 0, 0)
-
   Si (dwReturn)
     mciGetErrorString(dwReturn, ret, 128)
     Resultado = TruncarCadena(ret)
@@ -74,14 +64,12 @@ Proc DetenerMultimedia(Referencia Alias:Cadena):Cadena
   FinSi
 FinProc
 
-Proc CerrarMultimedia(Referencia Alias:Cadena):Cadena
+Proc Multimedia_Cerrar(Referencia Alias:Cadena):Cadena
   Var cmdToDo,ret:Cadena
   Var dwReturn:Entero
-
   ret = Espacio(128)
   cmdToDo = "close " + Alias
   dwReturn = mciSendString(cmdToDo, Nulo, 0, 0)
-
   Si (dwReturn)
     mciGetErrorString(dwReturn, ret, 128)
     Resultado = TruncarCadena(ret)
@@ -90,14 +78,12 @@ Proc CerrarMultimedia(Referencia Alias:Cadena):Cadena
   FinSi
 FinProc
 
-Proc PausarMultimedia(Referencia Alias:Cadena):Cadena
+Proc Multimedia_Pausar(Referencia Alias:Cadena):Cadena
   Var cmdToDo,ret:Cadena
   Var dwReturn:Entero
-
   ret = Espacio(128)
   cmdToDo = "pause " + Alias
   dwReturn = mciSendString(cmdToDo, Nulo, 0, 0)
-
   Si (dwReturn)
     mciGetErrorString(dwReturn, ret, 128)
     Resultado = TruncarCadena(ret)
@@ -106,14 +92,12 @@ Proc PausarMultimedia(Referencia Alias:Cadena):Cadena
   FinSi
 FinProc
 
-Proc MoverMultimedia(Referencia Alias:Cadena, Posici$F3n:EnteroSig):Cadena
+Proc Multimedia_Mover(Referencia Alias:Cadena, Posici$F3n:EnteroSig):Cadena
   Var cmdToDo,ret:Cadena
   Var dwReturn:Entero
-
   ret = Espacio(128)
   cmdToDo = "seek " + Alias + " to " + EntCad(Posici$F3n)
   dwReturn = mciSendString(cmdToDo, Nulo, 0, 0)
-
   Si (dwReturn)
     mciGetErrorString(dwReturn, ret, 128)
     Resultado = TruncarCadena(ret)
@@ -122,14 +106,12 @@ Proc MoverMultimedia(Referencia Alias:Cadena, Posici$F3n:EnteroSig):Cadena
   FinSi
 FinProc
 
-Proc ResumirMultimedia(Referencia Alias:Cadena):Cadena
+Proc Multimedia_Resumir(Referencia Alias:Cadena):Cadena
   Var cmdToDo,ret:Cadena
   Var dwReturn:Entero
-
   ret = Espacio(128)
   cmdToDo = "resume " + Alias
   dwReturn = mciSendString(cmdToDo, Nulo, 0, 0)
-
   Si (dwReturn)
     mciGetErrorString(dwReturn, ret, 128)
     Resultado = TruncarCadena(ret)
@@ -138,14 +120,12 @@ Proc ResumirMultimedia(Referencia Alias:Cadena):Cadena
   FinSi
 FinProc
 
-Proc DevolverPosici$F3nMultimedia(Referencia Alias:Cadena):EnteroSig
+Proc Multimedia_DevolverPosici$F3n(Referencia Alias:Cadena):EnteroSig
   Var cmdToDo,pos:Cadena
   Var dwReturn:Entero
-
   pos = Espacio(128)
   cmdToDo = "status " + Alias + " position"
   dwReturn = mciSendString(cmdToDo, pos, 128, 0)
-
   Si (dwReturn)
     Resultado = -1
   SiNo
@@ -153,11 +133,10 @@ Proc DevolverPosici$F3nMultimedia(Referencia Alias:Cadena):EnteroSig
   FinSi
 FinProc
 
-Proc MultimediaTerminado(Referencia Alias:Cadena, Opcional $FAltimoCuadro:EnteroSig):Booleano
+Proc Multimedia_Terminado(Referencia Alias:Cadena, Opcional $FAltimoCuadro:EnteroSig):Booleano
   Var Pos:EnteroSig
-
   Si ($FAltimoCuadro = 0) $FAltimoCuadro = CantidadDeCuadros(Alias)
-  Pos = DevolverPosici$F3nMultimedia(Alias)
+  Pos = Multimedia_DevolverPosici$F3n(Alias)
   Si (Pos = -1) o ($FAltimoCuadro = -1) Salir
   Resultado = ($FAltimoCuadro = Pos) o (($FAltimoCuadro - 1) &lt; Pos)
 FinProc
@@ -165,14 +144,11 @@ FinProc
 Proc CantidadDeCuadros(Referencia Alias:Cadena):EnteroSig
   Var cmdToDo,Total:Cadena
   Var dwReturn:Entero
-
   Total = Espacio(128)
-
   cmdToDo = "set " + Alias + " time format frames"
   dwReturn = mciSendString(cmdToDo, Total, 128, 0)
   cmdToDo = "status " + Alias + " length"
   dwReturn = mciSendString(cmdToDo, Total, 128, 0)
-
   Si (dwReturn)
     Resultado = -1
   SiNo
@@ -180,20 +156,16 @@ Proc CantidadDeCuadros(Referencia Alias:Cadena):EnteroSig
   FinSi
 FinProc
 
-Proc CantidadDeMilisegundos(Referencia Alias:Cadena):EnteroSig
+Proc Multimedia_CantidadDeMilisegundos(Referencia Alias:Cadena):EnteroSig
   Var cmdToDo,Total:Cadena
   Var dwReturn:Entero
-
   Total = Espacio(128)
-
   cmdToDo = "set " + Alias + " time format ms"
   dwReturn = mciSendString(cmdToDo, Total, 128, 0)
   cmdToDo = "status " + Alias + " length"
   dwReturn = mciSendString(cmdToDo, Total, 128, 0)
-
   cmdToDo = "set " + Alias + " time format frames"
   mciSendString(cmdToDo, Nulo, 0, 0)
-
   Si (dwReturn)
     Resultado = -1
   SiNo
@@ -220,16 +192,16 @@ Privado:
   Constructor:iInicio
   Destructor:iFinal
   Proc GetTerminado:Booleano
-    Resultado=MultimediaTerminado(iAlias)
+    Resultado=Multimedia_Terminado(iAlias)
   FinProc
   Proc GetPosici$F3n:EnteroSig
-    Resultado=DevolverPosici$F3nMultimedia(iAlias)
+    Resultado=Multimedia_DevolverPosici$F3n(iAlias)
   FinProc
   Proc SetPosici$F3n(Valor:EnteroSig)
-    Si (MoverMultimedia(iAlias,Valor)&lt;&gt;"OK") GenerarError errFalloMultimedia
+    Si (Multimedia_Mover(iAlias,Valor)&lt;&gt;"OK") GenerarError errFalloMultimedia
   FinProc
   Proc GetTama$F1oEnMilisegundos:EnteroSig
-    Resultado=CantidadDeMilisegundos(iAlias)
+    Resultado=Multimedia_CantidadDeMilisegundos(iAlias)
   FinProc
   Proc GetTama$F1o:EnteroSig
     Resultado=CantidadDeCuadros(iAlias)
@@ -237,17 +209,17 @@ Privado:
 P$FAblico:
   'procs p$FAblicos
   Proc Abrir
-    Si (AbrirMultimedia(Archivo, iAlias)&lt;&gt;"OK") GenerarError errFalloMultimedia
+    Si (Multimedia_Abrir(Archivo, iAlias)&lt;&gt;"OK") GenerarError errFalloMultimedia
   FinProc
   Proc Reproducir
     Detener
-    ReproducirMultimedia(iAlias)
+    Multimedia_Reproducir(iAlias)
   FinProc
   Proc Detener
-    DetenerMultimedia(iAlias)
+    Multimedia_Detener(iAlias)
   FinProc
   Proc Cerrar
-    CerrarMultimedia(iAlias)
+    Multimedia_Cerrar(iAlias)
   FinProc
   'props p$FAblicos
   Prop Terminado:Booleano

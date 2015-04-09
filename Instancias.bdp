@@ -1,7 +1,6 @@
-<Datos><Nombre></Nombre><Icono>AA==</Icono><Version><Mayor>0</Mayor><Menor>0</Menor><Revision>0</Revision><AutoIncr>0</AutoIncr></Version><Info/><Contenido>'Importar "Declare.prp"
-Importar "ConstIpaError.prp" ' Se obtiene en: http://www.pauscal.com.ar/foro/viewtopic.php?f=19&amp;t=295
-Importar "Macros.prp" ' Se obtiene en: http://www.pauscal.com.ar/foro/viewtopic.php?f=19&amp;t=294
-Importar "Procesos.prp" ' Se obtiene en: http://www.pauscal.com.ar/foro/viewtopic.php?f=19&amp;t=305
+<Datos><Nombre></Nombre><Icono>AA==</Icono><Version><Mayor>0</Mayor><Menor>0</Menor><Revision>0</Revision><AutoIncr>0</AutoIncr></Version><Info/><Contenido>Importar "ConstIpaError.prp"
+Importar "Macros.prp"
+Importar "Procesos.prp"
 
 Privado:
 	Var Puntero:Entero
@@ -29,4 +28,14 @@ Clase PscMutex
 FinClase
 
 'Var Instancia:PscMutex
+Proc Instancia_Iniciar(Referencia Nombre:Cadena):Entero
+	Si Nombre = "" Entonces GenerarError 0,"[Instancia_Iniciar] primer parametro es vacio."
+	Resultado = CreateMutex(0,Verd,Nombre)
+	Si Error = ERROR_ALREADY_EXISTS Entonces GenerarError 1,"[Instancia_Iniciar] instancia existente."
+FinProc
+
+Proc Instanca_Liberar(h_Pun:Entero):Entero
+	Si h_Pun &lt;= 0 Entonces GenerarError 0,"[Instanca_Liberar] primer parametro igual o menor a cero."
+	Devolver ReleaseMutex(h_Pun)
+FinProc
 </Contenido></Datos>

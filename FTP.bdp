@@ -4,25 +4,25 @@
 ' Windows 7 Ultimate - Service Pack 1 - 32 Bits
 
 ' # Funci$F3nes # ===================================================================================================
-' &gt; FTPIniciar
-' &gt; FTPAbrir
-' &gt; FTPConectar
-' &gt; FTPComando
-' &gt; FTPCrearCarpeta
-' &gt; FTPBorrarCarpeta
-' &gt; FTPAbrirArchivo
-' &gt; FTPLeerArchivo
-' &gt; FTPEscribirArchivo
-' &gt; FTPRenombrarArchivo
-' &gt; FTPTama$F1oArchivo
-' &gt; FTPBorrarArchivo
-' &gt; FTPCerrarArchivo
-' &gt; FTPCerrar
-' &gt; FTPDescargarArchivo
-' &gt; FTPBuscarPrimerArchivo
-' &gt; FTPBuscarSiguienteArchivo
-' &gt; FTPObtenerDirectorio
-' &gt; FTPEstablecerDirectorio
+' &gt; FTP_Iniciar
+' &gt; FTP_Abrir
+' &gt; FTP_Conectar
+' &gt; FTP_Comando
+' &gt; FTP_CrearCarpeta
+' &gt; FTP_BorrarCarpeta
+' &gt; FTP_AbrirArchivo
+' &gt; FTP_LeerArchivo
+' &gt; FTP_EscribirArchivo
+' &gt; FTP_RenombrarArchivo
+' &gt; FTP_Tama$F1oArchivo
+' &gt; FTP_BorrarArchivo
+' &gt; FTP_CerrarArchivo
+' &gt; FTP_Cerrar
+' &gt; FTP_DescargarArchivo
+' &gt; FTP_BuscarPrimerArchivo
+' &gt; FTP_BuscarSiguienteArchivo
+' &gt; FTP_ObtenerDirectorio
+' &gt; FTP_EstablecerDirectorio
 ' # Fin Funci$F3nes # ===============================================================================================
 
 'MODIFICADORES
@@ -51,17 +51,18 @@ P$FAblico:
 ' Autor: PowerDeath
 ' Estado: Funcional
 ' ==================================================================================================================
-Proc FTPIniciar():Entero
+Proc FTP_Iniciar():Entero
 	ghWinInet_FTP = Verd
-	Resultado = FTPAbrir()
+	Resultado = FTP_Abrir()
 FinProc
 
 ' # Funci$F3n # ======================================================================================================
 ' Autor: PowerDeath
 ' Estado: Funcional
 ' ==================================================================================================================
-Proc FTPAbrir(Opcional s_Agent:Cadena = "Pauscal",Opcional l_AccessType:Entero = 1,Opcional s_ProxyName:Cadena = "",Opcional s_ProxyBypass:Cadena = "",Opcional l_Flags:Entero = 0):Entero
-	Si (ghWinInet_FTP = Falso) FTPIniciar()
+Proc FTP_Abrir(Opcional s_Agent:Cadena = "Pauscal",Opcional l_AccessType:Entero = 1,Opcional s_ProxyName:Cadena = "",Opcional s_ProxyBypass:Cadena = "",Opcional l_Flags:Entero = 0):Entero
+	Si s_Agent = "" Entonces GenerarError 0,"[FTP_Abrir] el primer parametro es vacio."
+	Si (ghWinInet_FTP = Falso) FTP_Iniciar()
 	Resultado = InternetOpen(s_Agent,l_AccessType,s_ProxyName,s_ProxyBypass,l_Flags)
 	h_Local_Session = Resultado
 FinProc
@@ -70,7 +71,10 @@ FinProc
 ' Autor: PowerDeath
 ' Estado: Funcional
 ' ==================================================================================================================
-Proc FTPConectar(Referencia s_ServerName,s_Username,s_Password:Cadena,Opcional l_InternetSession:Entero = 0,Opcional i_ServerPort:Word = 0,Opcional i_Passive:Entero = 0,Opcional l_Service:Entero = 1,Opcional l_Flags:Entero = 0,Opcional l_Context:Entero = 0):Entero
+Proc FTP_Conectar(Referencia s_ServerName,s_Username,s_Password:Cadena,Opcional l_InternetSession:Entero = 0,Opcional i_ServerPort:Word = 0,Opcional i_Passive:Entero = 0,Opcional l_Service:Entero = 1,Opcional l_Flags:Entero = 0,Opcional l_Context:Entero = 0):Entero
+	Si s_ServerName = "" Entonces GenerarError 0,"[FTP_Conectar] el primer parametro es vacio."
+	Si s_Username = "" Entonces GenerarError 1,"[FTP_Conectar] el segundo parametro es vacio."
+	Si s_Password = "" Entonces GenerarError 2,"[FTP_Conectar] el tercer parametro es vacio."
 	Si (ghWinInet_FTP = Falso) Salir
 	Resultado = InternetConnect(&gt;l_InternetSession?l_InternetSession:h_Local_Session,s_ServerName,i_ServerPort,s_Username,s_Password,l_Service,l_Flags,l_Context)
 	b_Local_Conection = Resultado
@@ -80,7 +84,8 @@ FinProc
 ' Autor: PowerDeath
 ' Estado: Funcional
 ' ==================================================================================================================
-Proc FTPComando(Referencia s_FTPCommand:Cadena,Opcional l_FTPSession:Entero = 0,Opcional l_Flags:Entero = 1,Opcional l_ExpectResponse:Entero = 0,Opcional l_Context:Entero = 0):Entero
+Proc FTP_Comando(Referencia s_FTPCommand:Cadena,Opcional l_FTPSession:Entero = 0,Opcional l_Flags:Entero = 1,Opcional l_ExpectResponse:Entero = 0,Opcional l_Context:Entero = 0):Entero
+	Si s_FTPCommand = "" Entonces GenerarError 0,"[FTP_Comando] el primer parametro es vacio."
 	Si (ghWinInet_FTP = Falso) Salir
 	Resultado = FtpCommand(&gt;l_FTPSession?l_FTPSession:b_Local_Conection,l_ExpectResponse,l_Flags,CadPtr(s_FTPCommand),l_Context@,0)
 FinProc
@@ -89,7 +94,8 @@ FinProc
 ' Autor: PowerDeath
 ' Estado: Funcional
 ' ==================================================================================================================
-Proc FTPCrearCarpeta(Referencia s_Remote:Cadena,Opcional l_FTPSession:Entero = 0):Booleano
+Proc FTP_CrearCarpeta(Referencia s_Remote:Cadena,Opcional l_FTPSession:Entero = 0):Booleano
+	Si s_Remote = "" Entonces GenerarError 0,"[FTP_CrearCarpeta] el primer parametro es vacio."
 	Si (ghWinInet_FTP = Falso) Salir
 	Resultado = FtpCreateDirectory(&gt;l_FTPSession?l_FTPSession:b_Local_Conection,s_Remote)
 FinProc
@@ -98,7 +104,8 @@ FinProc
 ' Autor: PowerDeath
 ' Estado: Funcional
 ' ==================================================================================================================
-Proc FTPBorrarCarpeta(Referencia s_Remote:Cadena,Opcional l_FTPSession:Entero = 0):Booleano
+Proc FTP_BorrarCarpeta(Referencia s_Remote:Cadena,Opcional l_FTPSession:Entero = 0):Booleano
+	Si s_Remote = "" Entonces GenerarError 0,"[FTP_BorrarCarpeta] el primer parametro es vacio."
 	Si (ghWinInet_FTP = Falso) Salir
 	Resultado = FtpRemoveDirectory(&gt;l_FTPSession?l_FTPSession:b_Local_Conection,s_Remote)
 FinProc
@@ -107,7 +114,8 @@ FinProc
 ' Autor: PowerDeath
 ' Estado: Funcional
 ' ==================================================================================================================
-Proc FTPAbrirArchivo(Referencia lpszFileName:Cadena,Opcional hConnect:Entero = 0,Opcional dwAccess:Entero = &amp;40000000 Or &amp;80000000,Opcional dwFlags:Entero = 2,Opcional dwContext:Entero = 0):Entero
+Proc FTP_AbrirArchivo(Referencia lpszFileName:Cadena,Opcional hConnect:Entero = 0,Opcional dwAccess:Entero = &amp;40000000 Or &amp;80000000,Opcional dwFlags:Entero = 2,Opcional dwContext:Entero = 0):Entero
+	Si lpszFileName = "" Entonces GenerarError 0,"[FTP_AbrirArchivo] el primer parametro es vacio."
 	Si (ghWinInet_FTP = Falso) Salir
 	Resultado = FtpOpenFile(&gt;hConnect?hConnect:b_Local_Conection,lpszFileName,dwAccess,dwFlags,dwContext)
 	u_Local_FileUltimate = Resultado
@@ -118,16 +126,16 @@ FinProc
 ' Autor: PowerDeath
 ' Estado: Funcional
 ' ==================================================================================================================
-Proc FTPLeerArchivo(Opcional lpszFileName:Cadena,Opcional dwNumberOfBytesToRead:Entero,Opcional l_FTPSession:Entero = 0):Cadena
+Proc FTP_LeerArchivo(Opcional lpszFileName:Cadena,Opcional dwNumberOfBytesToRead:Entero,Opcional l_FTPSession:Entero = 0):Cadena
 	Var lpBuffer:Cadena,lpdwNumberOfBytesRead,S_File:Entero
 	Si (ghWinInet_FTP = Falso) Salir
 	Si lpszFileName &lt;&gt; "" Entonces
-		S_File = FTPAbrirArchivo(lpszFileName,0,&amp;80000000,&amp;80000000)
-		Resultado = Espacio((&gt;dwNumberOfBytesToRead?dwNumberOfBytesToRead:FTPTama$F1oArchivo(lpszFileRead,(&gt;l_FTPSession?l_FTPSession:0))))
+		S_File = FTP_AbrirArchivo(lpszFileName,0,&amp;80000000,&amp;80000000)
+		Resultado = Espacio((&gt;dwNumberOfBytesToRead?dwNumberOfBytesToRead:FTP_Tama$F1oArchivo(lpszFileRead,(&gt;l_FTPSession?l_FTPSession:0))))
 		InternetReadFile(S_File,Resultado,CadLong(Resultado),lpdwNumberOfBytesRead)
 		Resultado = IzquierdaCad(Resultado,lpdwNumberOfBytesRead)
 	SiNo
-		Resultado = Espacio((&gt;dwNumberOfBytesToRead?dwNumberOfBytesToRead:FTPTama$F1oArchivo(lpszFileRead,(&gt;l_FTPSession?l_FTPSession:0))))
+		Resultado = Espacio((&gt;dwNumberOfBytesToRead?dwNumberOfBytesToRead:FTP_Tama$F1oArchivo(lpszFileRead,(&gt;l_FTPSession?l_FTPSession:0))))
 		InternetReadFile(&gt;l_FTPSession?l_FTPSession:b_Local_Conection,Resultado,CadLong(Resultado),lpdwNumberOfBytesRead)
 		Resultado = IzquierdaCad(Resultado,lpdwNumberOfBytesRead)
 	FinSi
@@ -137,7 +145,9 @@ FinProc
 ' Autor: PowerDeath
 ' Estado: Funcional
 ' ==================================================================================================================
-Proc FTPEscribirArchivo(Referencia s_LocalFile,s_RemoteFile:Cadena,Opcional l_FTPSession:Entero = 0,Opcional l_Flags:Entero = 0,Opcional l_Context:Entero = 0):Booleano
+Proc FTP_EscribirArchivo(Referencia s_LocalFile,s_RemoteFile:Cadena,Opcional l_FTPSession:Entero = 0,Opcional l_Flags:Entero = 0,Opcional l_Context:Entero = 0):Booleano
+	Si s_LocalFile = "" Entonces GenerarError 0,"[FTP_EscribirArchivo] el primer parametro es vacio."
+	Si s_RemoteFile = "" Entonces GenerarError 1,"[FTP_EscribirArchivo] el segundo parametro es vacio."
 	Si (ghWinInet_FTP = Falso) Salir
 	Resultado = FtpPutFIle(&gt;l_FTPSession?l_FTPSession:b_Local_Conection,s_LocalFile,s_RemoteFile,l_Flags,l_Context)
 FinProc
@@ -146,7 +156,9 @@ FinProc
 ' Autor: PowerDeath
 ' Estado: Funcional
 ' ==================================================================================================================
-Proc FTPRenombrarArchivo(s_Existing,s_New:Cadena,Opcional l_FTPSession:Entero = 0):Booleano
+Proc FTP_RenombrarArchivo(Referencia s_Existing,s_New:Cadena,Opcional l_FTPSession:Entero = 0):Booleano
+	Si s_Existing = "" Entonces GenerarError 0,"[FTP_RenombrarArchivo] el primer parametro es vacio."
+	Si s_New = "" Entonces GenerarError 1,"[FTP_RenombrarArchivo] el segundo parametro es vacio."
 	Si (ghWinInet_FTP = Falso) Salir
 	Resultado = FTPRenameFile(&gt;l_FTPSession?l_FTPSession:b_Local_Conection,s_Existing,s_New)
 FinProc
@@ -155,8 +167,9 @@ FinProc
 ' Autor: PowerDeath
 ' Estado: Funcional
 ' ==================================================================================================================
-Proc FTPTama$F1oArchivo(Referencia s_FileName:Cadena,Opcional l_FTPSession:Entero = 0):Entero
+Proc FTP_Tama$F1oArchivo(Referencia s_FileName:Cadena,Opcional l_FTPSession:Entero = 0):Entero
 	Var Result:Entero
+	Si s_FileName = "" Entonces GenerarError 0,"[FTP_Tama$F1oArchivo] el primer parametro es vacio."
 	Si (ghWinInet_FTP = Falso) Salir
 	Result = FtpOpenFile(&gt;l_FTPSession?l_FTPSession:b_Local_Conection,s_FileName,GENERIC_READ,INTERNET_FLAG_NO_CACHE_WRITE + INTERNET_FLAG_TRANSFER_BINARY,0)
 	SI Result Entonces Resultado = FtpGetFileSize(Result,0)
@@ -166,7 +179,8 @@ FinProc
 ' Autor: PowerDeath
 ' Estado: Funcional
 ' ==================================================================================================================
-Proc FTPBorrarArchivo(Referencia s_RemoteFile:Cadena,Opcional l_FTPSession:Entero = 0):Booleano
+Proc FTP_BorrarArchivo(Referencia s_RemoteFile:Cadena,Opcional l_FTPSession:Entero = 0):Booleano
+	Si s_RemoteFile = "" Entonces GenerarError 0,"[FTP_BorrarArchivo] el primer parametro es vacio."
 	Si (ghWinInet_FTP = Falso) Salir
 	Resultado = FtpDeleteFile(&gt;l_FTPSession?l_FTPSession:b_Local_Conection,s_RemoteFile)
 FinProc
@@ -175,7 +189,7 @@ FinProc
 ' Autor: PowerDeath
 ' Estado: Funcional
 ' ==================================================================================================================
-Proc FTPCerrarArchivo(Opcional l_InternetSession:Entero = 0):Booleano
+Proc FTP_CerrarArchivo(Opcional l_InternetSession:Entero = 0):Booleano
 	Si (ghWinInet_FTP = Falso) Salir
 	Resultado = InternetCloseHandle(&gt;l_InternetSession?l_InternetSession:u_Local_FileUltimate)
 FinProc
@@ -184,7 +198,9 @@ FinProc
 ' Autor: PowerDeath
 ' Estado: Funcional
 ' ==================================================================================================================
-Proc FTPDescargarArchivo(Referencia s_RemoteFile,s_LocalFile:Cadena,Opcional l_FTPSession:Entero = 0,Opcional fFailIfExists:Booleano = Falso,Opcional dwFlagsAndAttributes:Entero = 0,Opcional l_Flags:Entero = 0,Opcional l_Context:Entero = 0):Booleano
+Proc FTP_DescargarArchivo(Referencia s_RemoteFile,s_LocalFile:Cadena,Opcional l_FTPSession:Entero = 0,Opcional fFailIfExists:Booleano = Falso,Opcional dwFlagsAndAttributes:Entero = 0,Opcional l_Flags:Entero = 0,Opcional l_Context:Entero = 0):Booleano
+	Si s_RemoteFile = "" Entonces GenerarError 0,"[FTP_DescargarArchivo] el primer parametro es vacio."
+	Si s_LocalFile = "" Entonces GenerarError 1,"[FTP_DescargarArchivo] el segundo parametro es vacio."
 	Si (ghWinInet_FTP = Falso) Salir
 	Resultado = FtpGetFile(&gt;l_FTPSession?l_FTPSession:b_Local_Conection,s_RemoteFile,s_LocalFile,fFailIfExists,dwFlagsAndAttributes,l_Flags,l_Context)
 FinProc
@@ -193,8 +209,9 @@ FinProc
 ' Autor: PowerDeath
 ' Estado: Funcional
 ' ==================================================================================================================
-Proc FTPBuscarPrimerArchivo(Referencia s_RemotePath,Matriz[]:Cadena,Opcional l_FTPSession,l_Flags,l_Context:Entero = 0):Entero
+Proc FTP_BuscarPrimerArchivo(Referencia s_RemotePath,Matriz[]:Cadena,Opcional l_FTPSession,l_Flags,l_Context:Entero = 0):Entero
 	Var l_DllStruct:FTPInformaci$F3n
+	Si s_RemotePath = "" Entonces GenerarError 0,"[FTP_BuscarPrimerArchivo] el primer parametro es vacio."
 	Si (ghWinInet_FTP = Falso) Salir
 	ReDim Matriz,12
 	Resultado = FtpFindFirstFile(&gt;l_FTPSession?l_FTPSession:b_Local_Conection,s_RemotePath,l_DllStruct,l_Flags,l_Context)
@@ -219,7 +236,7 @@ FinProc
 ' Autor: PowerDeath
 ' Estado: Funcional
 ' ==================================================================================================================
-Proc FTPBuscarSiguienteArchivo(Referencia Matriz[]:Cadena,Opcional hFind:Entero = 0):Booleano
+Proc FTP_BuscarSiguienteArchivo(Referencia Matriz[]:Cadena,Opcional hFind:Entero = 0):Booleano
 	Var l_DllStruct:FTPInformaci$F3n
 	Si (ghWinInet_FTP = Falso) Salir
 	ReDim Matriz,12
@@ -246,7 +263,7 @@ FinProc
 ' Autor: PowerDeath
 ' Estado: Funcional
 ' ==================================================================================================================
-Proc FTPObtenerDirectorio(Opcional hSession:Entero = 0):Cadena
+Proc FTP_ObtenerDirectorio(Opcional hSession:Entero = 0):Cadena
 	Var s_String:Cadena,h_Result,h:Entero
 	s_String = Espacio(MAX_PATH);h = MAX_PATH
 	h_Result = FtpGetCurrentDirectory(&gt;hSession?hSession:b_Local_Conection,s_String,h@)
@@ -257,16 +274,17 @@ FinProc
 ' Autor: PowerDeath
 ' Estado: Funcional
 ' ==================================================================================================================
-Proc FTPEstablecerDirectorio(Referencia l_Directorio:Cadena,Opcional hSession:Entero = 0):Booleano
-	Resultado = FtpSetCurrentDirectory(&gt;hSession?hSession:b_Local_Conection,l_Directorio)
+Proc FTP_EstablecerDirectorio(Referencia l_Directorio:Cadena,Opcional hSession:Entero = 0):Booleano
+	Si l_Directorio = "" Entonces GenerarError 0,"[FTP_EstablecerDirectorio] el primer parametro es vacio."
+	Devolver FtpSetCurrentDirectory(&gt;hSession?hSession:b_Local_Conection,l_Directorio)
 FinProc
 
 ' # Funci$F3n # ======================================================================================================
 ' Autor: PowerDeath
 ' Estado: Funcional
 ' ==================================================================================================================
-Proc FTPCerrar(Opcional l_InternetSession:Entero = 0):Booleano
+Proc FTP_Cerrar(Opcional l_InternetSession:Entero = 0):Booleano
 	Si (ghWinInet_FTP = Falso) Salir
-	Resultado = InternetCloseHandle(&gt;l_InternetSession?l_InternetSession:b_Local_Conection)
+	Devolver InternetCloseHandle(&gt;l_InternetSession?l_InternetSession:b_Local_Conection)
 FinProc
 </Contenido></Datos>

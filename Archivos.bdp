@@ -2,7 +2,7 @@
 
 $24ADV-
 
-Proc ArchivoCrear(Referencia Ruta:Cadena):Booleano
+Proc Archivo_Crear(Referencia Ruta:Cadena):Booleano
 	Var Ptr:Entero
 	Ptr = CreateFile(Ruta,GENERIC_WRITE,FILE_SHARE_WRITE,Nulo,CREATE_NEW,0,0)
 	Si (Ptr = -1) Entonces Devolver Falso
@@ -10,7 +10,7 @@ Proc ArchivoCrear(Referencia Ruta:Cadena):Booleano
 	Devolver Verd
 FinProc
 
-Proc ArchivoAbrir(Referencia Ruta:Cadena,Opcional Acceso:Cadena = "Todo",Opcional Modo:Entero = 3):Entero
+Proc Archivo_Abrir(Referencia Ruta:Cadena,Opcional Acceso:Cadena = "Todo",Opcional Modo:Entero = 3):Entero
 	Seleccionar CadMayus(Acceso)
 		Caso "LECTURA-ESCRITURA"
 			Resultado = CreateFile(Ruta,&amp;80000000 Or &amp;40000000,&amp;1 Or &amp;2,Nulo,Modo,0,0)
@@ -21,11 +21,11 @@ Proc ArchivoAbrir(Referencia Ruta:Cadena,Opcional Acceso:Cadena = "Todo",Opciona
 		Caso "TODO"
 			Resultado = CreateFile(Ruta,&amp;10000000,0,Nulo,Modo,0,0)
 		Caso Otro
-			Resultado = CreateFile(Ruta,&amp;80000000 Or &amp;40000000,&amp;1 Or &amp;2,Nulo,Modo,0,0)
+			GenerarError 0, "[Archivo_Abrir] acceso invalido."
 	FinSeleccionar
 FinProc
 
-Proc ArchivoExiste(Referencia Ruta:Cadena):Booleano
+Proc Archivo_Existe(Referencia Ruta:Cadena):Booleano
 	Var Ptr:Entero
 	Ptr = CreateFile(Ruta,&amp;80000000,&amp;1 Or &amp;2,Nulo,3,0,0)
 	Si (Ptr = -1) Entonces Devolver Falso
@@ -33,28 +33,28 @@ Proc ArchivoExiste(Referencia Ruta:Cadena):Booleano
 	Devolver Verd
 FinProc
 
-Proc ArchivoCopiar(Referencia Ruta1,Ruta2:Cadena,Opcional Reemplazar:Booleano = Verd):Booleano
+Proc Archivo_Copiar(Referencia Ruta1,Ruta2:Cadena,Opcional Reemplazar:Booleano = Verd):Booleano
 	Devolver CopyFile(Ruta1,Ruta2,Reemplazar)
 FinProc
 
-Proc ArchivoEliminar(Referencia Ruta:Cadena):Booleano
+Proc Archivo_Eliminar(Referencia Ruta:Cadena):Booleano
 	Devolver DeleteFile(Ruta)
 FinProc
 
-Proc ArchivoMover(Referencia Ruta1,Ruta2:Cadena):Booleano
+Proc Archivo_Mover(Referencia Ruta1,Ruta2:Cadena):Booleano
 	Devolver MoveFile(Ruta1,Ruta2)
 FinProc
 
-Proc ArchivoEstFinal(ID:Entero):Booleano
+Proc Archivo_EstFinal(ID:Entero):Booleano
 	Devolver SetEndOfFile(ID)
 FinProc
 
-Proc ArchivoDescargar(Referencia URL,Archivo:Cadena)
+Proc Archivo_Descargar(Referencia URL,Archivo:Cadena)
 	URLDownloadToFile(0, URL, Archivo, 0, 0)
 FinProc
 
-Proc ArchivoLeer(ID:Entero,Opcional Longitud:Entero):Cadena
-	Si ID = INVALID_HANDLE Entonces Salir
+Proc Archivo_Leer(ID:Entero,Opcional Longitud:Entero):Cadena
+	Si ID = INVALID_HANDLE Entonces GenerarError 0, "[Archivo_Leer] Puntero invalido."
 	Si SetFilePointer(ID,0,Nulo,FILE_CURRENT)=-1 Salir
 	Si SetFilePointer(ID,0,Nulo,FILE_BEGIN)&lt;&gt;0 Salir
 	Resultado = Espacio(&gt;Longitud?Longitud:GetFileSize(ID,Nulo))
@@ -62,7 +62,7 @@ Proc ArchivoLeer(ID:Entero,Opcional Longitud:Entero):Cadena
 	SetFilePointer(Id,0,Nulo,FILE_BEGIN)
 FinProc
 
-Proc ArchivoEscribir(ID:Entero,Referencia Datos:Cadena):Entero
+Proc Archivo_Escribir(ID:Entero,Referencia Datos:Cadena):Entero
 	Si ID = INVALID_HANDLE Entonces Salir
 	Si SetFilePointer(ID,0,Nulo,FILE_CURRENT)=-1 Salir
 	Si SetFilePointer(ID,0,Nulo,FILE_BEGIN)&lt;&gt;0 Salir
@@ -70,13 +70,13 @@ Proc ArchivoEscribir(ID:Entero,Referencia Datos:Cadena):Entero
 	SetFilePointer(Id,0,Nulo,FILE_BEGIN)
 FinProc
 
-Proc ArchivoTama$F1o(ID:Entero):Entero
-	Si ID = INVALID_HANDLE Entonces Salir
+Proc Archivo_Tama$F1o(ID:Entero):Entero
+	Si ID = INVALID_HANDLE Entonces GenerarError 0, "[Archivo_Tama$F1o] Puntero invalido."
 	Devolver GetFileSize(ID,Nulo)
 FinProc
 
-Proc ArchivoCerrar(ID:Entero)
-	Si ID = INVALID_HANDLE Entonces Salir
+Proc Archivo_Cerrar(ID:Entero)
+	Si ID = INVALID_HANDLE Entonces GenerarError 0, "[Archivo_Cerrar] Puntero invalido."
 	CloseHandle(ID)
 FinProc
 </Contenido></Datos>
