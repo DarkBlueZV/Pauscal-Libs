@@ -1,6 +1,10 @@
 <Datos><Nombre></Nombre><Icono>AA==</Icono><Version><Mayor>0</Mayor><Menor>0</Menor><Revision>0</Revision><AutoIncr>0</AutoIncr></Version><Info/><Contenido>Importar "Utiles.prp"
 ' Matrices.
 
+Proc MatDevolver(Referencia Matriz[]:Entero,Indice:Entero):Entero
+	Devolver Matriz[Indice]
+FinProc
+
 ' #############################################################
 ' Nombre       : RepartirDec
 ' Funci$F3n      : Reparte un valor decimal en una matriz.

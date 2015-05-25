@@ -45,8 +45,8 @@ Proc CadLong(Referencia lpStr:Cadena):Entero
 FinProc
 
 Proc CompararCad(Referencia Cad1,Cad2:Cadena,Opcional Sensitivo:Booleano):Booleano
-	Si (Cad1 = "") Entonces GenerarError 0,"[CompararCad] primer parametro es vacio."
-	Si (Cad2 = "") Entonces GenerarError 1,"[CompararCad] segundo parametro es vacio."
+	Si (Cad1 = "") Entonces GenerarError 1,"[CompararCad] primer parametro es vacio."
+	Si (Cad2 = "") Entonces GenerarError 2,"[CompararCad] segundo parametro es vacio."
 	Devolver &gt;(Sensitivo)?(lstrcmpi(Cad1,Cad2)):(lstrcmp(Cad1,Cad2))
 FinProc
 
@@ -54,7 +54,7 @@ FinProc
 ' Pero como alarg$E1r la longitud de la cadena "invalidamente" podria generar errores graves.
 Proc Espacio(Longitud:Entero):Cadena
    Var Ptr:StrAndIntToArrayByte
-   Si Longitud &lt;= 0 Entonces GenerarError 0,"[Espacio] primer parametro es menor o igual a cero."
+   Si Longitud &lt;= 0 Entonces GenerarError 1,"[Espacio] primer parametro es menor o igual a cero."
    ReDim Ptr.Bite,Longitud
    Devolver Ptr.Str
 FinProc
@@ -63,7 +63,7 @@ FinProc
 'Este procedimiento es muy rapido, no es necesario reemplazar.
 Proc Invertir(Referencia Expresi$F3n:Cadena):Cadena
 	Var Matriz1[],Matriz2[]:Byte,l,i,e:Entero
-	Si Expresi$F3n = "" Entonces GenerarError 0,"[Invertir] primer parametro es vacio."
+	Si Expresi$F3n = "" Entonces GenerarError 1,"[Invertir] primer parametro es vacio."
 	Matriz1 = MatrizByteDeCadena(Expresi$F3n)
 	l = LongMat(Matriz1)
 	e = l-1
@@ -87,7 +87,7 @@ FinProc
 ' Ascii ._.
 Proc Ascii(Referencia lpStr:Cadena):Byte
 	Var i:Entero,@Ret:Byte
-	Si lpStr = "" Entonces GenerarError 0,"[Ascii] primer parametro es vacio."
+	Si lpStr = "" Entonces GenerarError 1,"[Ascii] primer parametro es vacio."
 	Ret@=CadPtr(lpStr)
 	Devolver Ret
 FinProc
@@ -103,22 +103,22 @@ FinProc ' $BF$BFSe producen errores al salir del procedimiento?? Dios santo ....
 ' Nota2: Creo que esta usando "MoveMemory", me preocupa un poco el uso de estos punteros.
 Proc DerechaCad(Referencia Str:Cadena,Pos1:Entero):Cadena
 	Var Longi:Entero
-	Si Str = "" Entonces GenerarError 0, "[DerechaCad] primer parametro es vacio."
+	Si Str = "" Entonces GenerarError 1, "[DerechaCad] primer parametro es vacio."
 	Longi = CadLong(Str)
-	Si (Pos1 &gt; Longi) Entonces GenerarError 1, "[DerechaCad] segundo parametro es mayor a la longitud del primero."
-	Si (Pos1 &lt;= 0) Entonces GenerarError 2, "[DerechaCad] segundo parametro es menor/igual a cero."
+	Si (Pos1 &gt; Longi) Entonces GenerarError 2, "[DerechaCad] segundo parametro es mayor a la longitud del primero."
+	Si (Pos1 &lt;= 0) Entonces GenerarError 3, "[DerechaCad] segundo parametro es menor/igual a cero."
 	Devolver ParteCad(Str,Pos1)
 FinProc
 
 Proc UnicodeACad(Referencia Expresi$F3n:Cadena):Cadena
-	Si Expresi$F3n = "" Entonces GenerarError 0, "[UnicodeACad] primer parametro es vacio."
+	Si Expresi$F3n = "" Entonces GenerarError 1, "[UnicodeACad] primer parametro es vacio."
 	Devolver Reemplazar(Expresi$F3n,Null,"")
 FinProc
 
 ' CadAUnicode nuevo, Nativo &lt;
 Proc CadAUnicode(Referencia Expresion:Cadena):Cadena
 	Var Matriz1[],Matriz2[]:Byte,d,i,l:Entero
-	Si Expresion = "" Entonces GenerarError 0, "[CadAUnicode] primer parametro es vacio."
+	Si Expresion = "" Entonces Devolver ""#0
 	Matriz1 = MatrizByteDeCadena(Expresion)
 	d = LongMat(Matriz1)
 	ReDim Matriz2,(d*2)+1
@@ -133,11 +133,11 @@ FinProc
 ' ParteCad Optimizado By Yuki
 Proc ParteCad(Referencia Texto:Cadena, Comienzo:EnteroSig, Opcional Longit:EnteroSig=-1):Cadena
 	Var LenTxt:EnteroSig,@Ptr,@Ln:Entero
-	Si Texto = "" Entonces GenerarError 0, "[ParteCad] primer parametro es vacio."
+	Si Texto = "" Entonces GenerarError 1, "[ParteCad] primer parametro es vacio."
 	LenTxt=CadLong(Texto)
-	Si (Comienzo &gt; LenTxt) Entonces GenerarError 1, "[ParteCad] segundo parametro es mayor que la longitud del primero."
-	Si (Comienzo &lt;= 0) Entonces GenerarError 2, "[ParteCad] segundo parametro es menor/igual a cero."
-	Si (Longit &gt; LenTxt) Entonces GenerarError 3, "[ParteCad] tercer parametro es mayor a la longitud del primero."
+	Si (Comienzo &gt; LenTxt) Entonces GenerarError 2, "[ParteCad] segundo parametro es mayor que la longitud del primero."
+	Si (Comienzo &lt;= 0) Entonces GenerarError 3, "[ParteCad] segundo parametro es menor/igual a cero."
+	Si (Longit &gt; LenTxt) Entonces GenerarError 4, "[ParteCad] tercer parametro es mayor a la longitud del primero."
 	Longit = &gt;(Longit=-1) or (Longit + Comienzo &gt; LenTxt)?LenTxt-Comienzo+1:Longit
 	Ptr@ = Resultado@
 	Ln@ = Texto@
@@ -149,13 +149,13 @@ FinProc
 ' No son necesarias tantas sentencias, el procedimient parteCad ya hace el trabajo.
 Proc BuscarEnCad(Referencia lpStr,lpMatch:Cadena,Opcional dwPos:Entero = 1):Entero
 	Var i,l,r:Entero
-	Si (lpStr = "") Entonces GenerarError 0, "[BuscarEnCad] primer parametro es vacio."
+	Si (lpStr = "") Entonces GenerarError 1, "[BuscarEnCad] primer parametro es vacio."
 	r = CadLong(lpStr)
-	Si (lpMatch = "") Entonces GenerarError 1, "[BuscarEnCad] segundo parametro es vacio."
+	Si (lpMatch = "") Entonces GenerarError 2, "[BuscarEnCad] segundo parametro es vacio."
 	l = CadLong(lpMatch)
 	Si l &gt; r Entonces Salir ' Devuelve cero ya que la cadena lpMatch por ser de mayor longitud es directamente inexistente.
-	Si (dwPos &lt;= 0) Entonces GenerarError 2, "[BuscarEnCad] tercer parametro es menor/igual a cero."
-	Si (dwPos &gt; r) Entonces GenerarError 3, "[BuscarEnCad] tercer parametro es mayor a la longitud del primer parametro."
+	Si (dwPos &lt;= 0) Entonces GenerarError 3, "[BuscarEnCad] tercer parametro es menor/igual a cero."
+	Si (dwPos &gt; r) Entonces GenerarError 4, "[BuscarEnCad] tercer parametro es mayor a la longitud del primer parametro."
 	Contar i = dwPos a r
 		Si ParteCad(lpStr,i,l) = lpMatch Entonces Devolver i
 	Seguir
@@ -164,11 +164,11 @@ FinProc
 
 Proc BuscarEnCadInv(Referencia lpStr,lpMatch:Cadena,Opcional dwPos:Entero):Entero
   Var i,LongMatch,TotLng:Entero
-  Si lpStr = "" Entonces GenerarError 0, "[BuscarEnCadInv] primer parametro es vacio."
-  Si lpMatch = 0 Entonces GenerarError 1, "[BuscarEnCadInv] segundo parametro es vacio."
+  Si lpStr = "" Entonces GenerarError 1, "[BuscarEnCadInv] primer parametro es vacio."
+  Si lpMatch = 0 Entonces GenerarError 2, "[BuscarEnCadInv] segundo parametro es vacio."
   LongMatch=CadLong(lpMatch)
   TotLng=CadLong(lpStr)-LongMatch+1
-  Si (dwPos&gt;TotLng) GenerarError 2, "[BuscarEnCadInv] tercer parametro es mayor a la longitud del primero."
+  Si (dwPos&gt;TotLng) GenerarError 3, "[BuscarEnCadInv] tercer parametro es mayor a la longitud del primero."
   Si (dwPos=0) dwPos=TotLng
   Contar i = dwPos a 1 Dec
     Si (ParteCad(lpStr,i,LongMatch)=lpMatch) Devolver i
@@ -177,8 +177,8 @@ FinProc
 
 Proc Reemplazar(Referencia Str,Match,Rep:Cadena, Opcional Pos:EnteroSig):Cadena
   Var i,LongMatch,CL,TotLng:Entero
-  Si Str = "" GenerarError 0, "[Reemplazar] primer parametro es vacio."
-  Si Match = "" Entonces GenerarError 1, "[Reemplazar] segundo parametro es vacio."
+  Si Str = "" GenerarError 1, "[Reemplazar] primer parametro es vacio."
+  Si Match = "" Entonces GenerarError 2, "[Reemplazar] segundo parametro es vacio."
   'Si Rep = "" Entonces GenerarError 2, "[Reemplazar] tercer parametro es vacio."
   LongMatch=CadLong(Match)
   CL=CadLong(Str)
@@ -197,24 +197,29 @@ FinProc
 
 'EntreCad Bu Yuki!
 Proc EntreCad(Referencia Texto,Inicial,Final:Cadena,Opcional InicialB:Entero = 1):Cadena
-	Var Str[]:Cadena
-	Si (Texto = "") GenerarError 0, "[EntreCad] primer parametro es vacio."
-	Si (Inicial = "") GenerarError 1, "[EntreCad] segundo parametro es vacio."
-	Si (Final = "") GenerarError 2, "[EntreCad] tercer parametro es vacio."
-	Si (InicialB &lt;= 0) GenerarError 3, "[EntreCad] cuarto parametro es menor o igual a cero."
+	Var Str[]:Cadena,i:Entero
+	Si (Texto = "") GenerarError 1, "[EntreCad] primer parametro es vacio."
+	Si (Inicial = "") GenerarError 2, "[EntreCad] segundo parametro es vacio."
+	Si (Final = "") GenerarError 3, "[EntreCad] tercer parametro es vacio."
+	Si (InicialB &lt;= 0) GenerarError 4, "[EntreCad] cuarto parametro es menor o igual a cero."
 	AdmErr
 		Str = Separar(Texto,Inicial,InicialB)
 		Str = Separar(Str[1],Final)
 		Devolver Str[0]
-	Controlar
-		Salir
+	Controlar i
+		Seleccionar i
+			Caso errMatrizSinDim
+				GenerarError 4,"[EntreCad] matriz sin dimenci$F3n."
+			Caso errIndFueraInterv
+				GenerarError 5,"[EntreCad] indice fuera del intervalo."
+		FinSeleccionar
 	FinAdmErr
 FinProc
 
 ' MatrizByteDeCadena By Yuki.
 Proc MatrizByteDeCadena(Referencia Temp:Cadena,Opcional Bool:Booleano):Byte[]
 	Var Ptr:StrAndIntToArrayByte,i:Entero
-	Si Temp = "" Entonces GenerarError 0, "[MatrizByteDeCadena] primer parametro es vacio."
+	Si Temp = "" Entonces GenerarError 1, "[MatrizByteDeCadena] primer parametro es vacio."
 	Si Bool
 		i = CadLong(Temp)
 		ReDim Resultado,i
@@ -228,25 +233,24 @@ FinProc ' Genera Error al salir del procedimiento O.o
 
 Proc CadPtr(Referencia lpStr:Cadena):Entero
   Var @Dir:Entero
-  Si lpStr = "" GenerarError 0, "[CadPtr] primer parametro es vacio."
   Dir@=lpStr@
   Devolver Dir
 FinProc
 
 Proc CadMayus(Referencia lpStr:Cadena):Cadena
-	Si lpStr = "" GenerarError 0, "[CadMayus] primer parametro es vacio."
+	Si lpStr = "" GenerarError 1, "[CadMayus] primer parametro es vacio."
 	Devolver CadDePtr(CharUpper(CadPtr(lpStr)))
 FinProc
 
 Proc CadMinus(Referencia lpStr:Cadena):Cadena
-	Si lpStr = "" GenerarError 0, "[CadMinus] primer parametro es vacio."
+	Si lpStr = "" GenerarError 1, "[CadMinus] primer parametro es vacio."
 	Devolver CadDePtr(CharLower(CadPtr(lpStr)))
 FinProc
 
 'CadenaDeMarizByte By Yuki
 Proc CadenaDeMatrizByte(Referencia ByteAry[]:Byte):Cadena
   Var Ptr:StrAndIntToArrayByte
-  Si LongMat(ByteAry) = 0 Entonces GenerarError 0, "[CadenaDeMatrizByte] primer parametro es vacio."
+  Si LongMat(ByteAry) = 0 Entonces GenerarError 1, "[CadenaDeMatrizByte] primer parametro es vacio."
   Ptr.Bite = ByteAry
   Devolver Ptr.Str
 FinProc
@@ -255,7 +259,7 @@ FinProc
 ' Lo habia modificado utilizando matrices de bytes, pero como que CopyMemory es mas lento de esa forma, asique Ptr de cadenas nomas.
 Proc CadDePtr(PtrCad:Entero):Cadena
   Var Temp[]:Byte, LenTxt:EnteroSig
-  Si PtrCad &lt;= 0 Entonces GenerarError 0, "[CadDePtr] primer parametro es menor o igual cero."
+  Si PtrCad &lt;= 0 Entonces GenerarError 1, "[CadDePtr] primer parametro es menor o igual cero."
   LenTxt=lstrlenptr(PtrCad)
   Si LenTxt&lt;1 GenerarError 1, "[CadDePtr] la longitud del buffer obtenido es menor a uno."
   Resultado = Espacio(LenTxt)
@@ -264,7 +268,7 @@ FinProc
 
 Proc TruncarCadena(Referencia lpStr:Cadena):Cadena 
   Var Pos:Entero
-  Si lpStr = "" Entonces GenerarError 0, "[TruncarCadena] primer parametro es vacio."
+  Si lpStr = "" Entonces GenerarError 1, "[TruncarCadena] primer parametro es vacio."
   Pos=BuscarEnCad(lpStr,Null)
   Si (Pos=0) Devolver lpStr
   Si (Pos=1) Salir
@@ -273,10 +277,10 @@ FinProc
 
 Proc Separar(Referencia Texto,Sep:Cadena, Opcional PosInicio:Entero=1, Opcional MaxRet:Entero):Cadena[]
   Var Pos,Ret,Mx,SepLen,TxtLen:Entero
-  Si (Texto = "") Entonces GenerarError 0, "[Separar] primer parametro es vacio."
-  Si (Sep = "") Entonces GenerarError 1, "[Separar] segundo parametro es vacio."
-  Si (PosInicio &lt;= 0) Entonces GenerarError 2, "[Separar] tercer parametro es menor o igual a cero."
-  Si (MaxRet &lt; 0) Entonces GenerarError 3, "[Separar] cuarto parametro es menor a cero."
+  Si (Texto = "") Entonces GenerarError 1, "[Separar] primer parametro es vacio."
+  Si (Sep = "") Entonces GenerarError 2, "[Separar] segundo parametro es vacio."
+  Si (PosInicio &lt;= 0) Entonces GenerarError 3, "[Separar] tercer parametro es menor o igual a cero."
+  Si (MaxRet &lt; 0) Entonces GenerarError 4, "[Separar] cuarto parametro es menor a cero."
   SepLen = CadLong(Sep)
   TxtLen = CadLong(Texto)
   Borrar Resultado

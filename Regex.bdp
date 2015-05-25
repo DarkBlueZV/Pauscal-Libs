@@ -1,5 +1,6 @@
 <Datos><Nombre></Nombre><Icono>AA==</Icono><Version><Mayor>0</Mayor><Menor>0</Menor><Revision>0</Revision><AutoIncr>0</AutoIncr></Version><Info/><Contenido>'Importar "Utiles.prp"
 Importar "Matrices.prp"
+Importar "Memoria.prp"
 'extern pcre *pcre_compile(const char *, int, const char **, int *, const unsigned char *);
 'extern int  pcre_config(int, void *);
 'extern int  pcre_copy_named_substring(const pcre *, const char *, int *, int, const char *, char *, int);
@@ -85,84 +86,88 @@ Proc pcre_free_study(ptrExtra:Entero),"pcre3.dll"
 'void pcre_free_substring(const char *stringptr);
 Proc pcre_free_substring(stringptr:Entero),"pcre3.dll"
 Proc pcre_exec(PtrComile:Entero,Referencia:pcre_extra,Referencia:Cadena,,,,,:Entero):Entero, "pcre3.dll"
-
+Privado:
+	Var Matriz[]:Entero
+P$FAblico:
 'Var Regex_Error[]:Cadena
 Proc Regex_Versi$F3n:Cadena
 	Devolver CadDePtr(pcre_version)
 FinProc
 
-Proc Regex_Escanear(Referencia Texto,Patron:Cadena,Opcional InicioReg,Opciones:Entero):Cadena[]
-	Var PtrCompile,PtrExec,PtrStringError,OffsetErrorValue,LenTxt,IntSubString,PtrStudy,i,Vector[]:Entero,@Extra:pcre_extra',Str[]:Cadena
-	Si Patron = "" Entonces GenerarError 0,"[Regex_Escanear] el primer parametro es vacio." ; Salir
-	Si Texto = "" Entonces GenerarError 1,"[Regex_Escanear] el segundo parametro es vacio." ; Salir
-	LenTxt = CadLong(Texto)
-	' Compilamos el patron.
+Var Regex_Error:Cadena
+
+
+Proc Regex_Compilar(Referencia Patron:Cadena,Opcional Opciones:Entero):Entero
+	Var PtrStringError,PtrCompile,OffsetErrorValue,L:Entero
+	Si Patron = "" Entonces GenerarError 0,"[Regex_Compilar] el primer parametro es vacio."
 	PtrCompile = pcre_compile(Patron,Opciones,PtrStringError,OffsetErrorValue,0)
 	Si PtrStringError &gt; 0 Entonces
-		' Devolvemos el c$F3digo del error [0] y el offset del error en el patron [1].
-		Resultado = [CadDePtr(PtrStringError),EntCad(OffsetErrorValue)]
-		GenerarError 2,"[Regex_Escanear] patron invalido."
-		Salir
-	FinSi
-	' Si no existe un error, continuamos el trabajo.
-	Si PtrCompile &lt;&gt; 0 Entonces
-		ReDim Vector,3 * LenTxt
-		'ReDim Resultado,1
-		PtrStudy = pcre_study(PtrCompile,0,0)
-		Si PtrStudy &lt;&gt; 0 Entonces
-			Extra@ = PtrStudy
-			PtrExec = pcre_exec(PtrCompile,Extra,Texto,LenTxt,InicioReg,Opciones,Vector[0]@,LongMat(Vector))
-			IrHacia ProcesarExec
-		SiNo
-			' Ejecutamos el patron.
-			PtrExec = pcre_exec(PtrCompile,Nulo,Texto,LenTxt,InicioReg,Opciones,Vector[0]@,LongMat(Vector))
-ProcesarExec:
-			Si PtrExec &lt; 0 Entonces
-				' Si se produjo un error, salir sin hacer nada.
-				Salir
-			SiNo
-				' Esta secci$F3n de c$F3digo recupera la longitud requerida del buffer.
-				AdmErr
-					Resultado = [" "]
-					Repetir
-						IntSubString = pcre_copy_substring(Texto,Vector[0]@,PtrExec,i,Resultado[i],CadLong(Resultado[i]))
-						Seleccionar IntSubString
-							Caso PCRE_ERROR_NOMEMORY
-								Resultado[i] = Resultado[i] + " "
-							Caso PCRE_ERROR_NOSUBSTRING
-								Salir Repetir
-							Caso Otro
-								'Mensaje(EntCad(IntSubString))
-								Resultado[i] = ParteCad(Resultado[i],1,IntSubString)
-								i = i + 1
-								ReDim Preservar Resultado,i + 1
-						FinSeleccionar
-					PorSiempre
-					Salir
-				Controlar
-					Mensaje("Error inesperado al ejecutar Regex." + CrLf + _
-					"Esto lamentablemente no es una falla de c$F3digo, es un error del lenguaje de programaci$F3n." + CrLf + _
-					"Posiblemente en futuras versiones pueda ser solucionado.","Error",48)
-					Salir
-				FinAdmErr
-			FinSi
-		FinSi
+		Regex_Error = CadDePtr(PtrStringError)
+		Devolver OffsetErrorValue
+	SiNo
+		Devolver PtrCompile
 	FinSi
 FinProc
 
-'Clase Regex,Result[]:Cadena
-'	ClaseVar Texto:Cadena
-'	ClaseVar Patron:Cadena
-'	ClaseVar Longitud:Cadena
-'	ClaseVar Resultados[]:Cadena
-'	ClaseVar Error:Booleano
-'	Proc Buscar
-'		AdmErr
-'			Resultados = Regex_Escanear(Texto,Patron)
-'		Controlar
-'			Error = Verd ; Salir
-'		FinAdmErr
-'			Longitud = L$EDmite(Resultados)
-'	FinProc
-'FinClase
+Proc Regex_Exec(PtrCompilado:Entero,Referencia Texto:Cadena,InicioReg,Opciones:Entero):Entero
+	Var LenTxt,PtrStudy,PtrExec:Entero,@Extra:pcre_extra
+	Si Texto = "" Entonces GenerarError 0,"[Regex_Exec] segundo parametro es vacio."
+	Si PtrCompilado &gt; 0 Entonces
+		LenTxt = CadLong(Texto)
+		PtrStudy = pcre_study(PtrCompilado,0,0)
+		Si PtrStudy &lt;&gt; 0 Entonces
+			ReDim Matriz,3 * LenTxt
+			Extra@ = PtrStudy
+			PtrExec = pcre_exec(PtrCompilado,Extra,Texto,LenTxt,InicioReg,Opciones,Matriz[0]@,LongMat(Matriz))
+			IrHacia ProcesarExec
+		SiNo
+			' Ejecutamos el patron.
+			PtrExec = pcre_exec(PtrCompilado,Nulo,Texto,LenTxt,InicioReg,Opciones,Matriz[0]@,LongMat(Matriz))
+ProcesarExec:
+			Si PtrExec &lt; 0 Entonces
+				GenerarError 1,"[Regex_Exec] error al ejecutar patron."
+			SiNo
+				Devolver PtrExec
+			FinSi
+		FinSi
+	SiNo
+		GenerarError 0,"[Regex_Exec] puntero al patron compilado es cero."
+	FinSi
+FinProc
+
+Proc Regex_Escanear(Referencia Texto,Patron:Cadena,Opcional InicioReg,Opciones:Entero):Cadena[]
+	Var PtrCompile,PtrExec,IntSubString,PtrStudy,i:Entero
+	Si Patron = "" Entonces GenerarError 0,"[Regex_Escanear] el primer parametro es vacio."
+	Si Texto = "" Entonces GenerarError 1,"[Regex_Escanear] el segundo parametro es vacio."
+	AdmErr
+	PtrCompile = Regex_Compilar(Patron,Opciones)
+	Controlar
+		Mensaje("Error" + EntCad(i))
+	FinAdmErr
+	Si Regex_Error &lt;&gt; "" Entonces GenerarError 2,"[Regex_Escanear] error al compilar patron." + CrLf + "Ver: variable Regex_Error."
+	PtrExec = Regex_Exec(PtrCompile,Texto,InicioReg,Opciones)
+	Si PtrExec = 0 Entonces GenerarError 3,"[Regex_Escanear] error al ejecutar patron."
+	AdmErr
+		Resultado = [Espacio(1000)]
+		Repetir
+			IntSubString = pcre_copy_substring(Texto,Matriz[0]@,PtrExec,i,Resultado[i],CadLong(Resultado[i]))
+			Seleccionar IntSubString
+				Caso PCRE_ERROR_NOMEMORY
+					Resultado[i] = Resultado[i] + Espacio(1000)
+				Caso PCRE_ERROR_NOSUBSTRING
+					Salir Repetir
+				Caso Otro
+					Resultado[i] = ParteCad(Resultado[i],1,IntSubString)
+					i = i + 1
+					ReDim Preservar Resultado,i + 1
+			FinSeleccionar
+		PorSiempre
+		Salir
+	Controlar
+		Mensaje("Error inesperado al ejecutar Regex." + CrLf + _
+		"Esto lamentablemente no es una falla de c$F3digo, es un error del lenguaje de programaci$F3n." + CrLf + _
+		"Posiblemente en futuras versiones pueda ser solucionado.","Error",48)
+		Salir
+	FinAdmErr
+FinProc
 </Contenido></Datos>

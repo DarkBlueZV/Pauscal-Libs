@@ -5,6 +5,14 @@ Const Null=#0
 Const Verdad = &amp;1,Verdadero = &amp;1
 Const Defecto = 0
 Const S_OK = 0
+Const Pi2 = 3.1446055 ' Nuevo valor de PI 2015.
+
+' AttachConsole
+Const ATTACH_PARENT_PROCESS = -1
+' GetStdHandle
+Const STD_OUTPUT_HANDLE = -11
+Const STD_INPUT_HANDLE = -10
+Const STD_ERROR_HANDLE = -12
 
 ' SHAutoComplete
 Const SHACF_AUTOAPPEND_FORCE_OFF = &amp;80000000
@@ -16,9 +24,66 @@ Const SHACF_FILESYSTEM = 1
 Const SHACF_URLHISTORY = 2
 Const SHACF_URLMRU = 4
 Const SHACF_USETAB = 8
-
+Const GMEM_MOVEABLE = 2
 'Generales
 Const INVALID_HANDLE = -1, MAX_PATH = 260
+
+'Tooltip Window Constants
+Const TTS_CLOSE = &amp;80
+Const TTM_UPDATE = (WM_USER + 29)
+Const TTDT_AUTOMATIC = 0
+Const TTDT_RESHOW = 1
+Const TTDT_AUTOPOP = 2
+Const TTDT_INITIAL = 3
+Const TTS_NOPREFIX = &amp;2
+Const TTF_TRANSPARENT = &amp;100
+Const TTF_CENTERTIP = &amp;2
+Const TTM_ADDTOOLA = (WM_USER + 4)
+Const TTM_ACTIVATE = WM_USER + 1
+Const TTM_UPDATETIPTEXTA = (WM_USER + 12)
+Const TTM_SETMAXTIPWIDTH = (WM_USER + 24)
+Const TTM_SETTIPBKCOLOR = (WM_USER + 19)
+Const TTM_SETTIPTEXTCOLOR = (WM_USER + 20)
+Const TTM_SETTITLE = (WM_USER + 32)
+Const TTS_BALLOON = &amp;40
+Const TTM_GETTIPBKCOLOR = (WM_USER+22)
+Const TTS_ALWAYSTIP = &amp;1
+Const TTF_SUBCLASS = &amp;10
+Const TTF_IDISHWND = &amp;1
+Const TTM_SETDELAYTIME = (WM_USER + 3)
+Const TOOLTIPS_CLASSA = "tooltips_class32"
+Const TTM_GETMARGIN = (WM_USER+27)  
+Const TTM_TRACKACTIVATE = (WM_USER + 17)
+Const TTM_TRACKPOSITION = (WM_USER + 18)
+Const TTM_GETDELAYTIME = (WM_USER + 21)
+'Const TTM_GETTIPBKCOLOR = (WM_USER + 22)
+Const TTM_GETTIPTEXTCOLOR = (WM_USER + 23)
+Const TTM_GETMAXTIPWIDTH = (WM_USER + 25)
+Const TTM_SETMARGIN = (WM_USER + 26)
+Const TTM_POP = (WM_USER + 28)
+Const TTM_RELAYEVENT = (WM_USER + 7)
+Const TTM_GETTOOLCOUNT = (WM_USER + 13)
+Const TTM_WINDOWFROMPOINT = (WM_USER + 16)
+Const TTM_ADDTOOL = (WM_USER + 50)
+Const TTM_DELTOOL = (WM_USER + 51)
+Const TTM_NEWTOOLRECT = (WM_USER + 52)
+Const TTM_GETTOOLINFO = (WM_USER + 53)
+Const TTM_SETTOOLINFO = (WM_USER + 54)
+Const TTM_HITTEST = (WM_USER + 55)
+Const TTM_GETTEXT = (WM_USER + 56)
+Const TTM_UPDATETIPTEXT = (WM_USER + 57)
+Const TTM_ENUMTOOLS = (WM_USER + 58)
+Const TTM_GETCURRENTTOOL = (WM_USER + 59)
+Const TTNOICON = 0
+Const TTICONINFO = 1
+Const TTICONWARNING = 2
+Const TTICONERROR = 3
+Const TTI_INFO_LARGE = 4
+Const TTI_WARNING_LARGE = 5
+Const TTI_ERROR_LARGE = 6
+'Const TTSTANDAR = 0
+'Const TTBALLON = 1
+Const TTM_POPUP = (WM_USER + 34)
 
 'SetThreadPriority
 Const THREAD_BASE_PRIORITY_IDLE = -15
@@ -52,9 +117,6 @@ Const pscAceptarSolo=0,pscAceptarCancelar=1,pscAbortarReintentarIgnorar=2,pscS$E
 Const pscDef1=0,pscDef2=256,pscDef3=512
 Const pscModalPrograma=0,pscModalSistema=4096
 Const pscAceptar=1,pscCancelar=2,pscAbortar=3,pscReintentar=4,pscIgnorar=5,pscS$ED=6,pscNo=7
-
-'GlobalAlloc
-Const GMEM_MOVEABLE = 8194
 
 'SetClipboardData
 Const CF_TEXT = 1
@@ -546,13 +608,13 @@ Const WS_EX_NOPARENTNOTIFY= &amp;4
 Const WS_EX_TOPMOST= &amp;8
 Const WS_EX_ACCEPTFILES= &amp;10
 Const WS_EX_TRANSPARENT= &amp;20
-Const GWL_WNDPROC= (  -  &amp;4  )
-Const GWL_HINSTANCE= (  -  &amp;6  )
-Const GWL_HWNDPARENT= (  -  &amp;8  )
-Const GWL_STYLE= (  -  &amp;10  )
-Const GWL_EXSTYLE= (  -  &amp;14  )
-Const GWL_USERDATA= (  -  &amp;15  )
-Const GWL_ID= (  -  &amp;C  )
+Const GWL_WNDPROC = -4
+Const GWL_HINSTANCE = -6
+Const GWL_HWNDPARENT = -8
+Const GWL_STYLE = -16
+Const GWL_EXSTYLE = -20
+Const GWL_USERDATA = -16
+Const GWL_ID = -12
 Const BS_PUSHBUTTON= &amp;0
 Const BS_DEFPUSHBUTTON= &amp;1
 Const BS_CHECKBOX= &amp;2
@@ -884,4 +946,6 @@ Const SWP_NOREPOSITION =512
 Const SWP_NOSENDCHANGING =1024
 Const SWP_DEFERERASE =8192
 Const SWP_ASYNCWINDOWPOS  =16384
+
+Const WS_EX_TOOLWINDOW = &amp;00000080
 </Contenido></Datos>

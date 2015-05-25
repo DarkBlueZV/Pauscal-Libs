@@ -197,15 +197,17 @@ Estruc PSCCADENAS_EVENTINFO, _
 
 'PAUSCAL visual environment specific declarations
 
-Estruc RECT _
-,Left:Entero _
-,Top:Entero _
-,Right:Entero _
-,Bottom:Entero
+Estruc RECT,_
+Left,_
+Top,_
+Right,_
+Bottom:Entero
 
-Estruc POINTAPI _
-,x:Entero _
-,y:Entero
+'Estruc TOOLINFO,lSize,lFlags,hwnd,lId:Entero,lpRect:RECT,hInstance:Entero,lpStr:Cadena,lParam:Entero
+
+Estruc POINTAPI,_
+X,_
+Y:Entero
 
 
 Estruc MSG _

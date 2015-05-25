@@ -23,7 +23,7 @@ Privado:
     Var hMem,Length,Ptr:Entero
     Si (Neg OpenClipboard(0)) GenerarError errErrorEnPortapapeles
     Length=CadLong(Val)+2
-    hMem=GlobalAlloc(GMEM_MOVEABLE,Length)
+    hMem=GlobalAlloc(2,Length)
     Ptr=GlobalLock(hMem)
     CopyStrToBuff(Ptr,Val)
     SetClipboardData(CF_TEXT,hMem)
@@ -170,7 +170,7 @@ FinClase
 
 Clase pscDialogo, _
   iFiltro,iTitle,iDir:Cadena, _
-  TempBuff: OPENFILENAME, _
+  TempBuff:OPENFILENAME, _
   iArchivos[]:Cadena, _
   iMulti,iOvrWrt,iFileMustExist:Booleano
 

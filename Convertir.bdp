@@ -75,6 +75,12 @@ Proc EntMatByte(Int:Entero):Byte[]
 	Resultado = [Int And &amp;FF,(Int And 65280) \ &amp;100,(Int And &amp;FF0000) \ &amp;10000,((Int And &amp;FF000000) \ &amp;1000000) And &amp;FF]
 FinProc
 
+Proc ByteMatEnt(Referencia Bytes[]:Byte):Entero
+	Var @Ptr:Entero
+	Ptr@ = Bytes[0]@
+	Devolver Ptr
+FinProc
+
 'By Yuki!
 Proc WordCad(Number:WordSig):Cadena
 	Devolver UnicodeACad(vbaStrI2(Number))

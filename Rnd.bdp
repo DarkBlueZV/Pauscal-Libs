@@ -1,21 +1,17 @@
 <Datos><Nombre></Nombre><Icono>AA==</Icono><Version><Mayor>0</Mayor><Menor>0</Menor><Revision>0</Revision><AutoIncr>0</AutoIncr></Version><Info/><Contenido>Importar "Fechas.prp"
-
+'Importar "AutoWindows.prp"
+'Importar "Matrices.prp"
 '**************************************************'
 '******** GENERADOR DE N$DAMEROS AL AZAR ************'
-'**************************************************'
-'-----------------Codeado por Yuki-----------------'        
+'**************************************************'        
 
 
 Privado:
-
-Var PSemilla: Entero
-'Var Semilla:Entero,Fecha:PscFecha
-
+	Var PSemilla,M[]:Entero
 P$FAblico:
 
-Proc InicializarGeneradorN$FAmeroAlAzar(Opcional Semilla: Entero)
-   Var f: pscFecha
-
+Proc GenerarRnd(Opcional Semilla:Entero)
+   Var f:pscFecha
    Si Semilla = 0
       f = FechaActual()
       Semilla = f.Segundos
@@ -23,14 +19,10 @@ Proc InicializarGeneradorN$FAmeroAlAzar(Opcional Semilla: Entero)
    PSemilla = Semilla
 FinProc
 
-Proc GenerarN$FAmeroAlAzar(Min, Max: Entero): Entero
-   PSemilla = 1664525 * PSemilla + 1013904223
-   Resultado = Min + (PSemilla Mod (Max - Min + 1))
-FinProc
-
-Proc Randomizar(Min, Max:Entero):Entero
-	'Fecha = FechaActual
-   'Semilla = '&gt;(Aleatorio &lt; 0)?(1664525 + (GetTickCount * Fecha.Segundos) + 1013904223):((1664525 * Fecha.Segundos) + (GetTickCount) + 1013904223)
-   Resultado = Min + (Aleatorio Mod (Max - Min + 1))
+'Este sistema utiliza el valor previo de la variable
+'PSemilla que va cambiando por llamada al procedimiento.
+Proc Randomizar(Min,Max:Entero):Entero
+   PSemilla = 1774575 * PSemilla + 1113905113
+   Devolver Min + (PSemilla Mod (Max - Min + 1))
 FinProc
 </Contenido></Datos>

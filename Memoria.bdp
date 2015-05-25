@@ -1,3 +1,5 @@
-<Datos><Nombre></Nombre><Icono>AA==</Icono><Version><Mayor>0</Mayor><Menor>0</Menor><Revision>0</Revision><AutoIncr>0</AutoIncr></Version><Info/><Contenido>Proc Memoria_Copiar(Destino,Fuente,Longitud:Entero), "Kernel32.dll" "RtlMoveMemory"
+<Datos><Nombre></Nombre><Icono>AA==</Icono><Version><Mayor>0</Mayor><Menor>0</Menor><Revision>0</Revision><AutoIncr>0</AutoIncr></Version><Info/><Contenido>'Proc Memoria_Copiar(Destino,Fuente,Longitud:Entero), "Kernel32.dll" "RtlMoveMemory"
+'Proc Memoria_Mover(Destino,Fuente,Longitud:Entero), "Kernel32.dll" "RtlMoveMemory"
+Proc Memoria_Copiar(Destino,Fuente,Longitud:Entero), "Kernel32.dll" "RtlMoveMemory"
 Proc Memoria_Mover(Destino,Fuente,Longitud:Entero), "Kernel32.dll" "RtlMoveMemory"
 </Contenido></Datos>

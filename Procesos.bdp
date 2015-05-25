@@ -42,7 +42,7 @@ FinProc
 ' #Fin# ==================================================================================
 
 Proc ProcesoExiste(Referencia ProcessName:Cadena):Booleano
-	Devolver &gt;ProcesoObtenerID(ProcessName)?1:0
+	Devolver &gt;(ProcesoObtenerID(ProcessName))?(1):(0)
 FinProc
 
 ' #ProcesoEsperar# ========================================================================

@@ -6,7 +6,7 @@ $24ADV-
 Privado:
 
 Const DivVal=1000000000
-Var Time:Entero
+Var Time[],Ptr:Entero
 Prototipo EjecutarProc:Entero
 Uni$F3n Union, Union_e:Entero, Union_b[4]:Byte, Union_w[2]:Word
 
@@ -111,52 +111,51 @@ Proc Val(Referencia Str:Cadena):Real
   FinAdmErr
 FinProc
 
-Proc Tiempo:Entero
-  Resultado=timeGetTime()
-FinProc
+Proc Tiempo:Entero,"Winmm.dll" "timeGetTime"
 
 Proc TiempoSeg:Entero
-  Resultado=timeGetTime() \ 1000
+  Devolver timeGetTime() \ 1000
 FinProc
 
 Proc TiempoHora:Entero
-  Resultado=(timeGetTime() \ 1000) \ 60
+  Devolver (timeGetTime() \ 1000) \ 60
 FinProc
 
 'Inicia el contador de tiempo.
-Proc TiempoInicio
-  Time=timeGetTime()
+Proc TiempoInicio:Entero
+	ReDim Time,Ptr+1
+	Time[Ptr] = timeGetTime
+	Ptr = Ptr + 1
+	Devolver Ptr - 1
 FinProc
 
 'Obtiene el tiempo transcurrido desde el inicio del contador.
 'En Milesimas
-Proc TiempoFin:Entero
-  Resultado = (timeGetTime - Time)
+Proc TiempoFin(Opcional PtrParam:Entero):Entero
+  Devolver (timeGetTime - Time[&gt;PtrParam?PtrParam:Ptr - 1])
 FinProc
 
 'Obtiene el tiempo transcurrido desde el inicio del contador.
 'En Segundos
-Proc TiempoFinSeg:Entero
-  Resultado = (timeGetTime - Time) \ 1000
+Proc TiempoFinSeg(Opcional PtrParam:Entero):Entero
+  Devolver (timeGetTime - Time[&gt;PtrParam?PtrParam:Ptr - 1]) \ 1000
 FinProc
 
 'Obtiene el tiempo transcurrido desde el inicio del contador.
 'En Horas
-Proc TiempoFinHora:Entero
-  Resultado = ((timeGetTime - Time) \ 1000) \ 60
+Proc TiempoFinHora(Opcional PtrParam:Entero):Entero
+  Devolver ((timeGetTime - Time[&gt;PtrParam?PtrParam:Ptr - 1]) \ 1000) \ 60
 FinProc
 
 Proc Semilla(Opcional Longi:Entero = 3):Entero
-Var h_Time,h_Left,h_LeftB:Cadena,i:Entero
-h_Time = EntCad(Tiempo)
-h_Left = DerechaCad(h_Time,Longi)
-Resultado = CadEnt(h_Left)
+	Var h_Time,h_Left,h_LeftB:Cadena,i:Entero
+	h_Time = EntCad(Tiempo)
+	h_Left = DerechaCad(h_Time,Longi)
+	Resultado = CadEnt(h_Left)
 FinProc
 
 
 Proc Pausar(Milisegundos:Entero), "Kernel32" "Sleep"
-'  Sleep(Milisegundos)
-'FinProc
 
 Proc PausarSeg(Seg:Entero)
   Sleep(1000 * Seg)
@@ -178,7 +177,7 @@ Proc HiloCrear(Ptr:Entero,Opcional Datos:Entero)
 	SHCreateThread(Ptr,Datos,&amp;00000001,0)
 FinProc
 
-Proc LlamarAPI2(Referencia Libreria,Funci$F3n:Cadena,Referencia Parametros[]:Entero):Entero
+Proc LlamarDLL2(Referencia Libreria,Funci$F3n:Cadena,Referencia Parametros[]:Entero):Entero
 	Var Matriz[]:Byte,EjecutarProc:EjecutarProc
 	Var PtrProc,PtrDll:Entero ' Punteros a las Dll y Procedimientos
 	Var i:EnteroSig,@Ptr:Union ' i Contador, Ptr es un puntero a la uni$F3n.
@@ -210,7 +209,7 @@ Proc LlamarAPI2(Referencia Libreria,Funci$F3n:Cadena,Referencia Parametros[]:Ent
 	Resultado = EjecutarProc()
 FinProc
 
-Proc LLamarAPI(Referencia Lib,Func:Cadena,Parametros[]:Entero):Entero
+Proc LLamarDLL(Referencia Lib,Func:Cadena,Parametros[]:Entero):Entero
 	Var Matriz[]:Byte,Ptr,i:Entero,l:EjecutarProc
 	Ptr = LoadLibrary(Lib)
 	Si i = 0 Entonces GenerarError 0, "Error al cargar la libreria."
@@ -223,6 +222,10 @@ Proc LLamarAPI(Referencia Lib,Func:Cadena,Parametros[]:Entero):Entero
 	Seguir
 	Matriz = Matriz + [&amp;B8] + EntMatByte(Ptr) + [&amp;FF,&amp;D0,&amp;C3] ' Push CALL Funci$F3n
 	l@ = Matriz[0]@ ; Devolver l
+FinProc
+
+Proc PtrMat(Referencia Matriz[]:Entero,Opcional Indice:Entero):Entero
+	Devolver Matriz[Indice]@
 FinProc
 
 Proc MakeWord(LoByte,HiByte:Byte):Entero

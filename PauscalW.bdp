@@ -32,5 +32,6 @@ Importar "pscEtiqueta.prp"
 Importar "pscCajaLista.prp"
 Importar "pscCajaCombo.prp"
 Importar "pscTemporizador.prp"
+Importar "PscTooltip.prp"
 'Importar "CajaIngreso.prp"
 </Contenido></Datos>

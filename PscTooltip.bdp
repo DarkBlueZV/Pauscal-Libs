@@ -1,0 +1,228 @@
+<Datos><Nombre></Nombre><Icono>AA==</Icono><Version><Mayor>0</Mayor><Menor>0</Menor><Revision>0</Revision><AutoIncr>0</AutoIncr></Version><Info/><Contenido>Importar "Apis.prp"
+Importar "Estructuras.prp"
+Importar "Constantes.prp"
+Importar "Cadena.prp"
+'Importar "Convertir.prp"
+
+$24ADV-
+
+'Proc pscTooltip_wndproc(hWnd,Msg,wParam,lParam:Entero):Entero
+'  Var @Eventos:PSCTOOLTIP_EVENTINFO
+'  Eventos@=GetProp(hWnd,"EVENT")
+'  Si (Eventos@)
+'    Seleccionar Msg
+'      Caso WM_USER
+'        Seleccionar wParam
+'          Caso BN_CLICKED
+'            Eventos.AlCliquear
+'          Caso BN_DOUBLECLICKED
+'            Eventos.AlDobleCliquear
+'        FinSeleccionar
+'        Salir
+'    FinSeleccionar
+'  FinSi
+'  Devolver CallWindowProc(GetProp(hWnd,"PREVHWND"),hWnd,Msg,wParam,lParam)
+'FinProc
+
+'Estruc PSCTOOLTIP_EVENTINFO, _
+'  AlCliquear:pscEvNotif, _
+'  AlDobleCliquear:pscEvNotif
+
+Estruc RECT1 _ ' Lo re-declaramos debido a un bug del compilador.
+,Left _
+,Top _
+,Right _
+,Bottom:Entero
+
+Estruc TOOLINFO,lSize,lFlags,hwnd,lId:Entero,lpRect:RECT1,hInstance:Entero,lpStr:Cadena,lParam:Entero
+
+Clase pscTooltip,mvarTitle:Cadena,mvarStyle,mvarBackColor,mvarForeColor,mvarIcon,mvarVisibleTime,mvarDelayTime,hwndTooltip,mvarAnchor:Entero,tt:TOOLINFO
+ClaseVar Centrar:Booleano
+'ClaseVar Eventos:PSCTOOLTIP_EVENTINFO
+Privado:
+	Proc Inicializar ' Inicializa el tooltip.
+			InitCommonControls
+		   mvarDelayTime = 500
+			mvarVisibleTime = 5000
+	FinProc
+	Proc ObtenerhWnd:Entero
+		Devolver hwndTooltip
+	FinProc
+	Proc Finalizar ' Destruye el tooltip.
+		Si hwndTooltip = 0 Entonces Salir
+		DestroyWindow(hwndTooltip)
+	FinProc
+	Proc EstablecerEstilo(Estilo:Entero) ' Establece el estilo del tooltip.
+		mvarStyle = Estilo
+	FinProc
+	Proc ObtenerEstilo:Entero
+		Devolver mvarStyle
+	FinProc
+	'Proc EstablecerCentrado(Centrado:Booleano) ' Establece si el tooltip es centrado.
+	'	mvarCentered = Centrado
+	'	MessageBox(0,EntCad(mvarCentered),"",0)
+	'FinProc
+	'Proc ObtenerCentrado:Booleano
+	'	Devolver mvarCentered
+	'FinProc
+	Proc EstablecerTexto(Texto:Cadena) ' Establece el texto del tooltip.
+		tt.lpStr = (&gt;(Texto &lt;&gt; "")?(Texto):("Texto no establecido."))
+		Si hwndTooltip = 0 Entonces Salir
+		SendMessage(hwndTooltip,TTM_UPDATETIPTEXTA,0,tt@)
+	FinProc
+	Proc ObtenerTexto:Cadena
+		Devolver tt.lpStr
+	FinProc
+	Proc EstablecerT$EDtulo(T$EDtulo:Cadena) ' Establece el t$EDtulo del tooltip.
+		mvarTitle = T$EDtulo
+		Si hwndTooltip = 0 Entonces Salir
+		SendMessage(hwndTooltip,TTM_SETTITLE,mvarIcon,CadPtr(mvarTitle))
+	FinProc
+	Proc ObtenerT$EDtulo:Cadena
+		Devolver tt.lpStr
+	FinProc
+	Proc EstablecerTiempoVisible(Tiempo:Entero) ' Establece el tiempo en el que el tooltip se mantiene visible.
+		mvarVisibleTime = Tiempo
+	FinProc
+	Proc ObtenerTiempoVisible:Entero
+		Devolver mvarVisibleTime
+	FinProc
+	Proc EstablecerTiempoRetardo(Tiempo:Entero) ' El retardo en aparecer (creo).
+		mvarDelayTime = Tiempo
+	FinProc
+	Proc ObtenerTiempoRetardo:Entero
+		Devolver mvarDelayTime
+	FinProc
+	Proc EstablecerIcono(Icono:Entero) ' El icono del tooltip.
+		mvarIcon = Icono
+		Si hwndTooltip = 0 Entonces Salir
+		SendMessage(hwndTooltip, TTM_SETTITLE,mvarIcon,CadPtr((&gt;(mvarTitle &lt;&gt; "")?(mvarTitle):("Pauscal"))))
+	FinProc
+	Proc ObtenerIcono:Entero
+		Devolver mvarIcon
+	FinProc
+	Proc EstablecerColorTexto(Color:Entero)
+		mvarForeColor = Color
+		Si hwndTooltip = 0 Entonces Salir
+		SendMessage(hwndTooltip,TTM_SETTIPTEXTCOLOR,mvarForeColor,0)
+	FinProc
+	Proc ObtenerColorTexto:Entero
+		Si hwndTooltip = 0 Entonces Devolver mvarForeColor
+		Devolver SendMessage(hwndTooltip,TTM_GETTIPTEXTCOLOR,0,0)
+	FinProc
+	Proc EstablecerColorFondo(Color:Entero)
+		mvarBackColor = Color
+		Si hwndTooltip = 0 Entonces Salir
+		SendMessage(hwndTooltip,TTM_SETTIPBKCOLOR,Color,0)
+	FinProc
+	Proc ObtenerColorFondo:Entero
+		Si hwndTooltip = 0 Entonces Devolver mvarBackColor
+		Devolver SendMessage(hwndTooltip,TTM_GETTIPBKCOLOR,0,0)
+	FinProc
+	Proc EstablecerAnchura(Anchura:Entero)
+		mvarAnchor = Anchura
+		Si hwndTooltip = 0 Entonces Salir
+		SendMessage(hwndTooltip, TTM_SETMAXTIPWIDTH,0,mvarAnchor)
+	FinProc
+	Proc ObtenerAnchura:Entero
+		Si hwndTooltip = 0 Entonces Devolver mvarAnchor
+		Devolver SendMessage(hwndTooltip, TTM_GETMAXTIPWIDTH,0,0)
+	FinProc
+	Constructor:Inicializar
+	Destructor:Finalizar
+P$FAblico: ' Propiedades p$FAblicas.
+	Prop Estilo:Entero
+		Lec:ObtenerEstilo
+		Esc:EstablecerEstilo
+		' Valores posibles: 0 o TTS_BALLOON
+	FinProp
+	'Prop Centrar:Booleano
+	'	Lec:ObtenerCentrado
+	'	Esc:EstablecerCentrado
+	'	 Valores posibles: Verd o Falso
+	'FinProp
+	Prop Texto:Cadena
+		Lec:ObtenerTexto
+		Esc:EstablecerTexto
+		' Valores posibles: "Texto no establecido." o Otro...
+	FinProp
+	Prop hWnd:Entero
+		Lec:ObtenerhWnd
+	FinProp
+	Prop T$EDtulo:Cadena
+		Lec:ObtenerT$EDtulo
+		Esc:EstablecerT$EDtulo
+		' Valores posibles: "" o Otro...
+	FinProp
+	Prop TiempoVisible:Entero
+		Lec:ObtenerTiempoVisible
+		Esc:EstablecerTiempoVisible
+		' Valores posibles: 0 - 4.000.000
+	FinProp
+	Prop TiempoRetardo:Entero
+		Esc:EstablecerTiempoRetardo
+		Lec:ObtenerTiempoRetardo
+		' Valores posibles: 0 - 4.000.000
+	FinProp
+	Prop Icono:Entero
+		Lec:ObtenerIcono
+		Esc:EstablecerIcono
+		' Valores posibles: 1,2,3,4 o Devuelto por LoadIcon
+	FinProp
+	Prop ColorTexto:Entero
+		Lec:ObtenerColorTexto
+		Esc:EstablecerColorTexto
+	FinProp
+	Prop ColorFondo:Entero
+		Lec:ObtenerColorFondo
+		Esc:EstablecerColorFondo
+	FinProp
+	Prop Anchor:Entero
+		Lec:ObtenerAnchura
+		Esc:EstablecerAnchura
+	FinProp
+	Proc Activar
+		Si hwndTooltip = 0 Entonces Salir
+		SendMessage(hwndTooltip,TTM_ACTIVATE,Verd,0)
+	FinProc
+	Proc Actualizar
+		Si hwndTooltip = 0 Entonces Salir
+		SendMessage(hwndTooltip,TTM_UPDATE,0,0)
+	FinProc
+	Proc Ocultar
+		Si hwndTooltip = 0 Entonces Salir
+		SendMessage(hwndTooltip,TTM_POP,0,0)
+	FinProc
+	Proc Mostrar
+		Si hwndTooltip = 0 Entonces Salir
+		SendMessage(hwndTooltip,TTM_POPUP,0,0)
+	FinProc
+	Proc CrearToolTip(hWndPadre:Entero):Booleano ' Dibuja el tooltip.
+		Var Instancia,EstiloT:Entero
+		Si hWndPadre = 0 Entonces Salir
+		Si tt.lpStr = "" Entonces tt.lpStr = "Texto no establecido."
+		EstiloT = Estilo Or TTS_ALWAYSTIP Or WS_POPUP Or TTS_NOPREFIX
+		Instancia = GetModuleHandle("") ' Establecemos en variable para no tener que llamar a GetModuleHandle mas de una vez.
+		Si hwndTooltip &lt;&gt; 0 Entonces DestroyWindow(hwndTooltip) ' Destruimos la ventana si es que existe.
+	   hwndTooltip = CreateWindowEx(0,TOOLTIPS_CLASSA,NULL,EstiloT,CW_USEDEFAULT,CW_USEDEFAULT,CW_USEDEFAULT,CW_USEDEFAULT,hWndPadre,0,Instancia,Nulo)
+	   Si hwndTooltip = 0 Entonces Salir
+	   'SetProp(hwndTooltip,"EVENT",Eventos@)
+		'SetProp(hwndTooltip,"PREVHWND",SetWindowLong(hwndTooltip,GWL_WNDPROC,pscTooltip_wndproc@))
+      Eval tt
+			.lSize = Long(tt)
+			.hwnd = hWndPadre
+			.lId = hWndPadre
+			.hInstance = Instancia
+			Si (Centrar) Entonces .lFlags = TTF_SUBCLASS Or TTF_CENTERTIP Or TTF_IDISHWND ; SiNo ; .lFlags = TTF_SUBCLASS Or TTF_IDISHWND
+      FinEval
+		SendMessage(hwndTooltip, TTM_SETMAXTIPWIDTH,0,(&gt;(mvarAnchor &gt; 0)?(mvarAnchor):(-1)))
+		SendMessage(hwndTooltip,TTM_SETTITLE,mvarIcon,CadPtr(mvarTitle))
+		Si mvarForeColor &lt;&gt; 0 Entonces SendMessage(hwndTooltip,TTM_SETTIPTEXTCOLOR,mvarForeColor,0)
+      Si mvarBackColor &lt;&gt; 0 Entonces SendMessage(hwndTooltip,TTM_SETTIPBKCOLOR,mvarBackColor,0)
+		SendMessage(hwndTooltip,TTM_SETDELAYTIME,TTDT_AUTOPOP,mvarVisibleTime)
+		SendMessage(hwndTooltip,TTM_SETDELAYTIME,TTDT_INITIAL,mvarDelayTime)
+		SendMessage(hwndTooltip, TTM_ADDTOOLA, 0, tt@)
+		Devolver Verd
+	FinProc
+FinClase
+</Contenido></Datos>

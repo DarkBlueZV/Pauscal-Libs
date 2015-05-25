@@ -2,6 +2,11 @@
 
 $24ADV-
 
+' Codeado por Yuki.
+' Esta libreria sockets permiten utilizar UDP y TCP
+' Programaci$F3n Funcional RULES! :D
+const MSG_WAITALL = &amp;0100
+
 Privado:	
 
 	Var wsaData:WSAData
@@ -10,7 +15,6 @@ Privado:
 	Proc ObtenerIPs(direcci$F3n:Cadena):Entero[]
 		Var @host:hostent
 		Var @ptr:Entero
-		'Var ret[]:Entero
 		Var i:EnteroSig
 		i = inet_addr(direcci$F3n)
 		Si i &lt;&gt; SOCKET_ERROR Entonces
@@ -22,31 +26,25 @@ Privado:
 				ptr@ = host.h_addr_list + i * Long(ptr)
 				Resultado[i] = ptr
 			Seguir
-			'Resultado = ret
 		FinSi
 	FinProc
 	
 	'Transforma la ip de entero a cadena del tipo 255.255.255.255
 	Proc ConvertirIp(direccion:Entero):Cadena
 		Var i:Entero
-		'Var res:Cadena
-		i = 0
 		Mientras i &lt; 4
 			Resultado = Resultado + EntCad(direccion And 255)
 			Si (i &lt; 3) Entonces Resultado = Resultado + "."
 			direccion = direccion shr 8
-			i = i+1
+			i = i + 1
 		FinMientras
-		'Resultado = res
 	FinProc
 	
 	Proc LE2BE(d[]:Byte):Byte[]
-		'Var ret[]:Byte
 		Var i:Entero
 		Contar i = 0 a LongMat(d) - 1
 			Resultado = [d[i]] + Resultado
-		Seguir
-		'Resultado = ret	
+		Seguir	
 	FinProc
 
 	Proc W_LE2BE(n:Word):Word
@@ -64,7 +62,7 @@ Privado:
 P$FAblico:
 
 Proc Socket_Iniciar(Opcional V1,V2:Entero = 2,Opcional Protocolo:Entero = 1,Opcional Dominio:Entero = 2)
-	Si Cone = Verd Entonces GenerarError 0,"[Socket_Iniciar] sockets ya inicializados."
+	Si Cone = Verd Entonces GenerarError 1,"[Socket_Iniciar] sockets ya inicializados."
 	WSAStartup(MakeWord(V1,V2), wsaData)
 	Prot = Protocolo
 	Domi = Dominio
@@ -77,8 +75,8 @@ Proc Socket_Escuchar(Puerto:Word,Opcional Longitud:Entero = 200):Entero
 	Bnd.sin_family = AF_INET
 	Bnd.sin_addr = INADDR_ANY
 	Bnd.sin_port = W_LE2BE(Puerto)
-	Si bind(Sckt,Bnd,Long(Bnd)) = SOCKET_ERROR Entonces GenerarError 0,"[Socket_Escuchar] error al intentar escuchar."
-	Si listen(Sckt,Longitud) = SOCKET_ERROR Entonces GenerarError 1,"[Socket_Escuchar] error al escuchar."
+	Si bind(Sckt,Bnd,Long(Bnd)) = SOCKET_ERROR Entonces GenerarError 1,"[Socket_Escuchar] error al intentar escuchar."
+	Si listen(Sckt,Longitud) = SOCKET_ERROR Entonces GenerarError 2,"[Socket_Escuchar] error al escuchar."
 	Devolver Sckt
 FinProc
 
@@ -92,29 +90,29 @@ Proc Socket_Conectar(Referencia IP:Cadena,Puerto:Word,Opcional Protocolo:Entero 
 			Bnd.sin_addr = MatrizIP[i]
 			Si connect(Sckt, Bnd, Long(Bnd)) = 0 Entonces Devolver Sckt
 		Seguir
-	GenerarError 0,"[Socket_Conectar] error al conectar."
+	GenerarError 1,"[Socket_Conectar] error al conectar."
 FinProc
 
 Proc Socket_Enviar(Socket:Entero,Datos:Cadena):Entero
 	Resultado = send(Socket, CadPtr(Datos), CadLong(Datos), 0)
-	Si Resultado = SOCKET_ERROR Entonces GenerarError 0,"[Socket_Enviar] error al enviar datos."
+	Si Resultado = SOCKET_ERROR Entonces GenerarError 1,"[Socket_Enviar] error al enviar datos."
 FinProc
 
 Proc Socket_Recibir(Socket:Entero,Opcional Tama$F1o:Entero = 1024):Cadena
 	Var ret:Entero
 	Resultado = Espacio(Tama$F1o)
 	ret = recv(Socket,CadPtr(Resultado), Tama$F1o, 0)
-	Si (ret = SOCKET_ERROR) Entonces GenerarError 0,"[Socket_Recibir] error al recibir datos."
+	Si ret &lt;= 0 Entonces GenerarError 1,"[Socket_Recibir] error al recibir datos."
 	Devolver IzquierdaCad(Resultado,ret)
 FinProc
 
 Proc Socket_Aceptar(Sckt:Entero):Entero
 	Resultado = Accept(Sckt,Nulo,Nulo)
-	Si Resultado = SOCKET_ERROR Entonces GenerarError 0,"[Socket_Aceptar] error al aceptar socket."
+	Si Resultado = SOCKET_ERROR Entonces GenerarError 1,"[Socket_Aceptar] error al aceptar socket."
 FinProc
 
 Proc Socket_Cerrar(Sckt:Entero)
-	Si Sckt = SOCKET_ERROR Entonces GenerarError 0,"[Socket_Cerrar] socket invalido."
+	Si Sckt = SOCKET_ERROR Entonces GenerarError 1,"[Socket_Cerrar] socket invalido."
 	CloseSocket(Sckt)
 FinProc
 

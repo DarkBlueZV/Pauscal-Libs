@@ -43,6 +43,6 @@ Proc INI_Escribir(Referencia Secci$F3n,Clave,Texto:Cadena,Opcional Archivo:Caden
 	Si Secci$F3n = "" Entonces GenerarError 0,"[INI_Escribir] primer parametro es vacio."
 	Si Clave = "" Entonces GenerarError 1,"[INI_Escribir] segundo parametro es vacio."
 	Si Texto = "" Entonces GenerarError 2,"[INI_Escribir] tercer parametro es vacio."
-	Resultado = WritePrivateProfileString(Secci$F3n,Clave,Texto,&gt;Archivo = "Defecto"?c_RutaFile:Archivo)
+	Devolver WritePrivateProfileString(Secci$F3n,Clave,Texto,&gt;Archivo = "Defecto"?c_RutaFile:Archivo)
 FinProc
 </Contenido></Datos>
