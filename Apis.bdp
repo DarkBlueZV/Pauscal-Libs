@@ -1,5 +1,7 @@
 <Datos><Nombre></Nombre><Icono>AA==</Icono><Version><Mayor>0</Mayor><Menor>0</Menor><Revision>0</Revision><AutoIncr>0</AutoIncr></Version><Info/><Contenido>Importar "Estructuras.prp"
 ' Captura
+
+Proc LoadIcon(hInstance:Entero,Referencia lpIconName:Cadena):Entero, "User32" "LoadIconA"
 Proc InitCommonControls, "comctl32.dll"
 Proc WindowFromDC(hDC:Entero):Entero, "User32.dll"
 Proc capCreateCaptureWindow(Referencia lpszWindowName:Cadena,dwStyle,x,y,nWidth,nHeight,hWnd,nID:Entero):Entero, "Avicap32.dll" "capCreateCaptureWindowA"

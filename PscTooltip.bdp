@@ -1,8 +1,9 @@
-<Datos><Nombre></Nombre><Icono>AA==</Icono><Version><Mayor>0</Mayor><Menor>0</Menor><Revision>0</Revision><AutoIncr>0</AutoIncr></Version><Info/><Contenido>Importar "Apis.prp"
-Importar "Estructuras.prp"
-Importar "Constantes.prp"
-Importar "Cadena.prp"
+<Datos><Nombre></Nombre><Icono>AA==</Icono><Version><Mayor>0</Mayor><Menor>0</Menor><Revision>0</Revision><AutoIncr>0</AutoIncr></Version><Info/><Contenido>'Importar "Apis.prp"
+'Importar "Estructuras.prp"
+'Importar "Constantes.prp"
+'Importar "Cadena.prp"
 'Importar "Convertir.prp"
+Importar "Utiles.prp"
 
 $24ADV-
 
@@ -219,8 +220,8 @@ P$FAblico: ' Propiedades p$FAblicas.
 		SendMessage(hwndTooltip,TTM_SETTITLE,mvarIcon,CadPtr(mvarTitle))
 		Si mvarForeColor &lt;&gt; 0 Entonces SendMessage(hwndTooltip,TTM_SETTIPTEXTCOLOR,mvarForeColor,0)
       Si mvarBackColor &lt;&gt; 0 Entonces SendMessage(hwndTooltip,TTM_SETTIPBKCOLOR,mvarBackColor,0)
-		SendMessage(hwndTooltip,TTM_SETDELAYTIME,TTDT_AUTOPOP,mvarVisibleTime)
-		SendMessage(hwndTooltip,TTM_SETDELAYTIME,TTDT_INITIAL,mvarDelayTime)
+		SendMessage(hwndTooltip,TTM_SETDELAYTIME,TTDT_AUTOPOP,LOWORD(mvarVisibleTime))
+		SendMessage(hwndTooltip,TTM_SETDELAYTIME,TTDT_INITIAL,LOWORD(mvarDelayTime))
 		SendMessage(hwndTooltip, TTM_ADDTOOLA, 0, tt@)
 		Devolver Verd
 	FinProc
