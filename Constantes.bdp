@@ -28,6 +28,32 @@ Const GMEM_MOVEABLE = 2
 'Generales
 Const INVALID_HANDLE = -1, MAX_PATH = 260
 
+'ProgressBar Window Constants
+Const PBM_SETRANGE = (WM_USER+1)
+Const PBM_SETPOS = (WM_USER+2)
+Const PBM_DELTAPOS = (WM_USER+3)
+Const PBM_SETSTEP = (WM_USER+4)
+Const PBM_STEPIT = (WM_USER+5)
+Const PBM_SETRANGE32 = 1030
+Const PBM_GETRANGE = 1031
+Const PBM_GETPOS = 1032
+Const PBM_SETBARCOLOR = 1033
+Const PBM_SETBKCOLOR = 8193
+Const PBS_SMOOTH = 1
+Const PBS_VERTICAL = 4
+Const PBM_SETMARQUEE = &amp;040A	' = Windows = XP = ?
+Const PBM_GETSTEP = &amp;040D	' = Windows = Vista = ?
+Const PBM_GETBKCOLOR = &amp;040E
+Const PBM_GETBARCOLOR = &amp;040F
+Const PBM_SETSTATE = &amp;0410
+Const PBM_GETSTATE = &amp;0411
+'Const CLR_CURRENT = 0
+'Const CLR_DEFAULT = 1
+'Const CLR_BLACK = 2
+'Const CLR_RED = 3
+'Const CLR_YELLOW = 5
+'Const CLR_BLUE = 6
+
 'Tooltip Window Constants
 Const TTS_CLOSE = &amp;80
 Const TTM_UPDATE = (WM_USER + 29)
@@ -51,7 +77,6 @@ Const TTS_ALWAYSTIP = &amp;1
 Const TTF_SUBCLASS = &amp;10
 Const TTF_IDISHWND = &amp;1
 Const TTM_SETDELAYTIME = (WM_USER + 3)
-Const TOOLTIPS_CLASSA = "tooltips_class32"
 Const TTM_GETMARGIN = (WM_USER+27)  
 Const TTM_TRACKACTIVATE = (WM_USER + 17)
 Const TTM_TRACKPOSITION = (WM_USER + 18)
@@ -84,6 +109,34 @@ Const TTI_ERROR_LARGE = 6
 'Const TTSTANDAR = 0
 'Const TTBALLON = 1
 Const TTM_POPUP = (WM_USER + 34)
+
+'Clases de windows
+Const TOOLTIPS_CLASS = "tooltips_class32"
+Const HOTKEY_CLASS = "msctls_hotkey32"
+Const PROGRESS_CLASS = "msctls_progress32"
+Const STATUSCLASSNAME = "msctls_statusbar32"
+Const TOOLBARCLASSNAME = "ToolbarWindow32"
+Const TRACKBAR_CLASS = "msctls_trackbar32"
+Const UPDOWN_CLASS = "msctls_updown32"
+Const ANIMATE_CLASS = "SysAnimate32"
+Const DATETIMEPICK_CLASS = "SysDateTimePick32"
+Const MONTHCAL_CLASS = "SysMonthCal32"
+Const REBARCLASSNAME = "ReBarWindow32"
+Const WC_COMBOBOXEX = "ComboBoxEx32"
+Const WC_IPADDRESS = "SysIPAddress32"
+Const WC_LISTVIEW = "SysListView32"
+Const WC_TABCONTROL = "SysTabControl32"
+Const WC_TREEVIEW = "SysTreeView32"
+Const WC_HEADER = "SysHeader32"
+Const WC_PAGESCROLLER = "SysPager"
+Const WC_NATIVEFONTCTL = "NativeFontCt"
+Const WC_BUTTON = "Button"
+Const WC_STATIC = "Static"
+Const WC_EDIT = "Edit"
+Const WC_LISTBOX = "ListBox"
+Const WC_COMBOBOX = "ComboBox"
+Const WC_SCROLLBAR = "ScrollBar"
+Const WC_LINK = "SysLink"
 
 'SetThreadPriority
 Const THREAD_BASE_PRIORITY_IDLE = -15

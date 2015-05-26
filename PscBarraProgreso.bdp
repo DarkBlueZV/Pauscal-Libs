@@ -1,0 +1,150 @@
+<Datos><Nombre></Nombre><Icono>AA==</Icono><Version><Mayor>0</Mayor><Menor>0</Menor><Revision>0</Revision><AutoIncr>0</AutoIncr></Version><Info/><Contenido>Importar "Utiles.prp"
+
+Clase PscBarraProgreso,hWndProg,EstiloProg,AltoProg,AnchoProg,XProg,YProg,MaxProg,MinProg,PosProg,ColorProg,ColorBProg,IncProg:Entero
+Privado:
+	Proc Inicializar
+		InitCommonControls()
+	FinProc
+	Proc Finalizar
+		DestroyWindow(hWndProg)
+	FinProc
+	Constructor:Inicializar
+	Destructor:Finalizar
+	Proc EstablecerY(Y:Entero)
+		YProg = Y
+	FinProc
+	Proc ObtenerY:Entero
+		Devolver YProg
+	FinProc
+	Proc EstablecerX(X:Entero)
+		XProg = X
+	FinProc
+	Proc ObtenerX:Entero
+		Devolver XProg
+	FinProc
+	Proc EstablecerAncho(Ancho:Entero)
+		AnchoProg = Ancho
+	FinProc
+	Proc ObtenerAncho:Entero
+		Devolver AnchoProg
+	FinProc
+	Proc EstablecerAlto(Alto:Entero)
+		AltoProg = Alto
+	FinProc
+	Proc ObtenerAlto:Entero
+		Devolver AltoProg
+	FinProc
+	Proc EstablecerValor(Valor:Entero)
+		PosProg = Valor
+		Si hWndProg = 0 Entonces Salir
+		SendMessage(hWndProg,PBM_SETPOS,Valor,0)
+	FinProc
+	Proc ObtenerValor:Entero
+		Si hWndProg = 0 Entonces Devolver PosProg
+		Devolver SendMessage(hWndProg,PBM_GETPOS,0,0)
+	FinProc
+	Proc EstablecerMax(Max:Entero)
+		MaxProg = Max
+		Si hWndProg = 0 Entonces Salir
+		SendMessage(hWndProg,PBM_SETRANGE32,(&gt;MinProg?MinProg:0),(&gt;MaxProg?MaxProg:100))
+	FinProc
+	Proc ObtenerMax:Entero
+		Si hWndProg = 0 Entonces Devolver MaxProg
+		Devolver SendMessage(hWndProg,PBM_GETRANGE,Falso,0)
+	FinProc
+	Proc EstablecerMin(Min:Entero)
+		MinProg = Min
+		Si hWndProg = 0 Entonces Salir
+		SendMessage(hWndProg,PBM_SETRANGE32,(&gt;MinProg?MinProg:0),(&gt;MaxProg?MaxProg:100))
+	FinProc
+	Proc ObtenerMin:Entero
+		Si hWndProg = 0 Entonces Devolver MinProg
+		Devolver SendMessage(hWndProg,PBM_GETRANGE,Verd,0)
+	FinProc
+	Proc EstablecerColorFondo(Color:Entero)
+		ColorProg = Color
+		Si hWndProg = 0 Entonces Salir
+		SendMessage(hWndProg,PBM_SETBKCOLOR,0,Color)
+	FinProc
+	Proc ObtenerColorFondo:Entero
+		Si hWndProg = 0 Entonces Devolver ColorProg
+		SendMessage(hWndProg,PBM_GETBKCOLOR,0,0)
+	FinProc
+	Proc EstablecerColorBarra(Color:Entero)
+		ColorBProg = Color
+		Si hWndProg = 0 Entonces Salir
+		SendMessage(hWndProg,PBM_SETBARCOLOR,0,Color)
+	FinProc
+	Proc ObtenerColorBarra:Entero
+		Si hWndProg = 0 Entonces Devolver ColorBProg
+		SendMessage(hWndProg,PBM_GETBARCOLOR,0,0)
+	FinProc
+	Proc EstablecerEstilo(Estilo:Entero)
+		EstiloProg = Estilo
+	FinProc
+	Proc ObtenerEstilo:Entero
+		Devolver EstiloProg
+	FinProc
+	Proc EstablecerIncrementar(Incrementar:Entero)
+		Si hWndProg = 0 Entonces Salir
+		IncProg = SendMessage(hWndProg,PBM_DELTAPOS,Incrementar,0)
+	FinProc
+	Proc ObtenerIncrementar:Entero
+		Devolver IncProg
+	FinProc
+P$FAblico:
+	Prop Incrementar:Entero
+		Lec:ObtenerIncrementar
+		Esc:EstablecerIncrementar
+	FinProp
+	Prop Estilo:Entero
+		Lec:ObtenerEstilo
+		Esc:EstablecerEstilo
+	FinProp
+	Prop ColorFondo:Entero
+		Lec:ObtenerColorFondo
+		Esc:EstablecerColorFondo
+	FinProp
+	Prop ColorBarra:Entero
+		Lec:ObtenerColorBarra
+		Esc:EstablecerColorBarra
+	FinProp
+	Prop Max:Entero
+		Lec:ObtenerMax
+		Esc:EstablecerMax
+	FinProp
+	Prop Min:Entero
+		Lec:ObtenerMin
+		Esc:EstablecerMin
+	FinProp
+	Prop Valor:Entero
+		Lec:ObtenerValor
+		Esc:EstablecerValor
+	FinProp
+	Prop X:Entero
+		Lec:ObtenerX
+		Esc:EstablecerX
+	FinProp
+	Prop Y:Entero
+		Lec:ObtenerY
+		Esc:EstablecerY
+	FinProp
+	Prop Alto:Entero
+		Lec:ObtenerAlto
+		Esc:EstablecerAlto
+	FinProp
+	Prop Ancho:Entero
+		Lec:ObtenerAncho
+		Esc:EstablecerAncho
+	FinProp
+	Proc CrearBarraProgreso(hWndPadre:Entero):Booleano
+		hWndProg = CreateWindowEx(0,PROGRESS_CLASS,"",EstiloProg Or WS_CHILD Or WS_VISIBLE,XProg,YProg,AnchoProg,AltoProg,hWndPadre,0,GetModuleHandle(""),Nulo)
+		Si hWndProg = 0 Entonces Salir
+		SendMessage(hWndProg,PBM_SETRANGE32,(&gt;MinProg?MinProg:0),(&gt;MaxProg?MaxProg:100))
+		Si PosProg &lt;&gt; 0 Entonces SendMessage(hWndProg,PBM_SETPOS,PosProg,0)
+		Si ColorProg &lt;&gt; 0 Entonces SendMessage(hWndProg,PBM_SETBKCOLOR,0,ColorProg)
+		Si ColorBProg &lt;&gt; 0 Entonces SendMessage(hWndProg,PBM_SETBARCOLOR,0,ColorBProg)
+		Devolver Verd
+	FinProc
+FinClase
+</Contenido></Datos>

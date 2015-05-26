@@ -110,6 +110,13 @@ Estruc POSANDSIZE, _
   x,y, _
   Width,Height:EnteroSig
 
+Estruc PSCTOOLTIP_EVENTINFO, _
+  AlCliquear:pscEvNotif, _
+  AlDobleCliquear:pscEvNotif,_
+  AlMoverMouse:pscEvMouseMov,_
+  AlApretarBotonMouse:pscEvMouse, _
+  AlSoltarBotonMouse:pscEvMouse
+
 Estruc PSCFUENTE_EVENTINFO, _
   AlCambiar:pscEvNotif
 
@@ -143,8 +150,11 @@ Estruc PSCBOTON_EVENTINFO, _
   AlGanarFoco:pscEvNotif, _
   AlPerderFoco:pscEvNotif
 
-Estruc PSCCAJALISTA_EVENTINFO, _
+Estruc PSCCAJACOMBO_EVENTINFO, _
   AlSeleccionar:pscEvNotif, _
+  AlCambiar:pscEvNotif, _
+  AlAparecerLista:pscEvNotif, _
+  AlCerrarLista:pscEvNotif, _
   AlMoverMouse:pscEvMouseMov, _
   AlDobleCliquear:pscEvNotif, _
   AlApretarBotonMouse:pscEvMouse, _
@@ -155,11 +165,8 @@ Estruc PSCCAJALISTA_EVENTINFO, _
   AlGanarFoco:pscEvNotif, _
   AlPerderFoco:pscEvNotif
 
-Estruc PSCCAJACOMBO_EVENTINFO, _
+Estruc PSCCAJALISTA_EVENTINFO, _
   AlSeleccionar:pscEvNotif, _
-  AlCambiar:pscEvNotif, _
-  AlAparecerLista:pscEvNotif, _
-  AlCerrarLista:pscEvNotif, _
   AlMoverMouse:pscEvMouseMov, _
   AlDobleCliquear:pscEvNotif, _
   AlApretarBotonMouse:pscEvMouse, _
