@@ -42,7 +42,7 @@ Proc RGB(Rojo,Verde,Azul:Byte):Entero
   Resultado=Rojo + (Verde shl 8) + (Azul shl 16)
 FinProc
 
-Proc ObtenerRGB(Color:Entero,R,V,A:Byte)
+Proc ObtenerRGB(Color:Entero,Referencia R,V,A:Byte)
   Si (Color&gt;&amp;FFFFFF) GenerarError 0
   R=Color And &amp;FF
   V=(Color shr 8) And &amp;FF
@@ -64,14 +64,6 @@ Proc TruncReal(Referencia Num:Real):Real
   Resultado=EntReal(Trunc(Num))
 FinProc
 
-Proc Promedio(Matriz[]:Entero):Real
-	Var i,l:Entero
-	Contar i = 0 a L$EDmite(Matriz)
-		l = l + Matriz[i]
-	Seguir
-	Devolver (EntReal(l) / 2.0)
-FinProc
-
 Proc Rnd():Real
   Var Num:EnteroSig
 
@@ -82,7 +74,6 @@ Proc Rnd():Real
   Devolver EntReal(Num)/DivVal
 FinProc
 
-
 Proc N$FAmeroAlAzar(Min,Max:Entero):Entero
   Var Lim:Real
 
@@ -92,17 +83,6 @@ Proc N$FAmeroAlAzar(Min,Max:Entero):Entero
     Resultado=RealEnt(Rnd()*Lim)+Min
   HastaQue (Resultado&gt;Min) y (Resultado&lt;Max)
 FinProc
-
-
-Proc HiWord(Valor:Entero):Word
-  Resultado=(Valor shr 16) And &amp;FFFF
-FinProc
-
-
-Proc LoWord(Valor:Entero):Word
-  Resultado=Valor
-FinProc
-
 
 Proc Val(Referencia Str:Cadena):Real
   AdmErr
@@ -228,11 +208,5 @@ Proc PtrMat(Referencia Matriz[]:Entero,Opcional Indice:Entero):Entero
 	Devolver Matriz[Indice]@
 FinProc
 
-Proc MakeWord(LoByte,HiByte:Byte):Entero
-	Si HiByte And &amp;80 Entonces
-		Devolver ((HiByte * &amp;100) + LoByte) Or &amp;FFFF0000
-	SiNo
-		Devolver (HiByte * &amp;100) + LoByte
-	FinSi
-FinProc
+
 </Contenido></Datos>

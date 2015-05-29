@@ -1,0 +1,553 @@
+<Datos><Nombre></Nombre><Icono>AA==</Icono><Version><Mayor>0</Mayor><Menor>0</Menor><Revision>0</Revision><AutoIncr>0</AutoIncr></Version><Info/><Contenido>Importar "PscBin.prp"
+Importar "Cadena.prp"
+
+'Privado:
+'	Var PtrEventos,PrevHwnd:Entero
+'P$FAblico:
+
+'Const LVN_ITEMCHANGING = LVN_FIRST
+'Const LVN_ITEMCHANGED = (LVN_FIRST-1)
+'Const LVN_INSERTITEM = (LVN_FIRST-2)
+'Const LVN_DELETEITEM = (LVN_FIRST-3)
+'Const LVN_DELETEALLITEMS = (LVN_FIRST-4)
+'Const LVN_BEGINLABELEDITA = (LVN_FIRST-5)
+'Const LVN_BEGINLABELEDITW = (LVN_FIRST-75)
+'Const LVN_ENDLABELEDITA = (LVN_FIRST-6)
+'Const LVN_ENDLABELEDITW = (LVN_FIRST-76)
+'Const LVN_COLUMNCLICK = (LVN_FIRST-8)
+'Const LVN_BEGINDRAG = (LVN_FIRST-9)
+'Const LVN_BEGINRDRAG = (LVN_FIRST-11)
+'Const LVN_GETDISPINFOA = (LVN_FIRST-50)
+'Const LVN_GETDISPINFOW = (LVN_FIRST-77)
+'Const LVN_SETDISPINFOA = (LVN_FIRST-51)
+'Const LVN_SETDISPINFOW = (LVN_FIRST-78)
+'Const LVN_KEYDOWN = (LVN_FIRST-55)
+'Const LVN_GETINFOTIPA = (LVN_FIRST-57)
+'Const LVN_GETINFOTIPW = (LVN_FIRST-58)
+'Const LVKF_ALT = &amp;0001
+'Const LVKF_CONTROL = &amp;0002
+'Const LVKF_SHIFT = &amp;0004
+'Const LVGIT_UNFOLDED = 1
+
+
+'Proc pscListView_wndproc(hWnd,Msg,wParam,lParam:Entero):Entero
+'	Var @Eventos:PSCVISORLISTA_EVENTINFO
+'	Eventos@ = PtrEventos
+'	Si (Eventos@)
+'	Seleccionar Msg
+'		Caso WM_PAINT
+'			Si (Eventos.AlCargarse@) Eventos.AlCargarse
+'		Caso WM_LBUTTONDOWN,WM_RBUTTONDOWN,WM_MBUTTONDOWN
+'			Si (Eventos.AlApretarBotonMouse@) Eventos.AlApretarBotonMouse( &gt;Msg=WM_LBUTTONDOWN?1:(&gt;Msg=WM_RBUTTONDOWN?2:3) ,wParam,LoWord(lParam),HiWord(lParam))
+'	   Caso WM_LBUTTONUP,WM_RBUTTONUP,WM_MBUTTONUP
+'			Si (Eventos.AlSoltarBotonMouse@) Eventos.AlSoltarBotonMouse( &gt;Msg=WM_LBUTTONUP?1:(&gt;Msg=WM_RBUTTONUP?2:3),wParam,LoWord(lParam),HiWord(lParam))
+'	   Caso WM_LBUTTONDBLCLK,WM_RBUTTONDBLCLK,WM_MBUTTONDBLCLK
+'			Si (Eventos.AlSoltarBotonMouse@) Eventos.AlSoltarBotonMouse( &gt;Msg=WM_LBUTTONDBLCLK?1:(&gt;Msg=WM_RBUTTONDBLCLK?2:3),wParam,LoWord(lParam),HiWord(lParam))
+'	   Caso WM_MOUSEMOVE
+'			Si (Eventos.AlMoverMouse@) Eventos.AlMoverMouse(wParam,LoWord(lParam),HiWord(lParam))
+'	   Caso WM_NOTIFY
+'		'	Seleccionar wParam
+'		'	  Caso BN_CLICKED
+'		'	    Si (Eventos.AlCliquear@) Eventos.AlCliquear
+'		'	  Caso BN_SETFOCUS
+'		'	    Si (Eventos.AlGanarFoco@) Eventos.AlGanarFoco
+'		'	  Caso BN_KILLFOCUS
+'		'	    Si (Eventos.AlPerderFoco@) Eventos.AlPerderFoco
+'		'	FinSeleccionar
+'		Salir
+'    FinSeleccionar
+'   FinSi
+'    Devolver CallWindowProc(PrevHwnd,hWnd,Msg,wParam,lParam)
+'FinProc
+
+'Estruc NMHDR,_
+'		 hwndFrom,_
+'		 idFrom,_
+'		 code:Entero
+ 
+'Estruc NMITEMACTIVATE,_
+'		 hdr,_
+'		 iItem,_
+'		 iSubItem,_
+'		 uNewState,_
+'		 uOldState,_
+'		 uChanged:Entero,_
+'		 ptAction:POINT,_
+'		 lParam,_
+'		 uKeyFlags:Entero
+
+Estruc LVCOLUMN,_
+		 mask,_
+		 fmt,_
+		 cx:Entero,_
+		 pszText:Cadena,_
+		 cchTextMax,_
+		 iSubItem,_
+		 iImage,_
+		 iOrder,_
+		 cxMin,_
+		 cxDefault,_
+		 cxIdeal:Entero
+
+Estruc LVITEM,_
+		 mask,_
+		 iItem,_
+		 iSubItem,_
+		 state,_
+		 stateMask:Entero,_
+		 pszText:Cadena,_
+		 cchTextMax,_
+		 iImage,_
+		 lParam,_
+		 iIndent,_
+		 iGroupId,_
+		 cColumns,_
+		 puColumns,_
+		 piColFmt,_
+		 iGroup:Entero
+
+Estruc POINT,_ ' Lo re-declaramos debido a un bug en el compilador.
+		 X,_
+		 Y:Entero
+
+Estruc LVFINDINFO,_
+		 flags:Entero,_
+		 psz:Cadena,_
+		 lParam:Entero,_
+		 pt:POINT,_
+		 vkDirection:Entero
+
+Estruc LVBKIMAGE,_
+		 ulFlags,_
+		 hbm:Entero,_
+		 pszImage:Cadena,_
+		 cchImageMax,_
+		 xOffsetPercent,_
+		 yOffsetPercent:Entero
+
+Proc ListView_SetBkImage(hWnd:Entero,plvbki:LVBKIMAGE):Booleano
+	Devolver SendMessage(hWnd,LVM_SETBKIMAGE,0,plvbki@)
+FinProc
+
+Proc ListView_FindItem(hWnd,iStart,plvfi:Entero):Entero
+	Devolver SendMessage(hWnd,LVM_FINDITEM,iStart,plvfi)
+FinProc
+
+Proc ListView_SetTextColor(hWnd,clrText:Entero):Booleano
+	Devolver SendMessage(hWnd,LVM_SETTEXTCOLOR,0,clrText)
+FinProc
+
+Proc ListView_SetToolTips(hWnd,hWndToolTips:Entero):Entero
+	Devolver SendMessage(hWnd,LVM_SETTOOLTIPS,0,hWndToolTips)
+FinProc
+
+Proc ListView_GetToolTips(hWnd:Entero):Entero
+	Devolver SendMessage(hWnd,LVM_GETTOOLTIPS,0,0)
+FinProc
+
+Proc ListView_GetTextColor(hWnd:Entero):Entero
+	Devolver SendMessage(hWnd,LVM_GETTEXTCOLOR,0,0)
+FinProc
+Proc ListView_GetStringWidth(hWnd:Entero,Referencia psz:Cadena):Entero
+	Devolver SendMessage(hWnd,LVM_GETSTRINGWIDTH,0,CadPtr(psz))
+FinProc
+
+Proc ListView_SetOutlineColor(hWnd,Color:Entero):Entero
+	Devolver SendMessage(hWnd,LVM_SETOUTLINECOLOR,0,Color)
+FinProc
+
+Proc ListView_GetColumnWidth(hWnd,Index:Entero):Entero
+	Devolver SendMessage(hWnd,LVM_GETCOLUMNWIDTH,Index,0)
+FinProc
+
+Proc ListView_SetColumnWidth(hWnd,Index,width:Entero):Booleano
+	Devolver SendMessage(hWnd,LVM_SETCOLUMNWIDTH,index,width)
+FinProc
+
+Proc ListView_SetBkColor(hWnd,CLRBK:Entero):Booleano
+	Devolver SendMessage(hWnd,LVM_SETBKCOLOR,0,CLRBK)
+FinProc
+
+Proc ListView_GetBkColor(hWnd:Entero):Entero
+	Devolver SendMessage(hWnd,LVM_GETBKCOLOR,0,0)
+FinProc
+
+Proc ListView_GetExtendedListViewStyle(hWnd:Entero):Entero
+	Devolver SendMessage(hWnd,LVM_GETEXTENDEDLISTVIEWSTYLE,0,0)
+FinProc
+
+Proc ListView_SetExtendedListViewStyle(hwndLV,dwExStyle:Entero):Booleano
+	Devolver SendMessage(hWndLV,LVM_SETEXTENDEDLISTVIEWSTYLE,0,dwExStyle)
+FinProc
+Proc ListView_DeleteItem(hWnd,Index:Entero):Booleano
+	Devolver SendMessage(hWnd,LVM_DELETEITEM,Index,0)
+FinProc
+
+Proc ListView_SetItemText(hWnd,i,iSubItem:Entero,Referencia pszText:Cadena)
+	Var lvi:LVITEM
+	lvi.iSubItem=iSubItem
+	lvi.pszText=pszText
+	SendMessage(hWnd,LVM_SETITEMTEXT,i,lvi@)
+FinProc
+
+Proc ListView_DeleteAllItems(hWnd:Entero):Booleano
+	Devolver SendMessage(hWnd,LVM_DELETEALLITEMS,0,0)
+FinProc
+
+Proc ListView_InsertItem(hWnd,pitem:Entero):Entero
+	Devolver SendMessage(hWnd,LVM_INSERTITEM,0,pitem)
+FinProc
+
+Proc ListView_GetItemState(hWnd,Item,iSubItem:Entero):Entero
+	Devolver SendMessage(hWnd,LVM_GETITEMSTATE,Item,iSubItem)
+FinProc
+
+Proc ListView_GetItemText(hWnd,Item,iSubItem:Entero,Referencia pszText:Cadena,cchTextMax:Entero):Entero
+	Var lvi:LVITEM,Tmp:Entero
+	lvi.iSubItem = iSubItem
+	lvi.cchTextMax = cchTextMax
+	lvi.pszText = pszText
+	Tmp = SendMessage(hWnd,LVM_GETITEMTEXT,Item,lvi@)
+	pszText = lvi.pszText ' &lt; Este c$F3digo lo tuve que adivinar, en el feo macro de C no aparece...
+	Devolver Tmp
+FinProc
+
+Proc ListView_AgregarItems(hWnd:Entero,Referencia Items[]:Cadena,Estado[],Indice:Entero)
+	Var i:Entero,Item:LVITEM
+	Item.iItem = Indice
+	AdmErr
+		Contar i = 0 a L$EDmite(Items)
+			Item.iSubItem = i
+			Item.state = Estado[i]
+			ListView_InsertItem(hWnd,Item@)
+			ListView_SetItemText(hWnd,Indice,i,Items[i])
+		Seguir
+	Controlar
+		Salir
+	FinAdmErr
+FinProc
+
+' Es recomendable utilizar el constructor de matrices ( [VALOR1,VALOR2,VALOR3] ), por ejemplo:
+' ListView_AgregarColumnas(Lista.hWnd,["Columna1","Columna","Columna3"],[0,1,2],[100,100,100])
+Proc ListView_AgregarColumnas(hWnd:Entero,Referencia Columnas[]:Cadena,Alineaci$F3n[]:Byte,Longitud[]:Entero)
+	Var i:Entero,Column:LVCOLUMN
+	Column.Mask = (LVCF_FMT Or LVCF_WIDTH Or LVCF_TEXT Or LVCF_SUBITEM)
+	AdmErr
+		Contar i = 0 a L$EDmite(Columnas)
+			Column.ISubItem = i
+			Column.PszText = Columnas[i]
+			Column.Cx = Longitud[i]
+			Column.Fmt = Alineaci$F3n[i]
+			SendMessage(hWnd,LVM_INSERTCOLUMN,i,Column@)
+			ListView_SetColumnWidth(hWnd,i,Longitud[i])
+		Seguir
+	Controlar
+		Salir
+	FinAdmErr
+FinProc
+
+Proc ListView_LeerItems(hWnd,Indice,cantColumns:Entero,Opcional Longitud:Entero = 1000):Cadena[]
+	Var i:Entero
+	ReDim Resultado,cantColumns
+	AdmErr
+		Contar i = 0 a cantColumns
+			Resultado[i] = Espacio(Longitud)
+			Resultado[i] = ParteCad(Resultado[i],1,ListView_GetItemText(hWnd,Indice,i,Resultado[i],CadLong(Resultado[i])))
+		Seguir
+	Controlar
+		Salir
+	FinAdmErr
+FinProc
+
+Clase PscItems,hWnd,CantidadItems:Entero,TextoItems:Cadena
+	ClaseVar Indice,SubIndice,Longitud:Entero,Estado:Byte
+	Privado:
+		Proc Inicializar(Handle:Entero)
+			hWnd = Handle
+			Longitud = 1000
+		FinProc
+		Proc EstablecerTexto(Texto:Cadena)
+			TextoItems = Texto
+			ListView_SetItemText(hWnd,Indice,SubIndice,Texto)
+		FinProc
+		Proc ObtenerTexto:Cadena
+			Si hWnd = 0 Entonces Devolver TextoItems
+			TextoItems = Espacio(Longitud)
+			ListView_GetItemText(hWnd,Indice,SubIndice,TextoItems,Longitud)
+			Devolver TextoItems
+		FinProc
+		Constructor:Inicializar
+		Proc ObtenerCantidad:Entero
+			Devolver CantidadItems
+		FinProc
+	P$FAblico:
+		Proc Buscar
+			Var LVFind:LVFINDINFO
+			LVFind.flags = LVFI_STRING Or LVFI_PARTIAL
+			LVFind.psz = TextoItems
+			'LVFind.vkDirection = VK_NEXT
+			Indice = ListView_FindItem(hWnd,Indice,LVFind@)
+		FinProc
+		Prop Texto:Cadena
+			Lec:ObtenerTexto
+			Esc:EstablecerTexto
+		FinProp
+		Prop Cantidad:Entero
+			Lec:ObtenerCantidad
+		FinProp
+		Proc Insertar
+			Var Item:LVITEM
+			Item.iItem = Indice
+			Item.iSubItem = SubIndice
+			Item.state = Estado
+			ListView_InsertItem(hWnd,Item@)
+			ListView_SetItemText(hWnd,Indice,SubIndice,TextoItems)
+			CantidadItems = CantidadItems + 1
+		FinProc
+		Proc Extraer
+			Si ListView_DeleteItem(hWnd,Indice) Entonces CantidadItems = CantidadItems - 1
+		FinProc
+		Proc BorrarTodo
+			ListView_DeleteAllItems(hWnd)
+		FinProc
+FinClase
+
+Clase PscColumnas,CantColumn,Tama$F1oColumn:Entero,Column:LVCOLUMN ' Permite agregar columnas personalizadas a los listviews.
+	ClaseVar hWnd,Alineaci$F3n,Tama$F1oMin,Mascara,Indice:Entero
+	ClaseVar Texto:Cadena
+	Proc ObtenerCantidad:Entero
+		Devolver CantColumn
+	FinProc
+Privado:
+	Proc Inicializar(Handle:Entero)
+		hWnd = Handle
+	FinProc
+	Constructor:Inicializar
+	Proc EstablecerTama$F1o(Tama$F1o:Entero)
+		Tama$F1oColumn = Tama$F1o
+		ListView_SetColumnWidth(hWnd,Indice,Tama$F1o)
+	FinProc
+	Proc ObtenerTama$F1o:Entero
+		Devolver ListView_GetColumnWidth(hWnd,Indice)
+	FinProc
+P$FAblico:
+	Prop Cantidad:Entero
+		Lec:ObtenerCantidad
+	FinProp
+	Prop Tama$F1o:Entero
+		Lec:ObtenerTama$F1o
+		Esc:EstablecerTama$F1o
+	FinProp
+	Proc Insertar
+		Column.Mask = &gt;Mascara?Mascara:(LVCF_FMT Or LVCF_WIDTH Or LVCF_TEXT Or LVCF_SUBITEM)
+		Column.ISubItem = Indice
+		Column.PszText = Texto
+		Column.cchTextMax = CadLong(Texto)
+		Column.Cx = 10
+		Column.Fmt = &gt;Alineaci$F3n?Alineaci$F3n:LVCFMT_CENTER
+		Column.CxMin = &gt;Tama$F1oMin?Tama$F1oMin:100
+		SendMessage(hWnd,LVM_INSERTCOLUMN,Indice,Column@)
+		ListView_SetColumnWidth(hWnd,Indice,Tama$F1oColumn)
+		CantColumn = CantColumn + 1
+	FinProc
+	Proc Extraer:Booleano
+		Devolver SendMessage(hWnd,LVM_DELETECOLUMN,Indice,0)
+	FinProc
+FinClase
+
+Clase PscImagenLista,hWnd,XImagenLista,YImagenLista,EstiloImagenLista:Entero,DirImagenLista:Cadena,Image:LVBKIMAGE
+	Privado:
+		Proc Inicializar(Handle,X,Y:Entero)
+			CoInitialize
+			hWnd = Handle
+			XImagenLista = X
+			YImagenLista = Y
+			EstiloImagenLista = LVBKIF_SOURCE_URL Or LVBKIF_STYLE_NORMAL
+		FinProc
+		Proc Finalizar
+			CoUninitialize
+		FinProc
+		Constructor:Inicializar
+		Destructor:Finalizar
+		Proc EstablecerDirecci$F3n(Direcci$F3n:Cadena)
+			DirImagenLista = Direcci$F3n
+			Image.ulFlags = EstiloImagenLista
+			Image.pszImage = Direcci$F3n
+			Image.xOffsetPercent = XImagenLista
+			Image.yOffsetPercent = YImagenLista
+		FinProc
+		Proc ObtenerDirecci$F3n:Cadena
+			Devolver DirImagenLista
+		FinProc
+		Proc EstablecerEstilo(Estilo:Entero)
+			EstiloImagenLista = Estilo
+			Image.ulFlags = EstiloImagenLista
+		FinProc
+		Proc ObtenerEstilo:Entero
+			Devolver EstiloImagenLista
+		FinProc
+		Proc EstablecerX(X:Entero)
+			XImagenLista = X
+			Image.xOffsetPercent = X
+		FinProc
+		Proc ObtenerX:Entero
+			Devolver XImagenLista
+		FinProc
+		Proc EstablecerY(Y:Entero)
+			YImagenLista = Y
+			Image.xOffsetPercent = Y
+		FinProc
+		Proc ObtenerY:Entero
+			Devolver YImagenLista
+		FinProc
+	P$FAblico:
+		Prop X:Entero
+			Lec:ObtenerX
+			Esc:EstablecerX
+		FinProp
+		Prop Y:Entero
+			Lec:ObtenerY
+			Esc:EstablecerY
+		FinProp
+		Prop Direcci$F3n:Cadena
+			Lec:ObtenerDirecci$F3n
+			Esc:EstablecerDirecci$F3n
+		FinProp
+		Prop Estilo:Entero
+			Lec:ObtenerEstilo
+			Esc:EstablecerEstilo
+		FinProp
+		Proc Insertar
+			Si DirImagenLista = "" Entonces Salir
+			ListView_SetBkImage(hWnd,Image)
+		FinProc
+FinClase
+
+Clase PscVisorLista,hWndLista,EstiloLista,ColorLista,XLista,YLista,AnchoLista,AltoLista,EstiloExLista,ColorTextoLista:Entero
+	ClaseVar Columna:PscColumnas,Items:PscItems,Imagen:PscImagenLista,Eventos:PSCVISORLISTA_EVENTINFO
+	Privado:
+		Proc ObtenerhWnd:Entero
+			Devolver hWndLista
+		FinProc
+		Proc Inicializar
+			InitCommonControls
+			EstiloExLista = LVS_EX_FULLROWSELECT Or WS_EX_CLIENTEDGE
+			EstiloLista = WS_CHILD Or LVS_REPORT Or WS_VISIBLE Or LVS_SHOWSELALWAYS Or LVS_SINGLESEL
+		FinProc
+		Proc Finalizar
+			Si hWndLista = 0 Entonces Salir
+			DestroyWindow(hWndLista)
+			Destruir Columna,Items,Imagen
+		FinProc
+		Constructor:Inicializar
+		Destructor:Finalizar
+		Proc EstablecerEstilo(Estilo:Entero)
+			EstiloLista = Estilo
+			Si hWndLista = 0 Entonces Salir
+			SetWindowLong(hWndLista,GWL_STYLE,EstiloLista)
+		FinProc
+		Proc ObtenerEstilo:Entero
+			Si hWndLista = 0 Entonces Devolver EstiloLista
+			Devolver GetWindowLong(hWndLista,GWL_STYLE)
+		FinProc
+		Proc EstablecerColorFondo(Color:Entero)
+			ColorLista = Color
+			Si hWndLista = 0 Entonces Salir
+			ListView_SetBkColor(hWndLista,ColorLista)
+		FinProc
+		Proc ObtenerColorFondo:Entero
+			Si hWndLista = 0 Entonces Devolver ColorLista
+			Devolver ListView_GetBkColor(hWndLista)
+		FinProc
+		Proc EstablecerX(X:Entero)
+			XLista = X
+		FinProc
+		Proc ObtenerX:Entero
+			Devolver XLista
+		FinProc
+		Proc EstablecerY(Y:Entero)
+			YLista = Y
+		FinProc
+		Proc ObtenerY:Entero
+			Devolver YLista
+		FinProc
+		Proc EstablecerAlto(Alto:Entero)
+			AltoLista = Alto
+		FinProc
+		Proc ObtenerAlto:Entero
+			Devolver AltoLista
+		FinProc
+		Proc EstablecerAncho(Ancho:Entero)
+			AnchoLista = Ancho
+		FinProc
+		Proc ObtenerAncho:Entero
+			Devolver AnchoLista
+		FinProc
+		Proc EstablecerEstiloExtendido(Estilo:Entero)
+			EstiloExLista = Estilo 
+			Si hWndLista = 0 Entonces Salir
+			ListView_SetExtendedListViewStyle(hWndLista,Estilo)
+		FinProc
+		Proc ObtenerEstiloExtendido:Entero
+			Si hWndLista = 0 Entonces Devolver EstiloExLista
+			Devolver ListView_GetExtendedListViewStyle(hWndLista)
+		FinProc
+		Proc EstablecerColorTexto(Color:Entero)
+			ColorTextoLista = Color
+			Si hWnd = 0 Entonces Salir
+			ListView_SetTextColor(hWnd,Color)
+		FinProc
+		Proc ObtenerColorTexto:Entero
+			Si hWnd = 0 Entonces Devolver ColorTextoLista
+			Devolver ListView_GetTextColor(hWnd)
+		FinProc
+	P$FAblico:
+		Prop ColorTexto:Entero
+			Lec:ObtenerColorTexto
+			Esc:EstablecerColorTexto
+		FinProp
+		Prop X:Entero
+			Lec:ObtenerX
+			Esc:EstablecerX
+		FinProp
+		Prop Y:Entero
+			Lec:ObtenerY
+			Esc:EstablecerY
+		FinProp
+		Prop Alto:Entero
+			Lec:ObtenerAlto
+			Esc:EstablecerAlto
+		FinProp
+		Prop Ancho:Entero
+			Lec:ObtenerAncho
+			Esc:EstablecerAncho
+		FinProp
+		Prop hWnd:Entero
+			Lec:ObtenerhWnd
+		FinProp
+		Prop Estilo:Entero
+			Lec:ObtenerEstilo
+			Esc:EstablecerEstilo
+		FinProp
+		Prop EstiloEx:Entero
+			Lec:ObtenerEstiloExtendido
+			Esc:EstablecerEstiloExtendido
+		FinProp
+		Prop ColorFondo:Entero
+			Lec:ObtenerColorFondo
+			Esc:EstablecerColorFondo
+		FinProp
+		Proc Actualizar:Booleano
+			Si hWndLista = 0 Entonces Salir
+			Devolver UpdateWindow(hWndLista)
+		FinProc
+		Proc CrearVisorLista(hWndPadre:Entero)
+			hWndLista = CreateWindowEx(0,WC_LISTVIEW,NULL,EstiloLista,XLista,YLista,AnchoLista,AltoLista,hWndPadre,0,GetModuleHandle(""),Nulo)
+			Si hWndLista = 0 Entonces Salir
+			ListView_SetExtendedListViewStyle(hWndLista,EstiloExLista)
+			Si ColorLista Entonces ListView_SetBkColor(hWndLista,EstiloLista)
+			Si ColorTextoLista Entonces ListView_SetTextColor(hWnd,ColorTextoLista)
+			Crear Columna(hWndLista),Items(hWndLista),Imagen(hWndLista,XLista,YLista)
+		FinProc
+FinClase
+</Contenido></Datos>

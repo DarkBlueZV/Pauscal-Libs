@@ -92,7 +92,13 @@ Privado:
 	Proc ObtenerIncrementar:Entero
 		Devolver IncProg
 	FinProc
+	Proc ObtenerhWnd:Entero
+		Devolver hWndProg
+	FinProc
 P$FAblico:
+	Prop hWnd:Entero
+		Lec:ObtenerhWnd
+	FinProp
 	Prop Incrementar:Entero
 		Lec:ObtenerIncrementar
 		Esc:EstablecerIncrementar

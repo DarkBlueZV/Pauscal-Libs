@@ -13,6 +13,10 @@ Prototipo pscEvGrphNotif(,:Entero)
 'Estruc Variante,iType,reserved,lLen:Entero
 Estruc Variante,Tipo:Word,Reservado:Booleano,Ptr:Entero
 
+Estruc INITCOMMONCONTROLSEX,_
+		 dwSize,_
+		 dwICC:Entero
+
 Estruc OVERLAPPED, _
 			Internal, _
 			InternalHigh, _
@@ -120,6 +124,15 @@ Estruc PSCTOOLTIP_EVENTINFO, _
 Estruc PSCFUENTE_EVENTINFO, _
   AlCambiar:pscEvNotif
 
+'Estruc PSCVISORLISTA_EVENTINFO,_
+'		 AlCliquear,_
+'		 AlCargarse,_
+'		 AlGanarFoco,_
+'		 AlPerderFoco:pscEvNotif,_
+'		 AlApretarBotonMouse,_
+'		 AlSoltarBotonMouse:pscEvMouse,_
+'		 AlMoverMouse:pscEvMouseMov
+
 Estruc PSCFORM_EVENTINFO, _
   AlCliquear:pscEvNotif, _
   AlMoverMouse:pscEvMouseMov, _
@@ -216,7 +229,52 @@ Estruc POINTAPI,_
 X,_
 Y:Entero
 
+Estruc IMAGEINFO,_
+		 hbmImage,_
+		 hbmMask,_
+		 Unused1,_
+		 Unused2:Entero,_
+		 rcImage:RECT
 
+Estruc IMAGELISTDRAWPARAMS,_
+		 cbSize,_
+		 himl,_
+		 i,_
+		 hdcDst,_
+		 x,_
+		 y,_
+		 cx,_
+		 cy,_
+		 xBitmap,_
+		 yBitmap,_
+		 rgbBk,_
+		 rgbFg,_
+		 fStyle,_
+		 dwRop,_
+		 fState,_
+		 Frame,_
+		 crEffect:Entero
+
+Estruc RGBQUAD,_
+		 rgbBlue,_
+		 rgbGreen,_
+		 rgbRed,_
+		 rgbReserved:Byte
+
+'REFIID Es un puntero a GUID.
+
+Estruc GUID,_
+		 Data1:Entero,_
+		 Data2,_
+		 Data3:Word,_
+		 Data4[8]:Byte
+
+Estruc UUID,_
+		 Data1:Entero,_
+		 Data2,_
+		 Data3:Word,_
+		 Data4[8]:Byte 
+		 
 Estruc MSG _
 ,hwnd:Entero _
 ,message:Entero _
@@ -410,11 +468,11 @@ Estruc BITMAPINFOHEADER _
  ,biHBMP:Entero _
  ,biAspecto:Real
 
- Estruc RGBQUAD _
- ,rgbBlue:Byte _
- ,rgbGreen:Byte _
- ,rgbRed:Byte _
- ,rgbReserved:Byte
+ 'Estruc RGBQUAD _
+ ',rgbBlue:Byte _
+ ',rgbGreen:Byte _
+ ',rgbRed:Byte _
+ ',rgbReserved:Byte
 
  Estruc BITMAPINFOHEADER1 _
  ,biSize:Entero _
