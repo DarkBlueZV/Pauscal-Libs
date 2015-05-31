@@ -1,0 +1,86 @@
+<Datos><Nombre></Nombre><Icono>AA==</Icono><Version><Mayor>0</Mayor><Menor>0</Menor><Revision>0</Revision><AutoIncr>0</AutoIncr></Version><Info/><Contenido>Importar "Cadena.prp"
+
+' Para saber si se cliqueo el boton TrayIcon es necesario utilizar el nuevo procedimiento
+' "Ninguno" de PscForm, acepta 4 parametros.
+' hWnd,Msg,wParam,lParam, Por defecto esta clase envia el valor 40 a Msg y los valores WM_LBUTTONUP,WM_RBUTTONUP,WM_MBUTTONUP
+' a lParam.
+' Esta clase supone que usted tiene conocimientos sobre GUI de Pauscal, envio de mensajes y recepci$F3n.
+
+Clase PscIconoBandeja,Data:NOTIFYICONDATA,IconoIcono:Cadena
+	Privado:
+		Proc Inicializar
+			Eval Data
+				.cbSize = Long(Data)
+				.uFlags = NIF_MESSAGE Or NIF_ICON Or NIF_TIP
+				.uID = IDC_MYICON
+				.uCallbackMessage = 40
+			FinEval
+		FinProc
+		Constructor:Inicializar
+		Proc EstablecerIcono(Ruta:Cadena)
+			IconoIcono = Ruta
+			Data.hIcon = LoadImage(0,Ruta,IMAGE_ICON,0,0,LR_LOADFROMFILE+LR_DEFAULTSIZE)
+		FinProc
+		Proc ObtenerIcono:Cadena
+			Resultado = IconoIcono ' Utilizo resultado debido a que es mas rapido que devolver.
+		FinProc
+		Proc EstablecerTexto(Texto:Cadena)
+			CopyMemory(Data.szTip[0]@,CadPtr(Texto),Long(Data.szTip))
+		FinProc
+		Proc ObtenerTexto:Cadena
+			Resultado = Espacio(64)
+			CopyMemory(CadPtr(Resultado),Data.szTip[0]@,Long(Data.szTip))
+		FinProc
+		Proc ObtenerIconohWnd:Entero
+			Resultado = Data.hIcon
+		FinProc
+		Proc EstablecerT$EDtulo(T$EDtulo:Cadena)
+			CopyMemory(Data.szInfoTitle[0]@,CadPtr(T$EDtulo),Long(Data.szInfoTitle))
+		FinProc
+		Proc ObtenerT$EDtulo:Cadena
+			CopyMemory(CadPtr(Resultado),Data.szInfoTitle[0]@,Long(Data.szInfoTitle))
+		FinProc
+		Proc EstablecerMensaje(Mensaje:Entero)
+			Data.uCallbackMessage = Mensaje
+		FinProc
+		Proc ObtenerMensaje:Entero
+			Resultado = Data.uCallbackMessage
+		FinProc
+	P$FAblico:
+		Prop Mensaje:Entero
+			Lec:ObtenerMensaje
+			Esc:EstablecerMensaje
+		FinProp
+		Prop Icono:Cadena
+			Lec:ObtenerIcono
+			Esc:EstablecerIcono
+		FinProp
+		Prop IconohWnd:Entero
+			Lec:ObtenerIconohWnd
+		FinProp
+		Prop Texto:Cadena
+			Lec:ObtenerTexto
+			Esc:EstablecerTexto
+		FinProp
+		Prop T$EDtulo:Cadena
+			Lec:ObtenerT$EDtulo
+			Esc:EstablecerT$EDtulo
+		FinProp
+		Proc CrearIconoBandeja(hWnd:Entero)
+			Eval Data
+				.hWnd = hWnd
+				Si .hIcon = 0 Entonces LoadImage(0,IconoIcono, IMAGE_ICON, 0, 0, LR_LOADFROMFILE+LR_DEFAULTSIZE)
+			FinEval
+			Shell_NotifyIcon(NIM_ADD,Data)
+		FinProc
+		Proc Refrescar
+			Eval Data
+				Si .hIcon = 0 Entonces LoadImage(0,IconoIcono, IMAGE_ICON, 0, 0, LR_LOADFROMFILE+LR_DEFAULTSIZE)
+			FinEval
+			Shell_NotifyIcon(NIM_MODIFY,Data)
+		FinProc
+		Proc Extraer
+			Shell_NotifyIcon(NIM_DELETE,Data)
+		FinProc
+FinClase
+</Contenido></Datos>

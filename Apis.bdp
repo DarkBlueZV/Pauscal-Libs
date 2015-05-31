@@ -1,5 +1,10 @@
 <Datos><Nombre></Nombre><Icono>AA==</Icono><Version><Mayor>0</Mayor><Menor>0</Menor><Revision>0</Revision><AutoIncr>0</AutoIncr></Version><Info/><Contenido>Importar "Estructuras.prp"
-
+Proc Shell_NotifyIcon(dwMessage:Entero,lpData:NOTIFYICONDATA):Entero, "Shell32.dll"
+Proc DrawIcon(hDC,X,Y,hIcon:Entero):Booleano, "User32.dll"
+Proc CreatePopupMenu():Entero, "User32.dll"
+Proc InsertMenuItem(hMenu,uItem:Entero,fByPosition:Booleano,lpmii:MENUITEMINFO):Booleano, "User32.dll"
+Proc TrackPopupMenu(hMenu,uFlags,x,y,nReserved,hWnd:Entero,prcRect:RECT):Booleano, "User32.dll"
+Proc DestroyMenu(hMenu:Entero):Booleano, "User32.dll"
 Proc CoUninitialize(), "Ole32.dll"
 Proc CoInitialize(Opcional:Entero):Entero, "Ole32.dll"
 Proc InitCommonControlsEx(lpInitCtrls:INITCOMMONCONTROLSEX):Booleano, "Comctl32.dll"

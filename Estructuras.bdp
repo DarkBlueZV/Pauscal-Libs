@@ -9,6 +9,7 @@ Prototipo pscEvFormCierra(Referencia Cancelar:Booleano)
 Prototipo pscEvTxtNavegar(Horizontal:Booleano)
 Prototipo pscEvCadNotif(hWnd,Pos:EnteroSig)
 Prototipo pscEvGrphNotif(,:Entero)
+Prototipo PscEvNing(hWnd,Msg,wParam,lParam:Entero):Entero
 
 'Estruc Variante,iType,reserved,lLen:Entero
 Estruc Variante,Tipo:Word,Reservado:Booleano,Ptr:Entero
@@ -103,6 +104,27 @@ Estruc THREADDATA, _
   tdDir:pscThreadLlamada, _
   @tdActivo:Booleano
 
+Uni$F3n NTIFYDATA,_
+		uTimeout,_
+		uVersion:Entero
+
+Estruc NOTIFYICONDATA, _
+		 cbSize, _
+		 hWnd, _
+		 uID, _
+		 uFlags, _
+		 uCallbackMessage, _
+		 hIcon:Entero, _
+		 szTip[64]:Byte,_
+		 dwStateMask:Entero,_
+		 szInfo[256]:Byte,_
+		 union:NTIFYDATA,_
+		 szInfoTitle[64]:Byte,_
+		 dwInfoFlags:Entero,_
+		 guidItem:GUID,_
+		 hBallonIcon:Entero
+
+
 Estruc WINTHREADDATA, _
   hWnd, hWndDisable[]:Entero
 
@@ -145,8 +167,9 @@ Estruc PSCFORM_EVENTINFO, _
   AlGanarFoco:pscEvNotif, _
   AlPerderFoco:pscEvNotif, _
   AlCerrarse:pscEvFormCierra, _
-  AlCargarse:pscEvNotif
-
+  AlCargarse:pscEvNotif,_
+  Ninguno:PscEvNing
+  
 Estruc PSCETIQUETA_EVENTINFO, _
   AlCliquear:pscEvNotif, _
   AlDobleCliquear:pscEvNotif

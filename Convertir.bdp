@@ -42,7 +42,7 @@ FinProc
 
 Proc CadEnt(Referencia lpStr:Cadena):EnteroSig
   Var Temp:Cadena, LenCad:Entero, Num:EnteroSig
-  Si lpStr = "" Entonces GenerarError 0,"[CadEnt] primer parametro es vacio."
+  Si lpStr = "" Entonces GenerarError 1,"[CadEnt] primer parametro es vacio."
   LenCad=CadLong(lpStr)
   Temp=Espacio((LenCad+1)*2)
   MultiByteToWideChar(0,0,lpStr,LenCad,Temp,LenCad*2)
@@ -52,7 +52,7 @@ FinProc
 
 Proc CadReal2(Referencia lpStr:Cadena):Real
   Var Temp:Cadena, LenCad:Entero, Num:Real
-  Si lpStr = "" Entonces GenerarError 0,"[CADReal2] primer parametro es vacio."
+  Si lpStr = "" Entonces GenerarError 1,"[CADReal2] primer parametro es vacio."
   LenCad=CadLong(lpStr)
   Temp=Espacio((LenCad+1)*2)
   MultiByteToWideChar(0,0,lpStr,LenCad,Temp,LenCad*2)
@@ -72,7 +72,10 @@ Proc RealCad2(Referencia lNum:Real):Cadena
 FinProc
 
 Proc EntMatByte(Int:Entero):Byte[]
-	Resultado = [Int And &amp;FF,(Int And 65280) \ &amp;100,(Int And &amp;FF0000) \ &amp;10000,((Int And &amp;FF000000) \ &amp;1000000) And &amp;FF]
+	Resultado = [Int And &amp;FF,_
+					(Int And 65280) \ &amp;100,_
+					(Int And &amp;FF0000) \ &amp;10000,_
+					((Int And &amp;FF000000) \ &amp;1000000) And &amp;FF]
 FinProc
 
 Proc ByteMatEnt(Referencia Bytes[]:Byte):Entero
@@ -103,38 +106,46 @@ Proc ByteCad(Number:Byte):Cadena
 FinProc
 'By Yuki!
 Proc CADWord(Referencia N$FAmero:Cadena):WordSig
-	Si N$FAmero = "" Entonces GenerarError 0,"[CadWord] primer parametro es vacio."
+	Si N$FAmero = "" Entonces GenerarError 1,"[CadWord] primer parametro es vacio."
 	Devolver vbaI2Str(CadAUnicode(N$FAmero))
 FinProc
 'By Yuki!
 Proc CadEntS(Referencia N$FAmero:Cadena):EnteroSig
-	Si N$FAmero = "" Entonces GenerarError 0,"[CadEntS] primer parametro es vacio."
+	Si N$FAmero = "" Entonces GenerarError 1,"[CadEntS] primer parametro es vacio."
 	Devolver vbaI4Str(CadAUnicode(N$FAmero))
 FinProc
 'By Yuki!
 Proc CadDec(Referencia N$FAmero:Cadena):Decimal
-	Si N$FAmero = "" Entonces GenerarError 0,"[CadDec] primer parametro es vacio."
+	Si N$FAmero = "" Entonces GenerarError 1,"[CadDec] primer parametro es vacio."
 	Devolver vbaCyStr(CadAUnicode(N$FAmero))
 FinProc
 'By Yuki!
 Proc CadReal(Referencia N$FAmero:Cadena):Real
-	Si N$FAmero = "" Entonces GenerarError 0,"[CadReal] primer parametro es vacio."
+	Si N$FAmero = "" Entonces GenerarError 1,"[CadReal] primer parametro es vacio."
 	Devolver vbaR8Str(CadAUnicode(N$FAmero))
 FinProc
 'By Yuki!
 Proc CadByte(Referencia N$FAmero:Cadena):Byte
-	Si N$FAmero = "" Entonces GenerarError 0,"[CadByte] primer parametro es vacio."
+	Si N$FAmero = "" Entonces GenerarError 1,"[CadByte] primer parametro es vacio."
 	Devolver vbaUI1Str(CadAUnicode(N$FAmero))
 FinProc
 
+'Proc EntCad(lNum:EnteroSig):Cadena
+'  Var Temp,Res:Cadena,LenCad:Entero
+'  $24CED-
+'  VarBstrFromI4(lNum,0,0,Temp)
+'  $24CED
+'  LenCad=CadLong(Temp)\2
+'  Res=Espacio((LenCad+1)*2)
+'  WideCharToMultiByte(0,0,Temp,-1,Res,LenCad,Nulo,Nulo)
+'  Resultado=UnicodeACad(Res)
+'FinProc
+
+' Reemplazado EntCad de Paul por el mio, quien te conoce PAUL &gt;:(
 Proc EntCad(lNum:EnteroSig):Cadena
-  Var Temp,Res:Cadena,LenCad:Entero
   $24CED-
-  VarBstrFromI4(lNum,0,0,Temp)
+  VarBstrFromI4(lNum,0,0,Resultado)
   $24CED
-  LenCad=CadLong(Temp)\2
-  Res=Espacio((LenCad+1)*2)
-  WideCharToMultiByte(0,0,Temp,-1,Res,LenCad,Nulo,Nulo)
-  Resultado=UnicodeACad(Res)
+  Devolver Reemplazar(Resultado,Null,"")
 FinProc
 </Contenido></Datos>

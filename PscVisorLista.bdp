@@ -1,5 +1,6 @@
 <Datos><Nombre></Nombre><Icono>AA==</Icono><Version><Mayor>0</Mayor><Menor>0</Menor><Revision>0</Revision><AutoIncr>0</AutoIncr></Version><Info/><Contenido>Importar "PscBin.prp"
 Importar "Cadena.prp"
+Importar "WinCtrls.prp"
 
 'Privado:
 '	Var PtrEventos,PrevHwnd:Entero
@@ -424,7 +425,7 @@ Clase PscImagenLista,hWnd,XImagenLista,YImagenLista,EstiloImagenLista:Entero,Dir
 FinClase
 
 Clase PscVisorLista,hWndLista,EstiloLista,ColorLista,XLista,YLista,AnchoLista,AltoLista,EstiloExLista,ColorTextoLista:Entero
-	ClaseVar Columna:PscColumnas,Items:PscItems,Imagen:PscImagenLista,Eventos:PSCVISORLISTA_EVENTINFO
+	ClaseVar Columna:PscColumnas,Items:PscItems,Imagen:PscImagenLista,Fuente:pscFuente',Eventos:PSCVISORLISTA_EVENTINFO
 	Privado:
 		Proc ObtenerhWnd:Entero
 			Devolver hWndLista
@@ -547,7 +548,8 @@ Clase PscVisorLista,hWndLista,EstiloLista,ColorLista,XLista,YLista,AnchoLista,Al
 			ListView_SetExtendedListViewStyle(hWndLista,EstiloExLista)
 			Si ColorLista Entonces ListView_SetBkColor(hWndLista,EstiloLista)
 			Si ColorTextoLista Entonces ListView_SetTextColor(hWnd,ColorTextoLista)
-			Crear Columna(hWndLista),Items(hWndLista),Imagen(hWndLista,XLista,YLista)
+			Crear Columna(hWndLista),Items(hWndLista),Imagen(hWndLista,XLista,YLista),Fuente
+			Fuente.InsertarFuente(hWndLista)
 		FinProc
 FinClase
 </Contenido></Datos>

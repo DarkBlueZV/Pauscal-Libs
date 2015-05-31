@@ -128,6 +128,8 @@ Proc pscForm_wndproc(hWnd,Msg,wParam,lParam:Entero):Entero
         FinSi
       Caso WM_USER+1 'acomodar men$FA
         This.Alto=This.Alto+GetSystemMetrics(SM_CYMENU)
+		Caso Otro
+			Si (Eventos.Ninguno@) Eventos.Ninguno(hWnd,Msg,wParam,lParam)
     FinSeleccionar
   FinSi
   Resultado=DefWindowProc(hWnd,Msg,wParam,lParam)
@@ -723,6 +725,9 @@ P$FAblico:
   FinProc
   'props p$FAblicos
   Prop hInstance:Entero
+    Lec:GetHInstance
+  FinProp
+  Prop Instancia:Entero
     Lec:GetHInstance
   FinProp
 FinClase

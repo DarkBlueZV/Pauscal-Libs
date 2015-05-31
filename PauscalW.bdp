@@ -31,5 +31,7 @@ Importar "pscCajaCombo.prp"
 Importar "pscTemporizador.prp"
 Importar "PscTooltip.prp"
 Importar "PscBarraProgreso.prp"
+Importar "PscVisorLista.prp"
+Importar "PscIconoBandeja.prp"
 'Importar "CajaIngreso.prp"
 </Contenido></Datos>
