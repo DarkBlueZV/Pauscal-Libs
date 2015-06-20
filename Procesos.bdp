@@ -20,16 +20,16 @@ Proc ProcesoObtenerID(ProcessName:Cadena):Entero
 	Var hSnapShot:EnteroSig
 	Var uProcess:PROCESSENTRY32
 	Var c_Check:Entero
-	ProcessName = CadMinus(ProcessName)
+	'ProcessName = Minuscula(ProcessName)
 	hSnapShot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS,&amp;0)
 	Si hSnapShot = -1 Salir
 	uProcess.dwSize = Long(uProcess)
 	Si ProcessFirst(hSnapShot, uProcess)
 	   Repetir
-	      Si CadMinus(CadDePtr(uProcess.szExeFile[0]@)) = ProcessName Entonces CloseHandle(hSnapShot) ; Devolver uProcess.th32ProcessID
+	      Si Comparar(CadDePtr(uProcess.szExeFile[0]@),ProcessName) Entonces CloseHandle(hSnapShot) ; Devolver uProcess.th32ProcessID
 	   HastaQue ProcessNext(hSnapShot, uProcess) = Falso
 	FinSi
-	Devolver 0
+	Resultado = 0
 FinProc
 
 ' #ProcesoExiste# ========================================================================

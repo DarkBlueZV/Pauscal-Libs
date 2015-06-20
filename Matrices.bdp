@@ -18,7 +18,7 @@ Textos = DecCad(N$FAmeros)
 Longitud = CadLong(Textos)
 ReDim Matriz, Longitud
 Contar i = 1 a Longitud
-   Matriz[i -1] = CadDec(ParteCad(Textos,i,1))
+   Matriz[i -1] = CadDec(Parte(Textos,i,1))
 Seguir
    Resultado = Matriz
 FinProc
@@ -46,7 +46,7 @@ Textos = RealCad(N$FAmeros)
 Longitud = CadLong(Textos)
 ReDim Matriz, Longitud
 Contar i = 1 a Longitud
-   Matriz[i -1] = CadReal(ParteCad(Textos,i,1))
+   Matriz[i -1] = CadReal(Parte(Textos,i,1))
 Seguir
    Resultado = Matriz
 FinProc
@@ -64,7 +64,7 @@ Textos = EntCad(N$FAmeros)
 Longitud = CadLong(Textos)
 ReDim Matriz, Longitud
 Contar i = 1 a Longitud
-   Matriz[i -1] = CadEnt(ParteCad(Textos,i,1))
+   Matriz[i -1] = CadEnt(Parte(Textos,i,1))
 Seguir
    Resultado = Matriz
 FinProc
@@ -82,7 +82,7 @@ Var i,b:Entero
 b = CadLong(Textos)
 ReDim Resultado,b
 Contar i = 1 a b
-	Resultado[i - 1] = ParteCad(Textos,i,1) 
+	Resultado[i - 1] = Parte(Textos,i,1) 
 Seguir
 FinProc
 
@@ -98,7 +98,7 @@ Var i,lLen:Entero,bArr[]:Byte,Letra:Cadena
     lLen = CadLong(Temp)
     Redim bArr,lLen
     Contar i = 1 a lLen
-      Letra = ParteCad(Temp,i, 1)
+      Letra = Parte(Temp,i, 1)
       bArr[i - 1] = Ascii(Letra)
     Seguir
     Resultado = bArr

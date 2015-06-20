@@ -42,17 +42,76 @@ FinProc
 P$FAblico:
 
 Clase pscBoton(pscTextControl), _
-  ObjNum:Entero
+  ObjNum:Entero, _
+  sPlano:Booleano, _
+  sIcono:Booleano, _
+  sBitmap:Booleano,_
+  Ptr:Entero,ImagenStr:Cadena
 
   ClaseVar Eventos:PSCBOTON_EVENTINFO
 
+Privado:
+
+  Proc GetPlano:Booleano
+      Devolver sPlano
+  FinProc
+  Proc SetPlano(Valor:Booleano)
+      Si (ObjHwnd) GenerarError errOpImposible
+        sPlano=Valor
+  FinProc
+  Proc GetBitmap:Booleano
+      Devolver sBitmap
+  FinProc
+  Proc SetBitmap(Valor:Booleano)
+      Si (ObjHwnd) GenerarError errOpImposible
+        sBitmap=Valor
+        Si (sBitmap) sIcono=Falso
+  FinProc
+  Proc GetIcono:Booleano
+      Devolver sIcono
+  FinProc
+  Proc SetIcono(Valor:Booleano)
+      Si (ObjHwnd) GenerarError errOpImposible
+        sIcono=Valor
+        Si (sIcono) sBitmap=Falso
+  FinProc
+	Proc EstablecerImagen(Imagen:Cadena)
+		Si (Imagen = "") Or ((sBitmap = 0) And (sIcono = 0)) Salir
+		Si Ptr Entonces
+			DeleteObject(Ptr)
+         Ptr = 0
+		FinSi
+		ImagenStr = Imagen
+		Si ObjHwnd = 0 Entonces GenerarError errOpImposible
+		Ptr = LoadImage(0,Imagen,&gt;sBitmap?IMAGE_BITMAP:IMAGE_ICON,0,0,&gt;sBitmap?LR_LOADFROMFILE+LR_CREATEDIBSECTION:LR_LOADFROMFILE)
+		SendMessage(ObjHwnd,BM_SETIMAGE,&gt;sBitmap?IMAGE_BITMAP:IMAGE_ICON,Ptr)
+	FinProc
+	Proc ObtenerImagen:Cadena
+		Devolver ImagenStr
+	FinProc
 P$FAblico:
   'proc p$FAblicos
+  Prop Plano:Booleano
+    Lec:GetPlano
+    Esc:SetPlano
+  FinProp
+  Prop Bitmap:Booleano
+    Lec:GetBitmap
+    Esc:SetBitmap
+  FinProp
+  Prop Icono:Booleano
+    Lec:GetIcono
+    Esc:SetIcono
+  FinProp
+  Prop Imagen:Cadena ' Nuevo &lt; Permite agregar una imagen .BMP al bot$F3n.
+	 Lec:ObtenerImagen
+	 Esc:EstablecerImagen
+  FinProp
   Proc CargarBoton(HwndParent:Entero)
     Var Nomb:Cadena
     Si (ObjHwnd&lt;&gt;0) Salir
     Nomb="BUTTON"
-    ObjHwnd=CreateWindowEx(WS_EX_NOPARENTNOTIFY,Nomb,iTexto,BS_PUSHBUTTON+WS_CLIPSIBLINGS+WS_CHILD+WS_TABSTOP+(&gt;Habil?0:WS_DISABLED)+ _
+    ObjHwnd=CreateWindowEx(WS_EX_NOPARENTNOTIFY,Nomb,iTexto,(&gt;sPlano?&amp;8000:0)+(&gt;sIcono?BS_ICON:0)+(&gt;sBitmap?BS_BITMAP:0)+BS_PUSHBUTTON+WS_CLIPSIBLINGS+WS_CHILD+WS_TABSTOP+(&gt;Habil?0:WS_DISABLED)+ _
                            (&gt;Visib?WS_VISIBLE:0),Coords.x,Coords.y,Coords.Width,Coords.Height,HwndParent,0,GetModuleHandle(""),Nulo)
     Si (ObjHwnd=0) GenerarError errFalloWinCtrls
     Fuente.InsertarFuente(ObjHwnd)
@@ -60,6 +119,10 @@ P$FAblico:
     SetProp(ObjHwnd,"PREVHWND",SetWindowLong(ObjHwnd,GWL_WNDPROC,pscBoton_wndproc@))
     SetColor(Col,0)
     ObtenerDC
+    Si (ImagenStr &lt;&gt; "") And (sBitmap Or sIcono) Entonces
+		Ptr = LoadImage(0,ImagenStr,&gt;sBitmap?IMAGE_BITMAP:IMAGE_ICON,0,0,&gt;sBitmap?LR_LOADFROMFILE+LR_CREATEDIBSECTION:LR_LOADFROMFILE)
+		SendMessage(ObjHwnd,BM_SETIMAGE,&gt;sBitmap?IMAGE_BITMAP:IMAGE_ICON,Ptr)
+    FinSi
     UpdateWindow(ObjHwnd)
   FinProc
   Proc DescargarBoton

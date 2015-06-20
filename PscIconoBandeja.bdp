@@ -66,7 +66,7 @@ Clase PscIconoBandeja,Data:NOTIFYICONDATA,IconoIcono:Cadena
 			Lec:ObtenerT$EDtulo
 			Esc:EstablecerT$EDtulo
 		FinProp
-		Proc CrearIconoBandeja(hWnd:Entero)
+		Proc CargarIconoBandeja(hWnd:Entero)
 			Eval Data
 				.hWnd = hWnd
 				Si .hIcon = 0 Entonces LoadImage(0,IconoIcono, IMAGE_ICON, 0, 0, LR_LOADFROMFILE+LR_DEFAULTSIZE)

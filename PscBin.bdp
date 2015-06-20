@@ -11,35 +11,39 @@ FinProc
 
 '#define MAKELPARAM(l,h) ((LPARAM)MAKELONG(l,h))
 Proc MakelParam(L,U:Entero):Entero
-   Devolver L Or (U * &amp;10000)
+   Resultado = L Or (U * &amp;10000)
 FinProc
 
-'#define MAKELONG(a,b)	((LONG)(((WORD)(a))|(((DWORD)((WORD)(b)))&lt;&lt;16)))
+'#define MAKELONG(a,b)	(a|b)&lt;&lt;16
+Proc MAKELONG(a,b:Entero):Entero
+	Resultado = a Or b Shl 16
+FinProc
+
 Proc MakeDWord(hWord,lWord:Entero):Entero
-    Devolver (hWord * &amp;10000) Or (lWord And &amp;FFFF)
+    Resultado = (hWord * &amp;10000) Or (lWord And &amp;FFFF)
 FinProc
 
-Proc MakeWord2(LoByte,HiByte:Byte):Entero
-	Si HiByte And &amp;80 Entonces
-		Devolver ((HiByte * &amp;100) + LoByte) Or &amp;FFFF0000
-	SiNo
-		Devolver (HiByte * &amp;100) + LoByte
-	FinSi
-FinProc
+'Proc MakeWord2(LoByte,HiByte:Byte):Entero
+'	Si HiByte And &amp;80 Entonces
+'		Devolver ((HiByte * &amp;100) + LoByte) Or &amp;FFFF0000
+'	SiNo
+'		Devolver (HiByte * &amp;100) + LoByte
+'	FinSi
+'FinProc
 
 '#define MAKEWORD(a,b)	((WORD)(((BYTE)(a))|(((WORD)((BYTE)(b)))&lt;&lt;8)))
 Proc MakeWord(LoByte,HiByte:Byte):Word
-	Devolver LoByte Or HiByte Shl 8
+	Resultado = LoByte Or HiByte Shl 8
 FinProc
 
 '#define MAKELONG(a,b)	((LONG)(((WORD)(a))|(((DWORD)((WORD)(b)))&lt;&lt;16)))
-Proc MAKELONG(A,B:Word):Entero
-	Devolver A Or B Shl 16
-FinProc
+'Proc MAKELONG(A,B:Word):Entero
+'	Resultado = A Or B Shl 16
+'FinProc
 
 '#define HIWORD(l)	((WORD)(((DWORD)(l)&gt;&gt;16)&amp;0xFFFF))
 Proc HIWORD(Valor:Entero):Word
-  Devolver (Valor shr 16) And &amp;FFFF
+	Resultado = (Valor shr 16) And &amp;FFFF
 FinProc
 
 
@@ -47,14 +51,19 @@ FinProc
 
 
 '#define LOBYTE(w)	((BYTE)(w))
+Proc LoByte(Valor:Entero):Byte
+	Resultado = Valor
+FinProc
 '#define HIBYTE(w)	((BYTE)(((WORD)(w)&gt;&gt;8)&amp;0xFF))
-
+Proc HiByte(Valor:Entero):Byte
+	Resultado = (Valor Shr 8) And &amp;FF
+FinProc
 '#define LOWORD(l)	((WORD)((DWORD)(l)))
 Proc LOWORD(INT:Entero):Word
-	Devolver INT
+	Resultado = INT
 FinProc
 
-Proc htons2(lPort:Entero):Entero
-   Devolver ((((lPort And &amp;FF000000) \ &amp;1000000) And &amp;FF) Or ((lPort And &amp;FF0000) \ &amp;100) Or ((lPort And &amp;FF00) * &amp;100) Or ((lPort And &amp;7F) * &amp;1000000) Or (&gt;(lPort And &amp;80)?&amp;80000000:&amp;0) And &amp;FFFF0000) \ &amp;10000
-FinProc
+'Proc htons2(lPort:Entero):Entero
+'   Resultado = ((((lPort And &amp;FF000000) \ &amp;1000000) And &amp;FF) Or ((lPort And &amp;FF0000) \ &amp;100) Or ((lPort And &amp;FF00) * &amp;100) Or ((lPort And &amp;7F) * &amp;1000000) Or (&gt;(lPort And &amp;80)?&amp;80000000:&amp;0) And &amp;FFFF0000) \ &amp;10000
+'FinProc
 </Contenido></Datos>

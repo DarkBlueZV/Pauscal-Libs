@@ -6,7 +6,7 @@ Privado:
 	'	Contar iTemp = 1 a CadLong(sData)
 	'	Result = Result + Carac(Ascii(ParteCad(sData,iTemp,1)) + 13)
 	'	Seguir
-	'	Devolver Result
+	'	Resultado = Result
 	'FinProc
 
 	'Proc ROT13Decrypt(sData:Cadena):Cadena
@@ -14,29 +14,29 @@ Privado:
 	'	Contar iTemp = 1 a CadLong(sData)
 	'	Result = Result + Carac(Ascii(ParteCad(sData,iTemp,1)) - 13)
 	'	Seguir
-	'	Devolver Result
+	'	Resultado = Result
 	'FinProc
 
 	Proc ROTNEncrypt(sData:Cadena,sValue:Entero):Cadena ' Encriptador Rot Numero. 
 		Var Result:Cadena,iTemp:Entero
 		Contar iTemp = 1 a CadLong(sData)
-		Result = Result + Carac(Ascii(ParteCad(sData,iTemp,1)) + sValue)
+		Result = Result + Carac(Ascii(Parte(sData,iTemp,1)) + sValue)
 		Seguir
-		Devolver Result
+		Resultado = Result
 	FinProc
 
 	Proc ROTNDecrypt(sData:Cadena,sValue:Entero):Cadena ' Des-Encriptador Rot Numero.
 		Var Result:Cadena,iTemp:Entero
 		Contar iTemp = 1 a CadLong(sData)
-		Result = Result + Carac(Ascii(ParteCad(sData,iTemp,1)) - sValue)
+		Result = Result + Carac(Ascii(Parte(sData,iTemp,1)) - sValue)
 		Seguir
-		Devolver Result
+		Resultado = Result
 	FinProc
-	
+
 	Proc BrainFuck_LetraACode(Referencia Caracter:Cadena):Cadena
 		Var i:Entero,Cad:Cadena
 		Cad = RepCarac(43,Ascii(Caracter))
-		Devolver (Cad + ".&gt;")
+		Resultado = (Cad + ".&gt;")
 	FinProc
 
 P$FAblico:
@@ -45,7 +45,7 @@ Proc CadXor(Referencia Cadena1:Cadena):Cadena
 	Var Kod,X2:Cadena
 	Var X3:Entero
 	Contar X3 = 1 a CadLong(Cadena1)
-	X2 = ParteCad(Cadena1,X3,1)
+	X2 = Parte(Cadena1,X3,1)
 	Kod = Kod + Carac(ASCII(X2) Xor 255)
 	Seguir
 	Devolver Kod
@@ -56,15 +56,15 @@ FinProc
 'FinProc
 
 Proc CadROTN(Referencia sData:Cadena,Valor:Entero,Opcional Encriptar:Booleano = Verd):Cadena
-	Si sData = "" Entonces GenerarError 0,"Error: primer parametro es vacio."
+	Si sData = "" Entonces GenerarError 1,"Error: primer parametro es vacio."
 	Devolver &gt;Encriptar?ROTNEncrypt(sData,Valor):ROTNDecrypt(sData,Valor)
 FinProc
 
 Proc BrainFuck_TextoACode(Referencia Texto:Cadena):Cadena
 	Var Letra,Cad:Cadena,Contador:Entero
-	Si Texto = "" Entonces GenerarError 0,"Error: primer parametro es vacio."
+	Si Texto = "" Entonces GenerarError 1,"Error: primer parametro es vacio."
 	Contar Contador = 1 a CadLong(Texto)
-		Letra = ParteCad(Texto,Contador,1)
+		Letra = Parte(Texto,Contador,1)
 		Cad = Cad  + BrainFuck_LetraACode(Letra)
 	Seguir
 	Devolver Cad
@@ -72,7 +72,7 @@ FinProc
 
 Proc BrainFuck_CodeATexto(Referencia Code:Cadena):Cadena
 	Var Matriz[]:Cadena,i:Entero
-	Si Code = "" Entonces GenerarError 0,"Error: primer parametro es vacio."
+	Si Code = "" Entonces GenerarError 1,"Error: primer parametro es vacio."
 	Matriz = Separar(Code,".&gt;")
 	Resultado = ""
 	Contar i = 0 a L$EDmite(Matriz)

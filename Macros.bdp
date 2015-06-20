@@ -17,7 +17,7 @@ FinProc
 Clase PscUsuario
 	Proc Nombre:Cadena
 		Resultado = ObtCarpEsp(CSIDL_APPDATA)
-		Devolver DerechaCad(ObtCarpEsp(CSIDL_PROFILE),CadLong(Resultado) - BuscarEnCadInv(Resultado,"\"))
+		Devolver Derecha(ObtCarpEsp(CSIDL_PROFILE),CadLong(Resultado) - BuscarInv(Resultado,"\"))
 	FinProc
 FinClase
 
@@ -97,18 +97,18 @@ Clase PscProgramaLocal,h_int:Entero
 		
 		Proc Inicializar
 		   Nombre = Espacio(255)
-		   Nombre = ParteCad(Nombre, 1,GetModuleFileName(0, CadPtr(Nombre), 255))
-		   Nombre = DerechaCad(Nombre,CadLong(Nombre) - BuscarEnCadInv(Nombre, "\"))
+		   Nombre = Parte(Nombre, 1,GetModuleFileName(0, CadPtr(Nombre), 255))
+		   Nombre = Derecha(Nombre,CadLong(Nombre) - BuscarInv(Nombre, "\"))
 		   AdmErr
-		   Nombre = IzquierdaCad(Nombre,BuscarEnCad(Nombre,".") - 1)
+		   Nombre = Izquierda(Nombre,Buscar(Nombre,".") - 1)
 		   Controlar
 		   
 		   FinAdmErr
 		   Instancia = GetModuleHandle("")
 		   
 		   NombreExe = Espacio(255)
-		   NombreExe = ParteCad(NombreExe, 1, GetModuleFileName(0, CadPtr(NombreExe), 255))
-		   NombreExe = DerechaCad(NombreExe,CadLong(NombreExe) - BuscarEnCadInv(NombreExe, "\"))
+		   NombreExe = Parte(NombreExe, 1, GetModuleFileName(0, CadPtr(NombreExe), 255))
+		   NombreExe = Derecha(NombreExe,CadLong(NombreExe) - BuscarInv(NombreExe, "\"))
 		   
 		   L$EDneaDeComandos = CadDePtr(GetCommandLine())
 		   
@@ -196,12 +196,12 @@ Clase PscProgramaLocal,h_int:Entero
 
 		Proc Ruta:Cadena
 			Resultado = Espacio(255)
-			Devolver IzquierdaCad(Resultado,GetCurrentDirectory(255,Resultado))
+			Devolver Izquierda(Resultado,GetCurrentDirectory(255,Resultado))
 		FinProc
 
 		Proc RutaCompleta:Cadena
 		   Resultado = Espacio(255)
-		   Devolver ParteCad(Resultado, 1,GetModuleFileName(0, CadPtr(Resultado), 255))
+		   Devolver Parte(Resultado, 1,GetModuleFileName(0, CadPtr(Resultado), 255))
 		FinProc
 
 		Proc Terminar
@@ -225,7 +225,7 @@ Privado:
 	Proc Inicializar
 
 	   Temp = Espacio(255)
-	   Temp = ParteCad(Temp,1,GetTempPath(255,CadPtr(Temp)) - 1)
+	   Temp = Parte(Temp,1,GetTempPath(255,CadPtr(Temp)) - 1)
 
 		Comando = Espacio(1000)
 		GetEnvironmentVariable("ComSpec",Comando,1000)
@@ -245,7 +245,7 @@ Privado:
 		
 		Roaming = TruncarCadena(ObtCarpEsp(CSIDL_APPDATA))
 		
-		AppData = IzquierdaCad(Roaming,CadLong(Roaming) - 8)
+		AppData = Izquierda(Roaming,CadLong(Roaming) - 8)
 		
 		Fuentes = TruncarCadena(ObtCarpEsp(CSIDL_FONTS))
 		

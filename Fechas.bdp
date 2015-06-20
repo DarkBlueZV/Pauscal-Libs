@@ -22,8 +22,8 @@ Proc DiaDeSemana(Fecha:pscFecha):ByteSig
       A$F1o=EntReal(.A$F1o)
     SiNo
       Temp=EntCad(.A$F1o)
-      A$F1o=CadReal(DerechaCad(Temp,2))
-      Sig=CadReal(IzquierdaCad(Temp,CadLong(Temp)-2))
+      A$F1o=CadReal(Derecha(Temp,2))
+      Sig=CadReal(Izquierda(Temp,CadLong(Temp)-2))
     FinSi
   FinEval
   Resultado=RealEnt(Dia+TruncReal((13.0*Mes-1.0)/5.0)+A$F1o+TruncReal(A$F1o/4.0)+TruncReal(Sig/4.0)-2*Sig)

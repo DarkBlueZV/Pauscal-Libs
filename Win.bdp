@@ -142,12 +142,6 @@ P$FAblico:
     LenTxt=CadLong(Texto)
     Si (LenTxt) Escribir(CadPtr(Texto),LenTxt)
   FinProc
-  Proc EscribirEnt(Num:Entero)
-    Escribir(Num@,Long(Num))
-  FinProc
-  Proc EscribirReal(Num:Real)
-    Escribir(Num@,Long(Num))
-  FinProc
   Proc EscribirL$EDnea(Texto:Cadena)
     EscribirCad(Texto+CrLf)
   FinProc
@@ -180,7 +174,7 @@ Clase pscDialogo, _
 Privado:
   Proc ArreglarRutas
     Var i:Entero
-    Si (DerechaCad(iArchivos[0],1)&lt;&gt;"\") iArchivos[0]=iArchivos[0]+"\"
+    Si (Derecha(iArchivos[0],1)&lt;&gt;"\") iArchivos[0]=iArchivos[0]+"\"
     Contar i=1 a L$EDmite(iArchivos)
       iArchivos[i]=iArchivos[0]+iArchivos[i]
     Seguir
@@ -189,8 +183,8 @@ Privado:
     Var Temp:Cadena,Pos:Entero
     Si (Ret)
       Si (iMulti)
-        Pos = BuscarEnCad(TempBuff.lpstrFile,Null+Null)
-        Si (Pos) Temp = ParteCad(TempBuff.lpstrFile,1,Pos-1); SiNo; Temp = TempBuff.lpstrFile
+        Pos = Buscar(TempBuff.lpstrFile,Null+Null)
+        Si (Pos) Temp = Parte(TempBuff.lpstrFile,1,Pos-1); SiNo; Temp = TempBuff.lpstrFile
         iArchivos = Separar(Temp,Null)
         Si (L$EDmite(iArchivos)=0)
           Redim Preservar iArchivos,2
@@ -218,7 +212,7 @@ Privado:
   FinProc
   Proc SetFiltro(Val:Cadena)
     iFiltro=Val
-    TempBuff.lpstrFilter=Reemplazar(IzquierdaCad(Val+Espacio(MAX_PATH),MAX_PATH),"|",Null)+Null+Null
+    TempBuff.lpstrFilter=Reemplazar(Izquierda(Val+Espacio(MAX_PATH),MAX_PATH),"|",Null)+Null+Null
   FinProc
   Proc SetTit(Val:Cadena)
     iTitle=Val
@@ -230,7 +224,7 @@ Privado:
   Proc SetArchivo(Val:Cadena)
     Redim iArchivos,2
     iArchivos[1] = Val
-    TempBuff.lpstrFile=IzquierdaCad(Val+Espacio(MAXFILENAME),MAXFILENAME)
+    TempBuff.lpstrFile=Izquierda(Val+Espacio(MAXFILENAME),MAXFILENAME)
   FinProc
   Proc GetArchivos(Indice:Entero):Cadena
     Si ((Indice&lt;1) Or (Indice &gt; L$EDmite(iArchivos))) GenerarError errParamInv
@@ -287,7 +281,7 @@ Privado:
     Eval TempBuff
       Arch=TruncarCadena(.lpstrFile)
       Longit=CadLong(Arch)
-      Si (Longit&lt;&gt;0) And (.nFileOffset&lt;&gt;0) Resultado=DerechaCad(Arch,Longit-.nFileOffset)
+      Si (Longit&lt;&gt;0) And (.nFileOffset&lt;&gt;0) Resultado=Derecha(Arch,Longit-.nFileOffset)
     FinEval
   FinProc
   Constructor:Init
@@ -422,8 +416,8 @@ FinClase
 Proc SimplificarRuta(Ruta:Cadena):Cadena
   Var Pos:Entero
 
-  Pos=BuscarEnCadInv(Ruta,"\")
-  Si (Pos) Resultado=ParteCad(Ruta,Pos+1,CadLong(Ruta)); SiNo; Resultado=Ruta
+  Pos=BuscarInv(Ruta,"\")
+  Si (Pos) Resultado=Parte(Ruta,Pos+1,CadLong(Ruta)); SiNo; Resultado=Ruta
 FinProc
 
 Proc ExisteArchivo(Arch:Cadena):Booleano
@@ -446,11 +440,11 @@ FinProc
 Proc QuitarExtensi$F3n(Arch:Cadena):Cadena
   Var Pos:Entero
 
-  Pos=BuscarEnCadInv(Arch,".")
+  Pos=BuscarInv(Arch,".")
   Si (Pos=0)
     Resultado=Arch
   SiNo
-    Resultado=IzquierdaCad(Arch,Pos-1)
+    Resultado=Izquierda(Arch,Pos-1)
   FinSi
 FinProc
 

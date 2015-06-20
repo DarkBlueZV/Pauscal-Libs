@@ -157,7 +157,7 @@ Proc Regex_Escanear(Referencia Texto,Patron:Cadena,Opcional InicioReg,Opciones:E
 				Caso PCRE_ERROR_NOSUBSTRING
 					Salir Repetir
 				Caso Otro
-					Resultado[i] = ParteCad(Resultado[i],1,IntSubString)
+					Resultado[i] = Parte(Resultado[i],1,IntSubString)
 					i = i + 1
 					ReDim Preservar Resultado,i + 1
 			FinSeleccionar

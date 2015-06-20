@@ -1,0 +1,268 @@
+<Datos><Nombre></Nombre><Icono>AA==</Icono><Version><Mayor>0</Mayor><Menor>0</Menor><Revision>0</Revision><AutoIncr>0</AutoIncr></Version><Info/><Contenido>Importar "Utiles.prp"
+Importar "ConstIpaError.prp"
+Importar "Constantes.prp"
+
+Clase PscHTTP,cUrl,cAgente,cMetodo,cObjetivo,cError,cCabecera,cVersi$F3n:Cadena,wPuerto:Word,eOpen,eConnect,eRequest,eLong:Entero
+	ClaseVar Parametros[]:Cadena
+	Privado:
+		Proc Inicializar
+			cAgente = CadAUnicode("Pauscal")
+			wPuerto = INTERNET_DEFAULT_PORT
+			cVersi$F3n = CadAUnicode("HTTP/1.1")
+		FinProc
+		Proc Finalizar
+			Si (eConnect) Entonces WinHttpCloseHandle(eConnect)
+			Si (eOpen) Entonces WinHttpCloseHandle(eOpen)
+		FinProc
+		Constructor:Inicializar
+		Destructor:Finalizar
+		Proc ObtenerURL:Cadena
+			Resultado = cUrl
+		FinProc
+		Proc EstablecerUrl(Valor:Cadena)
+			cUrl = CadAUnicode(Valor)
+		FinProc
+		Proc ObtenerPuerto:Word
+			Resultado = wPuerto
+		FinProc
+		Proc EstablecerPuerto(Valor:Word)
+			wPuerto = Valor
+		FinProc
+		Proc ObtenerAgente:Cadena
+			Resultado = cAgente
+		FinProc
+		Proc EstablecerAgente(Valor:Cadena)
+			cAgente = CadAUnicode(Valor)
+		FinProc
+		Proc ObtenerMetodo:Cadena
+			Resultado = cMetodo
+		FinProc
+		Proc EstablecerMetodo(Valor:Cadena)
+			cMetodo = Mayuscula(Valor)
+		FinProc
+		Proc ObtenerObjetivo:Cadena
+			Resultado = cObjetivo ' Se Objetivo JAJAJAJAJ
+		FinProc
+		Proc EstablecerObjetivo(Valor:Cadena)
+			cObjetivo = CadAUnicode(Valor)
+		FinProc
+		Proc ObtenerLongitud:Entero
+			Resultado = eLong
+		FinProc
+		Proc ObtenerError:Cadena
+			Resultado = cError
+		FinProc
+		Proc ObtenerCabecera:Cadena
+			Resultado = cCabecera
+		FinProc
+		Proc EstablecerCabecera(Valor:Cadena)
+			cCabecera = CadAUnicode(Valor)
+		FinProc
+		Proc ObtenerVersi$F3n:Cadena
+			Resultado = cVersi$F3n
+		FinProc
+		Proc EstablecerVersi$F3n(Valor:Cadena)
+			cVersi$F3n = CadAUnicode(Valor)
+		FinProc
+	P$FAblico:
+		Prop Versi$F3n:Cadena
+			Lec:ObtenerVersi$F3n
+			Esc:EstablecerVersi$F3n
+		FinProp
+		Prop Cabecera:Cadena
+			Lec:ObtenerCabecera
+			Esc:EstablecerCabecera
+		FinProp
+		Prop Longitud:Entero
+			Lec:ObtenerLongitud
+		FinProp
+		Prop Agente:Cadena
+			Lec:ObtenerAgente
+			Esc:EstablecerAgente
+		FinProp
+		Prop Direcci$F3n:Cadena
+			Lec:ObtenerURL
+			Esc:EstablecerURL
+		FinProp
+		Prop Puerto:Word
+			Lec:ObtenerPuerto
+			Esc:EstablecerPuerto
+		FinProp
+		Prop Metodo:Cadena
+			Lec:ObtenerMetodo
+			Esc:EstablecerMetodo
+		FinProp
+		Prop Objetivo:Cadena
+			Lec:ObtenerObjetivo
+			Esc:EstablecerObjetivo
+		FinProp
+		Prop Error:Cadena
+			Lec:ObtenerError
+		FinProp
+		Proc Conectar:Booleano
+			'Var Matriz[]:Cadena
+			Si cUrl = "" Entonces Salir
+			'Matriz = WinHttpCrackearURL(cURL)
+			'Si LongMat(Matriz) &lt;&gt; 7 Entonces Salir
+			eOpen = WinHttpOpen(cAgente,WINHTTP_ACCESS_TYPE_NO_PROXY,WINHTTP_NO_PROXY_NAME,WINHTTP_NO_PROXY_BYPASS,0)
+			Si (eOpen) Entonces
+				eConnect = WinHttpConnect(eOpen,cUrl,wPuerto,0)
+				Si (eConnect) Entonces
+					Devolver Verd
+				SiNo
+					Seleccionar GetLastError
+						Caso ERROR_WINHTTP_INCORRECT_HANDLE_TYPE
+							cError = "El tipo de mango suministrado es incorrecto para esta operaci$F3n."
+						Caso ERROR_WINHTTP_INTERNAL_ERROR
+							cError = "Ha ocurrido un error interno."
+						Caso ERROR_WINHTTP_INVALID_URL
+							cError = "La URL no es v$E1lida."
+						Caso ERROR_WINHTTP_OPERATION_CANCELLED
+							cError = "La operaci$F3n fue cancelada, por lo general debido a que la manija en la que la solicitud se operava se cerr$F3 antes de que la operaci$F3n se complete."
+						Caso ERROR_WINHTTP_UNRECOGNIZED_SCHEME
+							cError = "El esquema de URL no pudo ser reconocido, o no es compatible."
+						Caso ERROR_WINHTTP_SHUTDOWN
+							cError = "La ayuda de la funci$F3n WinHTTP se est$E1 cerrando o se descarga."
+						Caso ERROR_NOT_ENOUGH_MEMORY
+							cError = "No hay suficiente memoria disponible para completar la operaci$F3n solicitada. (C$F3digo de error de Windows)"
+					FinSeleccionar
+					Devolver Falso
+				FinSi
+			SiNo
+				Salir
+			FinSi
+		FinProc
+		Proc Enviar(Opcional Datos:Cadena):Entero
+			Var Len[],i:Entero,Str:Cadena
+			Si LongMat(Parametros) Entonces
+				Str = "?"
+				Repetir
+					Str = Str + Parametros[i] + "=" + Parametros[i+1] + "&amp;"
+					i = i + 2
+				HastaQue i &gt;= L$EDmite(Parametros)
+				Str = Izquierda(Str,CadLong(Str) - 1)
+			FinSi
+			Si (eConnect = 0) Entonces Devolver Falso
+			eRequest = WinHttpOpenRequest(eConnect,CadAUnicode(cMetodo),cObjetivo,cVersi$F3n,WINHTTP_NO_REFERER,WINHTTP_DEFAULT_ACCEPT_TYPES,WINHTTP_FLAG_ESCAPE_DISABLE)
+			Si (eRequest = 0) Entonces
+				Seleccionar GetLastError
+					Caso ERROR_WINHTTP_INCORRECT_HANDLE_TYPE
+						cError = "El tipo de mango suministrado es incorrecto para esta operaci$F3n."
+					Caso ERROR_WINHTTP_INTERNAL_ERROR
+						cError = "Ha ocurrido un error interno."
+					Caso ERROR_WINHTTP_INVALID_URL
+						cError = "La URL no es v$E1lida."
+					Caso ERROR_WINHTTP_OPERATION_CANCELLED
+						cError = "La operaci$F3n fue cancelada, por lo general debido a que la manija en la que la solicitud se operava se cerr$F3 antes de que la operaci$F3n se complete."
+					Caso ERROR_WINHTTP_UNRECOGNIZED_SCHEME
+						cError = "El esquema de URL no pudo ser reconocido, o no es compatible."
+					Caso ERROR_WINHTTP_SHUTDOWN
+						cError = "La ayuda de la funci$F3n WinHTTP se est$E1 cerrando o se descarga."
+					Caso ERROR_NOT_ENOUGH_MEMORY
+						cError = "No hay suficiente memoria disponible para completar la operaci$F3n solicitada. (C$F3digo de error de Windows)"
+					Caso 87
+						cError = "Parametro invalido."
+				FinSeleccionar
+				Devolver Falso
+			FinSi
+			Len = [LongMat(Parametros),CadLong(Str)]
+			Seleccionar cMetodo
+				Caso "PUT"
+					Si WinHttpSendRequest(eRequest,cCabecera,CadLong(cCabecera),0,0,CadLong(Datos),0) = Falso Entonces IrHacia EscanearSendRequest
+					Si WinHttpWriteData(eRequest,CadPtr(Datos),CadLong(Datos),Resultado) Entonces Salir
+				Caso "POST"
+					Si Len[0] &lt;&gt; 0 Entonces
+						Si WinHttpSendRequest(eRequest,cCabecera,CadLong(cCabecera),CadPtr(Str),Len[1],Len[1],0) = Falso Entonces
+EscanearSendRequest:
+							Seleccionar GetLastError
+								Caso ERROR_WINHTTP_CANNOT_CONNECT
+									cError = "La conexi$F3n al servidor fall$F3."
+								Caso ERROR_WINHTTP_CLIENT_AUTH_CERT_NEEDED
+									cError = "El servidor seguro HTTP requiere un certificado de cliente."
+								Caso ERROR_WINHTTP_CONNECTION_ERROR
+									cError = "La conexi$F3n con el servidor se ha restablecido o terminado, o fue encontrado con un protocolo SSL incompatibles."
+								Caso ERROR_WINHTTP_INCORRECT_HANDLE_STATE
+									cError = "La operaci$F3n solicitada no puede llevarse a cabo debido a que el mango no es suministrada en el estado correcto."
+								Caso ERROR_WINHTTP_INCORRECT_HANDLE_TYPE
+									cError = "El tipo de mango suministrado es incorrecto para esta operaci$F3n."
+								Caso ERROR_WINHTTP_INTERNAL_ERROR
+									cError = "Ha ocurrido un error interno."
+								Caso ERROR_WINHTTP_INVALID_URL
+									cError = "La URL no es v$E1lida."
+								Caso ERROR_WINHTTP_LOGIN_FAILURE
+									cError = "El intento de conexi$F3n fall$F3. Cuando se encuentra este error, el mango solicitud debe ser cerrado con WinHttpCloseHandle."
+								Caso ERROR_WINHTTP_NAME_NOT_RESOLVED
+									cError = "El nombre del servidor no se puede resolver."
+								Caso ERROR_WINHTTP_OPERATION_CANCELLED
+									cError = "La operaci$F3n fue cancelada, por lo general debido a que la manija en la que la solicitud se operava se cerr$F3 antes de que la operaci$F3n se complete."
+								Caso ERROR_WINHTTP_RESPONSE_DRAIN_OVERFLOW
+									cError = "La respuesta entrante excede un tama$F1o l$EDmite interno WinHTTP."
+								Caso ERROR_WINHTTP_SECURE_FAILURE
+									cError = "Uno o m$E1s errores se encontraron en el certificado Secure Sockets Layer (SSL) enviado por el servidor."
+								Caso ERROR_WINHTTP_SHUTDOWN
+									cError = "La ayuda de la funci$F3n WinHTTP se apaga o fue descargada."
+								Caso ERROR_WINHTTP_TIMEOUT
+									cError = "La solicitud de tiempo de espera se ha excedido."
+								Caso ERROR_WINHTTP_UNRECOGNIZED_SCHEME
+									cError = "La URL especifica un esquema distinto de "#34"http:"#34" o "#34"https:"#34"."
+								Caso ERROR_NOT_ENOUGH_MEMORY
+									cError = "No hay suficiente memoria disponible para completar la operaci$F3n solicitada."
+								Caso ERROR_INVALID_PARAMETER
+									cError = "La longitud de contenido especificado en el par$E1metro dwTotalLength no coincide con la longitud especificada en la cabecera Content-Length."
+								Caso ERROR_WINHTTP_RESEND_REQUEST
+									cError = "La aplicaci$F3n debe llamar WinHttpSendRequest de nuevo debido a un problema de redirecci$F3n o la autenticaci$F3n."
+							FinSeleccionar
+							Devolver Falso
+						FinSi
+					FinSi
+				Caso "GET"
+					Si WinHttpSendRequest(eRequest,cCabecera,CadLong(cCabecera),WINHTTP_NO_REQUEST_DATA,0,0,0) = Falso Entonces IrHacia EscanearSendRequest
+			FinSeleccionar
+			Resultado = Verd
+		FinProc
+		Proc EsperarRespuesta:Booleano
+			Si (eRequest) Entonces Resultado = WinHttpReceiveResponse(eRequest)
+		FinProc
+		Proc DatosDisponibles:Booleano
+			Si (eRequest) Entonces Resultado = WinHttpQueryDataAvailable(eRequest,eLong)
+		FinProc
+		Proc LeerDatos(LenBuffer:Entero):Cadena
+			Var Buffer[]:Byte,Len:Entero
+			Si (eRequest) Entonces
+			ReDim Buffer,LenBuffer
+			Si WinHttpReadData(eRequest,Buffer[0]@,LenBuffer,Len) Entonces
+				ReDim Preservar Buffer,Len
+				Resultado = CadDeMatByte(Buffer)
+			FinSi
+			FinSi
+		FinProc
+FinClase
+
+
+'Var HTTP:PscHTTP,Str:Cadena
+'Str = Espacio(400)
+'Crear HTTP
+
+'Eval HTTP
+'	'.Parametros = ["buscar","Bleach"]
+'	.Metodo = "GET"
+'	.Objetivo = ""
+'	.Direcci$F3n = "www.pauscal.com.ar"
+'	.Agente = "Pauscal (HTTP_POST)"
+'	Interrumpir
+'	Si .Conectar Entonces
+'		Si .Enviar Entonces
+'			Si .EsperarRespuesta Entonces
+'				Str = .LeerDatos(400)
+'				AU3_ClipPut(CadAUnicode(Str))
+'			FinSi
+'		SiNo
+'			Mensaje(.Error)
+'		FinSi
+'	SiNo
+'		Mensaje(.Error)
+'	FinSi
+'FinEval
+
+'Destruir HTTP
+</Contenido></Datos>

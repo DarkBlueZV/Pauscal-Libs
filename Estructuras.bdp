@@ -1,5 +1,5 @@
 <Datos><Nombre></Nombre><Icono>AA==</Icono><Version><Mayor>0</Mayor><Menor>0</Menor><Revision>0</Revision><AutoIncr>0</AutoIncr></Version><Info/><Contenido>'Importar "Prototipos.prp"
-
+Prototipo PscCallProc:Entero
 Prototipo pscThreadLlamada
 Prototipo pscEvNotif
 Prototipo pscEvMouse(Bot$F3n,Shift,X,Y:EnteroSig)
@@ -10,9 +10,82 @@ Prototipo pscEvTxtNavegar(Horizontal:Booleano)
 Prototipo pscEvCadNotif(hWnd,Pos:EnteroSig)
 Prototipo pscEvGrphNotif(,:Entero)
 Prototipo PscEvNing(hWnd,Msg,wParam,lParam:Entero):Entero
-
+Prototipo PscEvClic(Izquierdo:Booleano)
+Prototipo PscEvClicColumn(Columna:Entero)
 'Estruc Variante,iType,reserved,lLen:Entero
 Estruc Variante,Tipo:Word,Reservado:Booleano,Ptr:Entero
+
+Estruc URL_COMPONENTS,_
+		 dwStructSize:Entero,_
+		 lpszScheme:Cadena,_
+		 dwSchemeLength,_
+		 nScheme:Entero,_
+		 lpszHostName:Cadena,_
+		 dwHostNameLength:Entero,_
+		 nPort:Word,_
+		 lpszUserName:Cadena,_
+		 dwUserNameLength:Entero,_
+		 lpszPassword:Cadena,_
+		 dwPasswordLength:Entero,_
+		 lpszUrlPath:Cadena,_
+		 dwUrlPathLength:Entero,_
+		 lpszExtraInfo:Cadena,_
+		 dwExtraInfoLength:Entero
+
+Estruc WINHTTP_ASYNC_RESULT,_
+		 dwResult,_
+		 dwError:Entero
+
+Estruc WINHTTP_CERTIFICATE_INFO,_
+		 ftExpiry,_
+		 ftStart:FILETIME,_
+		 lpszSubjectInfo,_
+		 lpszIssuerInfo,_
+		 lpszProtocolName,_
+		 lpszSignatureAlgName,_
+		 lpszEncryptionAlgName:Cadena,_
+		 dwKeySize:Entero
+
+Estruc WINHTTP_PROXY_INFO,_
+		 dwAccessType:Entero,_
+		 lpszProxy,_
+		 lpszProxyBypass:Cadena
+
+Estruc WINHTTP_CURRENT_USER_IE_PROXY_CONFIG,_
+		 fAutoDetect:Booleano,_
+		 lpszAutoConfigUrl,_
+		 lpszProxy,_
+		 lpszProxyBypass:Cadena
+
+Estruc WINHTTP_AUTOPROXY_OPTIONS,_
+		 dwFlags,_
+		 dwAutoDetectFlags:Entero,_
+		 lpszAutoConfigUrl:Cadena,_
+		 lpvReserved,_
+		 dwReserved:Entero,_
+		 fAutoLogonIfChallenged:Booleano
+
+Estruc HTTP_VERSION_INFO,_
+		 dwMajorVersion,_
+		 dwMinorVersion:Entero
+
+Estruc MEMORYSTATUS,_
+		 dwLength,_
+		 dwMemoryLoad,_
+		 dwTotalPhys,_
+		 dwAvailPhys,_
+		 dwTotalPageFile,_
+		 dwAvailPageFile,_
+		 dwTotalVirtual,_
+		 dwAvailVirtual:Entero
+
+Estruc PARSEDURL,_
+		 cbSize:Entero,_
+		 pszProtocol:Cadena,_
+		 cchProtocol:Entero,_
+		 pszSufix:Cadena,_
+		 cchSuffix,_
+		 nScheme:Entero
 
 Estruc INITCOMMONCONTROLSEX,_
 		 dwSize,_
@@ -146,14 +219,12 @@ Estruc PSCTOOLTIP_EVENTINFO, _
 Estruc PSCFUENTE_EVENTINFO, _
   AlCambiar:pscEvNotif
 
-'Estruc PSCVISORLISTA_EVENTINFO,_
-'		 AlCliquear,_
-'		 AlCargarse,_
-'		 AlGanarFoco,_
-'		 AlPerderFoco:pscEvNotif,_
-'		 AlApretarBotonMouse,_
-'		 AlSoltarBotonMouse:pscEvMouse,_
-'		 AlMoverMouse:pscEvMouseMov
+Estruc PSCVISORLISTA_EVENTINFO,_
+		 AlCliquear,_
+		 AlDobleCliquear:PscEvClic,_
+		 AlGanarFoco,_
+		 AlPerderFoco:pscEvNotif,_
+		 AlCliquearColumna:PscEvClicColumn
 
 Estruc PSCFORM_EVENTINFO, _
   AlCliquear:pscEvNotif, _

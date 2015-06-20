@@ -72,16 +72,16 @@ Proc Ventana_ObtT$EDtulo(HWND:Entero):Cadena
 	Var Variable:Cadena,Longi:Entero
 	Longi = GetWindowTextLength(HWND)
 	Variable = Espacio(Longi)
-	Variable = IzquierdaCad(Variable,GetWindowText(HWND,Variable,Longi + 1))
-	Si CadLong(Variable) &gt; 0 Devolver Variable
+	Variable = Izquierda(Variable,GetWindowText(HWND,Variable,Longi + 1))
+	Si CadLong(Variable) &gt; 0 Entonces Resultado = Variable
 FinProc
 
 Proc Ventana_ObtT$EDtuloClase(HWND:Entero):Cadena
 	Var Variable:Cadena,Longi:Entero
 	Longi = GetWindowTextLength(HWND)
 	Variable = Espacio(Longi)
-	Variable = IzquierdaCad(Variable,GetClassName(HWND,Variable,Longi + 1))
-	Si CadLong(Variable) &gt; 0 Devolver Variable
+	Variable = Izquierda(Variable,GetClassName(HWND,Variable,Longi + 1))
+	Si CadLong(Variable) &gt; 0 Entonces Resultado = Variable
 FinProc
 
 Proc Mouse_PosInicio
@@ -122,8 +122,10 @@ Proc Teclado_Bloquear(Estado:Booleano):Booleano
    Resultado = BlockInput(Estado)
 FinProc
 
-Proc Mouse_Puntero(X,Y:Entero):Entero
-   Resultado = WindowFromPoint(X,Y)
+Proc Mouse_Puntero:Entero
+	Var Variable:POINTAPI
+	Si GetCursorPos(Variable) = 0 Entonces Salir
+   Resultado = WindowFromPoint(Variable.X,Variable.Y)
 FinProc
 
 Proc Ventana_T$EDtulo(TituloVentana,Titulo:Cadena,Opcional HWND:Entero = 0):Booleano

@@ -21,7 +21,7 @@ Proc INI_Secci$F3nes(Opcional Archivo:Cadena = "Defecto"):Cadena[]
 	lp_Result = GetPrivateProfileSectionNames(lp_String,CadLong(lp_String),&gt;Archivo = "Defecto"?c_RutaFile:Archivo)
 	Si lp_Result
 		Str = Null
-		lp_String = IzquierdaCad(lp_String,lp_Result)
+		lp_String = Izquierda(lp_String,lp_Result)
 	   Matriz = Separar(lp_String,Str)
 	SiNo
 	   Salir

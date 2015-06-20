@@ -102,7 +102,7 @@ Proc Registro_Enumerar(s_Registro:Entero,S_Secci$F3n:Cadena):Cadena[]
    s_Long = 255
 	Mientras RegEnumKeyEx(h_ValueOpen,s_Contedor,Resultado[s_Contedor],s_Long,0,0,0,0) &lt;&gt; ERROR_NO_MORE_ITEMS
 		'Si c_i =  Entonces Salir Repetir
-		Resultado[s_Contedor] = ParteCad(Resultado[s_Contedor],1,s_Long)
+		Resultado[s_Contedor] = Parte(Resultado[s_Contedor],1,s_Long)
 		s_Contedor = s_Contedor + 1
 		ReDim Preservar Resultado,s_Contedor + 1
 		s_Long = 255
@@ -124,7 +124,7 @@ Proc Registro_EnumerarValores(s_Registro:Entero,S_Secci$F3n:Cadena):Cadena[]
    Resultado[0] = Espacio(255)
    s_Long = 255
 	Mientras RegEnumValue(h_ValueOpen,s_Contedor,Resultado[s_Contedor],s_Long,0,0,0,0) &lt;&gt; ERROR_NO_MORE_ITEMS
-		Resultado[s_Contedor] = ParteCad(Resultado[s_Contedor],1,s_Long)
+		Resultado[s_Contedor] = Parte(Resultado[s_Contedor],1,s_Long)
 		s_Contedor = s_Contedor + 1 ; s_Long = 255
 		ReDim Preservar Resultado,s_Contedor + 1
 		Resultado[s_Contedor] = Espacio(255)

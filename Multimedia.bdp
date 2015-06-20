@@ -20,7 +20,7 @@ Proc Multimedia_Abrir(Referencia Archivo,Alias:Cadena,Opcional Tipo:Cadena = "MP
   tmp = Espacio(255)
   ret = Espacio(128)
   lenShort = GetShortPathName(Archivo,tmp,255)
-  ShortPath = IzquierdaCad(tmp,lenShort)
+  ShortPath = Izquierda(tmp,lenShort)
   cmdToDo = "open " + ShortPath + " type " + Tipo + " Alias " + Alias + " parent " + EntCad(hWnd) + " Style " + EntCad(&amp;40000000)
   dwReturn = mciSendString(cmdToDo, Nulo, 0, 0)
   Si (dwReturn)

@@ -4,7 +4,7 @@
 'Importar "Cadena.prp"
 'Importar "Convertir.prp"
 Importar "Utiles.prp"
-'Importar "WinCtrls.prp"
+Importar "WinCtrls.prp"
 Importar "PscBin.prp"
 
 $24ADV-
@@ -226,7 +226,7 @@ P$FAblico: ' Propiedades p$FAblicas.
 		Si hwndTooltip = 0 Entonces Salir
 		SendMessage(hwndTooltip,TTM_POPUP,0,0)
 	FinProc
-	Proc CrearToolTip(hWndPadre:Entero):Booleano ' Dibuja el tooltip.
+	Proc CargarToolTip(hWndPadre:Entero):Booleano ' Dibuja el tooltip.
 		Var Instancia,EstiloT:Entero
 		Si hWndPadre = 0 Entonces Salir
 		Si tt.lpStr = "" Entonces tt.lpStr = "Texto no establecido."

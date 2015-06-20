@@ -11,7 +11,7 @@ Proc Archivo_Crear(Referencia Ruta:Cadena):Booleano
 FinProc
 
 Proc Archivo_Abrir(Referencia Ruta:Cadena,Opcional Acceso:Cadena = "Todo",Opcional Modo:Entero = 3):Entero
-	Seleccionar CadMayus(Acceso)
+	Seleccionar Mayuscula(Acceso)
 		Caso "LECTURA-ESCRITURA"
 			Resultado = CreateFile(Ruta,&amp;80000000 Or &amp;40000000,&amp;1 Or &amp;2,Nulo,Modo,0,0)
 		Caso "LECTURA"
@@ -58,7 +58,7 @@ Proc Archivo_Buscar(Referencia Ruta:Cadena):Cadena[]
 	Var Handle:Entero
 	Var Cnt:Entero
 	Si Ruta = "" Entonces GenerarError 1,"Error: primer parametro es vacio."
-	Si DerechaCad(Ruta, 1) = "\" Entonces Ruta = Ruta + "*"
+	Si Derecha(Ruta, 1) = "\" Entonces Ruta = Ruta + "*"
 	Handle = FindFirstFile(Ruta, Data)
 	Si Handle = 0 Entonces GenerarError 0
 	Mientras FindNextFile(Handle, Data) &lt;&gt; Falso		

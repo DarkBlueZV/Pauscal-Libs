@@ -1,7 +1,9 @@
 <Datos><Nombre></Nombre><Icono>AA==</Icono><Version><Mayor>0</Mayor><Menor>0</Menor><Revision>0</Revision><AutoIncr>0</AutoIncr></Version><Info/><Contenido>$24ADV-
 $24EBC-
 
+Importar "Utiles.prp"
 Importar "WinCtrls.prp"
+
 
 Privado:
 
@@ -46,7 +48,9 @@ P$FAblico:
 
 Clase pscCajaTexto(pscTextControl), _
   Locked:Booleano, _
-  ObjNum:Entero
+  pMultilinea:Booleano, _
+  ObjNum:Entero,_
+  sCenter,sRight,sLeft,sMayus,sMinus,sVert,sOris,sBord,sAutoHor,sAutoVer,sSolosNum,sContra,sPlano:Booleano
 
   ClaseVar Eventos:PSCCAJATEXTO_EVENTINFO
 
@@ -63,11 +67,18 @@ Privado:
     Locked=Valor
     Si (ObjHwnd) SendMessage(ObjHwnd,EM_SETREADONLY,Locked,0)
   FinProc
+  Proc GetMultilinea:Booleano
+      Resultado = pMultilinea
+  FinProc
+  Proc SetMultilinea(Valor:Booleano)
+      Si (ObjHwnd) GenerarError errOpImposible
+        pMultilinea=Valor
+  FinProc
   Proc GetSelStart:Entero
     Var dwInicio,dwFinal:Entero
     Si (ObjHwnd)
       SendMessage(ObjHwnd,EM_GETSEL,dwInicio@,dwFinal@)
-      Resultado=dwInicio
+      Devolver dwInicio
     FinSi
   FinProc
   Proc SetSelStart(Valor:Entero)
@@ -77,7 +88,7 @@ Privado:
     Var dwInicio,dwFinal:Entero
     Si (ObjHwnd)
       SendMessage(ObjHwnd,EM_GETSEL,dwInicio@,dwFinal@)
-      Resultado=dwFinal-dwInicio
+      Devolver dwFinal-dwInicio
     FinSi
   FinProc
   Proc SetSelLen(Valor:Entero)
@@ -91,11 +102,115 @@ Privado:
     Var dwInicio,dwFinal:Entero
     Si (ObjHwnd)
       SendMessage(ObjHwnd,EM_GETSEL,dwInicio@,dwFinal@)
-      Si (dwFinal-dwInicio) Resultado=ParteCad(Texto,dwInicio+1,dwFinal-dwInicio)
+      Si (dwFinal-dwInicio) Resultado=Parte(Texto,dwInicio+1,dwFinal-dwInicio)
     FinSi
   FinProc
   Proc SetSelText(Valor:Cadena)
     Si (ObjHwnd) SendMessage(ObjHwnd,EM_REPLACESEL,Verd,CadPtr(Valor))
+  FinProc
+  Proc SetCenter(Valor:Booleano)
+  	Si (ObjHwnd) GenerarError errOpImposible
+		Si (sRight Or sLeft) Salir
+		sCenter = Valor
+  FinProc
+  Proc GetCenter:Booleano
+		Resultado = sCenter
+  FinProc
+  Proc SetRight(Valor:Booleano)
+  	Si (ObjHwnd) GenerarError errOpImposible
+		Si (sCenter Or sLeft) Salir ' Si es Centrado o izquierda salir.
+		sRight = Valor
+  FinProc
+  Proc GetRight:Booleano
+		Resultado = sRight
+  FinProc
+  Proc SetLeft(Valor:Booleano)
+  	Si (ObjHwnd) GenerarError errOpImposible
+		Si (sRight Or sCenter) Salir
+		sLeft = Valor
+  FinProc
+  Proc GetLeft:Booleano
+		Resultado = sLeft
+  FinProc
+  Proc SetLowerCase(Valor:Booleano)
+  	Si (ObjHwnd) GenerarError errOpImposible
+		Si (sMayus) Salir
+		sMinus = Valor
+  FinProc
+  Proc GetLowerCase:Booleano
+		Resultado = sMinus
+  FinProc
+  Proc SetUpperCase(Valor:Booleano)
+  	Si (ObjHwnd) GenerarError errOpImposible
+		Si (sMinus) Salir
+		sMayus = Valor
+  FinProc
+  Proc GetUpperCase:Booleano
+		Resultado = sMayus
+  FinProc
+  Proc GetVSCROLL:Booleano
+		Resultado = sVert
+  FinProc
+  Proc SetVSCROLL(Valor:Booleano)
+  	Si (ObjHwnd) GenerarError errOpImposible
+		sVert = Valor
+  FinProc
+  Proc GetOSCROLL:Booleano
+		Resultado = sOris
+  FinProc
+  Proc SetOSCROLL(Valor:Booleano)
+  	Si (ObjHwnd) GenerarError errOpImposible
+		sOris = Valor
+  FinProc
+  Proc ObtBorde:Booleano
+		Resultado = sBord
+  FinProc
+  Proc EstBorde(Valor:Booleano)
+	Si (ObjHwnd) GenerarError errOpImposible
+		sBord = Valor
+  FinProc
+  Proc ObtAutoHor:Booleano
+		Resultado = sAutoHor
+  FinProc
+  Proc EstAutoHor(Valor:Booleano)
+	Si (ObjHwnd) GenerarError  errOpImposible
+		Si sOris = Falso Salir
+		sAutoHor = Valor
+  FinProc
+  Proc ObtAutoVer:Booleano
+		Resultado = sAutoVer
+  FinProc
+  Proc EstAutoVer(Valor:Booleano)	
+		Si sVert = Falso Salir
+		sAutoVer = Valor
+  FinProc
+  Proc EstSoloNumeros(Valor:Booleano)
+	Si (ObjHwnd) GenerarError  errOpImposible
+		sSolosNum = Valor
+  FinProc
+  Proc ObtSoloNumeros:Booleano
+		Resultado = sSolosNum
+  FinProc
+  Proc EsContraObt:Booleano
+		Resultado = sContra
+  FinProc
+  Proc EsContraEst(Valor:Booleano)
+	Si (ObjHwnd) GenerarError errOpImposible
+		sContra = Valor
+  FinProc
+  Proc GetPlano:Booleano
+      Devolver sPlano
+  FinProc
+  Proc SetPlano(Valor:Booleano)
+      Si (ObjHwnd) GenerarError errOpImposible
+        sPlano=Valor
+  FinProc
+  Proc SetLimit(Value:Entero)
+		Si (ObjHwnd) GenerarError errOpImposible
+		SendMessage(ObjHwnd,EM_SETLIMITTEXT,Value,0)
+  FinProc
+  Proc GetLimit:Entero
+		Resultado = SendMessage(ObjHwnd,EM_GETLIMITTEXT,0,0)
   FinProc
 P$FAblico:
   'props p$FAblicos
@@ -115,13 +230,92 @@ P$FAblico:
     Lec:GetSoloLectura
     Esc:SetSoloLectura
   FinProp
+  Prop Multil$EDnea:Booleano
+    Lec:GetMultilinea
+    Esc:SetMultilinea
+  FinProp
+  Prop Contrase$F1a:Booleano
+	Lec:EsContraObt
+	Esc:EsContraEst
+  FinProp
+  Prop Centrar:Booleano
+    Lec:GetCenter
+    Esc:SetCenter
+  FinProp
+  Prop Derecha:Booleano
+	 Lec:GetRight
+	 Esc:SetRight
+  FinProp
+  Prop SoloN$FAmeros:booleano
+	Lec:ObtSoloNumeros
+	Esc:EstSoloNumeros
+  FinProp
+  Prop Izquierda:Booleano
+    Lec:GetLeft
+    Esc:SetLeft
+  FinProp
+  Prop SoloMayusculas:Booleano
+	 Lec:GetUpperCase
+	 Esc:SetUpperCase
+  FinProp
+  Prop SoloMinusculas:Booleano
+	 Lec:GetLowerCase
+	 Esc:SetLowerCase
+  FinProp
+  Prop BarraVertical:Booleano
+	Lec:GetVSCROLL
+	Esc:SetVSCROLL
+  FinProp
+  Prop BarraHorizontal:Booleano
+	Lec:GetOSCROLL
+	Esc:SetOSCROLL
+  FinProp
+  Prop AutoAjusteHorizontal:Booleano
+		Lec:ObtAutoHor
+		Esc:EstAutoHor
+  FinProp
+  Prop AutoAjusteVertical:Booleano
+		Lec:ObtAutoVer
+		Esc:EstAutoVer
+  FinProp
+  Prop Borde:Booleano
+	Lec:ObtBorde
+	Esc:EstBorde
+  FinProp
+  Prop Plano:Booleano
+    Lec:GetPlano
+    Esc:SetPlano
+  FinProp
+  'Prop PuedeDeshacer:Booleano
+	' Lec:GetUndo
+  'FinProp
   'proc p$FAblicos
+  'Proc Deshacer
+	 'Si ObjHwnd = 0 Entonces Salir
+	 'SendMessage(ObjHwnd,EM_UNDO,0,0)
+  'FinProc
+  'Proc Rehacer
+	' Si ObjHwnd = 0 Entonces Salir
+	' SendMessage(ObjHwnd,EM_REDO,0,0)
+  'FinProc
+  Proc LeerL$EDnea(Indice:Entero):Cadena
+	Si (ObjHwnd = 0) Or (pMultilinea = Falso) Entonces Salir
+	Resultado = Espacio(64000) ' L$EDmite maximo de la l$EDnea.
+	Resultado = Izquierda(Resultado,SendMessage(ObjHwnd,EM_GETLINE,Indice,CadPtr(Resultado)))
+  FinProc
+  Prop LongitudMax:Entero
+	Lec:GetLimit
+	Esc:SetLimit
+  FinProp
+  Proc Limpiar
+	 Si ObjHwnd = 0 Entonces Salir
+	 SendMessage(ObjHwnd,WM_CLEAR,0,0)
+  FinProc
   Proc CargarCajaTexto(HwndParent:Entero)
     Var Nomb:Cadena
     Si (ObjHwnd&lt;&gt;0) Salir
     Nomb="EDIT"
-    ObjHwnd=CreateWindowEx(WS_EX_NOPARENTNOTIFY+512,Nomb,iTexto,ES_AUTOHSCROLL+ES_AUTOVSCROLL+WS_BORDER+WS_CLIPSIBLINGS+WS_CHILD+WS_TABSTOP+(&gt;Habil?0:WS_DISABLED)+ _
-                          (&gt;Locked?ES_READONLY:0)+(&gt;Visib?WS_VISIBLE:0),Coords.x,Coords.y,Coords.Width,Coords.Height,HwndParent,0,GetModuleHandle(""),Nulo)
+    ObjHwnd=CreateWindowEx(WS_EX_NOPARENTNOTIFY+512,Nomb,iTexto,(&gt;sPlano?&amp;8000:0)+(&gt;sContra?ES_PASSWORD:0)+(&gt;sSolosNum?ES_NUMBER:0)+(&gt;sOris?WS_HSCROLL:0)+(&gt;sVert?WS_VSCROLL:0)+(&gt;sMayus?ES_UPPERCASE:0)+(&gt;sMinus?ES_LOWERCASE:0)+(&gt;sLeft?ES_LEFT:0)+(&gt;sRight?ES_RIGHT:0)+(&gt;sCenter?ES_CENTER:0)+(&gt;pMultilinea?ES_MULTILINE:0)+(&gt;sAutoHor?ES_AUTOHSCROLL:0)+(&gt;sAutoVer?ES_AUTOVSCROLL:0)+(&gt;sBord?WS_BORDER:0)+WS_CLIPSIBLINGS+WS_CHILD+WS_TABSTOP+(&gt;Habil?0:WS_DISABLED)+(&gt;Locked?ES_READONLY:0)+(&gt;Visib?WS_VISIBLE:0),Coords.x,Coords.y,Coords.Width,Coords.Height,HwndParent,0,GetModuleHandle(""),Nulo)
     Si (ObjHwnd=0) GenerarError errFalloWinCtrls
     Fuente.InsertarFuente(ObjHwnd)
     SetProp(ObjHwnd,"EVENT",Eventos@)

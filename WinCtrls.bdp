@@ -344,7 +344,7 @@ Privado:
   FinProc
   Proc GetVisib:Booleano
     Si (ObjHwnd) Visib=IsWindowVisible(ObjHwnd)
-    Devolver Visib
+    Resultado = Visib
   FinProc
   Proc SetVisib(Valor:Booleano)
     Visib=Valor
@@ -352,7 +352,7 @@ Privado:
   FinProc
   Proc GetHabil:Booleano
     Si (ObjHwnd) Habil=IsWindowEnabled(ObjHwnd)
-    Devolver Habil
+    Resultado = Habil
   FinProc
   Proc SetHabil(Valor:Booleano)
     Habil=Valor
@@ -452,7 +452,7 @@ FinClase
 Clase pscForm(pscWinControl), _
   Text,ClassNomb:Cadena, _
   Estad,ModalHwnd[]:Entero, _
-  Modal,iMinBtn,iMaxBtn,iSysMnu,iSizeBox,iBorder,iCenter,iOnTop:Booleano
+  Modal,iMinBtn,iMaxBtn,iSysMnu,iSizeBox,iBorder,iCenter,iOnTop,iTool:Booleano
 
   ClaseVar Eventos:PSCFORM_EVENTINFO
 
@@ -571,6 +571,13 @@ Privado:
     X=(Pantalla.Ancho\2)-(Ancho\2)
     Y=(Pantalla.Alto\2)-(Alto\2)
   FinProc
+  Proc SetTool(Valor:Booleano)
+    Si (ObjHwnd) GenerarError errOpImposible
+    iTool = Valor
+  FinProc
+  Proc GetTool:Booleano
+	 Resultado = iTool
+  FinProc
 P$FAblico:
   'props p$FAblicos
   'Prop Eventos,Events
@@ -609,6 +616,10 @@ P$FAblico:
     Lec:GetBorde
     Esc:SetBorde
   FinProp
+  Prop Herramienta:Booleano
+	 Lec:GetTool
+	 Esc:SetTool
+  FinProp
   'proc p$FAblicos
   Proc CerrarForm
     Var i:Entero
@@ -622,7 +633,7 @@ P$FAblico:
   FinProc
   Proc CrearForm
     Si (ObjHwnd) Salir
-    ObjHwnd=CreateWindowEx( (&gt;iOnTop?WS_EX_TOPMOST:0),ClassNomb,Text,WS_CLIPCHILDREN+WS_OVERLAPPED+WS_CAPTION+ _
+    ObjHwnd=CreateWindowEx( (&gt;iOnTop?WS_EX_TOPMOST:0)+(&gt;iTool?WS_EX_TOOLWINDOW:0),ClassNomb,Text,WS_CLIPCHILDREN+WS_OVERLAPPED+WS_CAPTION+ _
                           (&gt;iSysMnu?WS_SYSMENU:0)+(&gt;iMaxBtn?WS_MAXIMIZEBOX:0)+(&gt;iMinBtn?WS_MINIMIZEBOX:0)+(&gt;iBorder?WS_THICKFRAME:0) _
                           +(&gt;Habil?0:WS_DISABLED),Coords.x,Coords.y,Coords.Width,Coords.Height,0,0,Programa.hInstance,Nulo)
     Si (ObjHwnd=0) GenerarError errFalloWinCtrls

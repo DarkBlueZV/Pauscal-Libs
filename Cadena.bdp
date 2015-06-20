@@ -1,6 +1,7 @@
 <Datos><Nombre></Nombre><Icono>AA==</Icono><Version><Mayor>0</Mayor><Menor>0</Menor><Revision>0</Revision><AutoIncr>0</AutoIncr></Version><Info/><Contenido>Importar "Apis.prp"
 Importar "Constantes.prp"
 Importar "Memoria.prp"
+'Importar "Utiles.prp"
 
 $24ADV-
 $24EBC-
@@ -44,7 +45,7 @@ Proc CadLong(Referencia lpStr:Cadena):Entero
   Devolver Ptr
 FinProc
 
-Proc CompararCad(Referencia Cad1,Cad2:Cadena,Opcional Sensitivo:Booleano):Booleano
+Proc Comparar(Referencia Cad1,Cad2:Cadena,Opcional Sensitivo:Booleano):Booleano
 	Si (Cad1 = "") Entonces GenerarError 1,"[CompararCad] primer parametro es vacio."
 	Si (Cad2 = "") Entonces GenerarError 2,"[CompararCad] segundo parametro es vacio."
 	Devolver &gt;(Sensitivo)?(lstrcmpi(Cad1,Cad2)):(lstrcmp(Cad1,Cad2))
@@ -54,7 +55,7 @@ FinProc
 ' Pero como alarg$E1r la longitud de la cadena "invalidamente" podria generar errores graves.
 Proc Espacio(Longitud:Entero):Cadena
    Var Ptr:StrAndIntToArrayByte
-   Si Longitud &lt;= 0 Entonces GenerarError 1,"[Espacio] primer parametro es menor o igual a cero."
+   Si Longitud &lt;= 0 Entonces Salir
    ReDim Ptr.Bite,Longitud
    Devolver Ptr.Str
 FinProc
@@ -64,7 +65,7 @@ FinProc
 Proc Invertir(Referencia Expresi$F3n:Cadena):Cadena
 	Var Matriz1[],Matriz2[]:Byte,l,i,e:Entero
 	Si Expresi$F3n = "" Entonces GenerarError 1,"[Invertir] primer parametro es vacio."
-	Matriz1 = MatrizByteDeCadena(Expresi$F3n)
+	Matriz1 = MatByteDeCad(Expresi$F3n)
 	l = LongMat(Matriz1)
 	e = l-1
 	ReDim Matriz2,l
@@ -72,7 +73,7 @@ Proc Invertir(Referencia Expresi$F3n:Cadena):Cadena
 		Matriz2[i] = Matriz1[e]
 		e = e - 1
 	Seguir
-	Devolver CadenaDeMatrizByte(Matriz2)
+	Devolver CadDeMatByte(Matriz2)
 FinProc
 
 ' Carac ._.
@@ -92,22 +93,22 @@ Proc Ascii(Referencia lpStr:Cadena):Byte
 	Devolver Ret
 FinProc
 
-Proc IzquierdaCad(Referencia Texto:Cadena,Longit:EnteroSig):Cadena
+Proc Izquierda(Referencia Texto:Cadena,Longit:EnteroSig):Cadena
 	Si (CadLong(Texto)&lt;=Longit) Devolver Texto
-	Devolver ParteCad(Texto,1,Longit)
+	Devolver Parte(Texto,1,Longit)
 FinProc ' $BF$BFSe producen errores al salir del procedimiento?? Dios santo ....................
 
 ' DerechaCad, Procedimiento mas rapido by Yuki.
 ' Jugando con punteros jajajaj
 ' Nota: Eh probado con otras alternativas, pero esta parece ser la mas veloz, mucho mas rapido que con CopyMemory.
 ' Nota2: Creo que esta usando "MoveMemory", me preocupa un poco el uso de estos punteros.
-Proc DerechaCad(Referencia Str:Cadena,Pos1:Entero):Cadena
+Proc Derecha(Referencia Str:Cadena,Pos1:Entero):Cadena
 	Var Longi:Entero
 	Si Str = "" Entonces GenerarError 1, "[DerechaCad] primer parametro es vacio."
 	Longi = CadLong(Str)
 	Si (Pos1 &gt; Longi) Entonces GenerarError 2, "[DerechaCad] segundo parametro es mayor a la longitud del primero."
 	Si (Pos1 &lt;= 0) Entonces GenerarError 3, "[DerechaCad] segundo parametro es menor/igual a cero."
-	Devolver ParteCad(Str,Pos1)
+	Devolver Parte(Str,Pos1)
 FinProc
 
 Proc UnicodeACad(Referencia Expresi$F3n:Cadena):Cadena
@@ -119,7 +120,7 @@ FinProc
 Proc CadAUnicode(Referencia Expresion:Cadena):Cadena
 	Var Matriz1[],Matriz2[]:Byte,d,i,l:Entero
 	Si Expresion = "" Entonces Devolver ""#0
-	Matriz1 = MatrizByteDeCadena(Expresion)
+	Matriz1 = MatByteDeCad(Expresion)
 	d = LongMat(Matriz1)
 	ReDim Matriz2,(d*2)+1
 	Repetir
@@ -127,11 +128,11 @@ Proc CadAUnicode(Referencia Expresion:Cadena):Cadena
 		l = l + 1
 		i = i + 2
 	HastaQue l = d
-	Devolver CadenaDeMatrizByte(Matriz2)
+	Devolver CadDeMatByte(Matriz2)
 FinProc
 
 ' ParteCad Optimizado By Yuki
-Proc ParteCad(Referencia Texto:Cadena, Comienzo:EnteroSig, Opcional Longit:EnteroSig=-1):Cadena
+Proc Parte(Referencia Texto:Cadena, Comienzo:EnteroSig, Opcional Longit:EnteroSig=-1):Cadena
 	Var LenTxt:EnteroSig,@Ptr,@Ln:Entero
 	Si Texto = "" Entonces GenerarError 1, "[ParteCad] primer parametro es vacio."
 	LenTxt=CadLong(Texto)
@@ -147,7 +148,7 @@ FinProc
 
 ' BuscarEnCad Alternativo by Yuki
 ' No son necesarias tantas sentencias, el procedimient parteCad ya hace el trabajo.
-Proc BuscarEnCad(Referencia lpStr,lpMatch:Cadena,Opcional dwPos:Entero = 1):Entero
+Proc Buscar(Referencia lpStr,lpMatch:Cadena,Opcional dwPos:Entero = 1):Entero
 	Var i,l,r:Entero
 	Si (lpStr = "") Entonces GenerarError 1, "[BuscarEnCad] primer parametro es vacio."
 	r = CadLong(lpStr)
@@ -157,12 +158,12 @@ Proc BuscarEnCad(Referencia lpStr,lpMatch:Cadena,Opcional dwPos:Entero = 1):Ente
 	Si (dwPos &lt;= 0) Entonces GenerarError 3, "[BuscarEnCad] tercer parametro es menor/igual a cero."
 	Si (dwPos &gt; r) Entonces GenerarError 4, "[BuscarEnCad] tercer parametro es mayor a la longitud del primer parametro."
 	Contar i = dwPos a r
-		Si ParteCad(lpStr,i,l) = lpMatch Entonces Devolver i
+		Si Parte(lpStr,i,l) = lpMatch Entonces Devolver i
 	Seguir
 FinProc
 
 
-Proc BuscarEnCadInv(Referencia lpStr,lpMatch:Cadena,Opcional dwPos:Entero):Entero
+Proc BuscarInv(Referencia lpStr,lpMatch:Cadena,Opcional dwPos:Entero):Entero
   Var i,LongMatch,TotLng:Entero
   Si lpStr = "" Entonces GenerarError 1, "[BuscarEnCadInv] primer parametro es vacio."
   Si lpMatch = 0 Entonces GenerarError 2, "[BuscarEnCadInv] segundo parametro es vacio."
@@ -171,7 +172,7 @@ Proc BuscarEnCadInv(Referencia lpStr,lpMatch:Cadena,Opcional dwPos:Entero):Enter
   Si (dwPos&gt;TotLng) GenerarError 3, "[BuscarEnCadInv] tercer parametro es mayor a la longitud del primero."
   Si (dwPos=0) dwPos=TotLng
   Contar i = dwPos a 1 Dec
-    Si (ParteCad(lpStr,i,LongMatch)=lpMatch) Devolver i
+    Si (Parte(lpStr,i,LongMatch)=lpMatch) Devolver i
   Seguir
 FinProc
 
@@ -186,38 +187,38 @@ Proc Reemplazar(Referencia Str,Match,Rep:Cadena, Opcional Pos:EnteroSig):Cadena
   Si (Pos&gt;TotLng) GenerarError 3, "[Reemplazar] cuarto parametro es mayor a la longitud del primero - segundo + 1."
   Si (Pos=0) Pos=1
   Contar i = 1 a CL
-    Si ((i&gt;=Pos) And (i&lt;=TotLng) And (ParteCad(Str,i,LongMatch)=Match))
+    Si ((i&gt;=Pos) And (i&lt;=TotLng) And (Parte(Str,i,LongMatch)=Match))
       Resultado=Resultado+Rep
       i=i+LongMatch-1
     SiNo
-      Resultado=Resultado+ParteCad(Str,i,1)
+      Resultado=Resultado+Parte(Str,i,1)
     FinSi
   Seguir
 FinProc
 
 'EntreCad Bu Yuki!
-Proc EntreCad(Referencia Texto,Inicial,Final:Cadena,Opcional InicialB:Entero = 1):Cadena
-	Var Str[]:Cadena,i:Entero
-	Si (Texto = "") GenerarError 1, "[EntreCad] primer parametro es vacio."
-	Si (Inicial = "") GenerarError 2, "[EntreCad] segundo parametro es vacio."
-	Si (Final = "") GenerarError 3, "[EntreCad] tercer parametro es vacio."
-	Si (InicialB &lt;= 0) GenerarError 4, "[EntreCad] cuarto parametro es menor o igual a cero."
-	AdmErr
-		Str = Separar(Texto,Inicial,InicialB)
-		Str = Separar(Str[1],Final)
-		Devolver Str[0]
-	Controlar i
-		Seleccionar i
-			Caso errMatrizSinDim
-				GenerarError 4,"[EntreCad] matriz sin dimenci$F3n."
-			Caso errIndFueraInterv
-				GenerarError 5,"[EntreCad] indice fuera del intervalo."
-		FinSeleccionar
-	FinAdmErr
-FinProc
+'Proc EntreCad(Referencia Texto,Inicial,Final:Cadena,Opcional InicialB:Entero = 1):Cadena
+'	Var Str[]:Cadena,i:Entero
+'	Si (Texto = "") GenerarError 1, "[EntreCad] primer parametro es vacio."
+'	Si (Inicial = "") GenerarError 2, "[EntreCad] segundo parametro es vacio."
+'	Si (Final = "") GenerarError 3, "[EntreCad] tercer parametro es vacio."
+'	Si (InicialB &lt;= 0) GenerarError 4, "[EntreCad] cuarto parametro es menor o igual a cero."
+'	AdmErr
+'		Str = Separar(Texto,Inicial,InicialB)
+'		Str = Separar(Str[1],Final)
+'		Devolver Str[0]
+'	Controlar i
+'		Seleccionar i
+'			Caso errMatrizSinDim
+'				GenerarError 4,"[EntreCad] matriz sin dimenci$F3n."
+'			Caso errIndFueraInterv
+'				GenerarError 5,"[EntreCad] indice fuera del intervalo."
+'		FinSeleccionar
+'	FinAdmErr
+'FinProc
 
 ' MatrizByteDeCadena By Yuki.
-Proc MatrizByteDeCadena(Referencia Temp:Cadena,Opcional Bool:Booleano):Byte[]
+Proc MatByteDeCad(Referencia Temp:Cadena,Opcional Bool:Booleano):Byte[]
 	Var Ptr:StrAndIntToArrayByte,i:Entero
 	Si Temp = "" Entonces GenerarError 1, "[MatrizByteDeCadena] primer parametro es vacio."
 	Si Bool
@@ -237,18 +238,18 @@ Proc CadPtr(Referencia lpStr:Cadena):Entero
   Devolver Dir
 FinProc
 
-Proc CadMayus(Referencia lpStr:Cadena):Cadena
+Proc Mayuscula(Referencia lpStr:Cadena):Cadena
 	Si lpStr = "" GenerarError 1, "[CadMayus] primer parametro es vacio."
 	Devolver CadDePtr(CharUpper(CadPtr(lpStr)))
 FinProc
 
-Proc CadMinus(Referencia lpStr:Cadena):Cadena
+Proc Minuscula(Referencia lpStr:Cadena):Cadena
 	Si lpStr = "" GenerarError 1, "[CadMinus] primer parametro es vacio."
 	Devolver CadDePtr(CharLower(CadPtr(lpStr)))
 FinProc
 
 'CadenaDeMarizByte By Yuki
-Proc CadenaDeMatrizByte(Referencia ByteAry[]:Byte):Cadena
+Proc CadDeMatByte(Referencia ByteAry[]:Byte):Cadena
   Var Ptr:StrAndIntToArrayByte
   Si LongMat(ByteAry) = 0 Entonces GenerarError 1, "[CadenaDeMatrizByte] primer parametro es vacio."
   Ptr.Bite = ByteAry
@@ -268,11 +269,11 @@ FinProc
 
 Proc TruncarCadena(Referencia lpStr:Cadena):Cadena 
   Var Pos:Entero
-  Si lpStr = "" Entonces GenerarError 1, "[TruncarCadena] primer parametro es vacio."
-  Pos=BuscarEnCad(lpStr,Null)
+  Si lpStr = "" Entonces Salir
+  Pos=Buscar(lpStr,Null)
   Si (Pos=0) Devolver lpStr
   Si (Pos=1) Salir
-  Devolver IzquierdaCad(lpStr,Pos-1)
+  Devolver Izquierda(lpStr,Pos-1)
 FinProc
 
 Proc Separar(Referencia Texto,Sep:Cadena, Opcional PosInicio:Entero=1, Opcional MaxRet:Entero):Cadena[]
@@ -285,24 +286,24 @@ Proc Separar(Referencia Texto,Sep:Cadena, Opcional PosInicio:Entero=1, Opcional 
   TxtLen = CadLong(Texto)
   Borrar Resultado
   Repetir
-    Ret = BuscarEnCad(Texto,Sep,Pos+1) ' Ret = la posici$F3n del separador el separador
+    Ret = Buscar(Texto,Sep,Pos+1) ' Ret = la posici$F3n del separador el separador
     Si (Ret=0) Salir Repetir ' Si no se encuentra el separador, salir.
     Redim Preservar Resultado, Mx + 1 ' Redimenciona el resultado.
-    Resultado[Mx] = ParteCad(Texto,Pos+1,Ret-Pos-1) ' Resultado.Contador =
+    Resultado[Mx] = Parte(Texto,Pos+1,Ret-Pos-1) ' Resultado.Contador =
     Pos = Ret + SepLen - 1
     Mx = Mx + 1
     Si (MaxRet) Si (Mx = MaxRet) Salir Repetir
     Si (Pos&gt;=TxtLen) Salir Repetir
   PorSiempre
   ReDim Preservar Resultado, Mx + 1
-  Resultado[Mx] = &gt; (Pos&gt;=TxtLen) ? ("") : (ParteCad(Texto,Pos+1))
+  Resultado[Mx] = &gt; (Pos&gt;=TxtLen) ? ("") : (Parte(Texto,Pos+1))
 FinProc
 
 Proc CadObtPosMat(Referencia Ex,Del:Cadena):Entero[]
 	Var A,B:Entero
 	Repetir
 		ReDim Preservar Resultado,B + 1
-		A = BuscarEnCad(Ex,Del,A+1)
+		A = Buscar(Ex,Del,A+1)
 		Si A Entonces B = B + 1 ; SiNo ; ReDim Preservar Resultado,LongMat(Resultado) - 1 ; Salir
 		Resultado[B - 1] = A
 	PorSiempre

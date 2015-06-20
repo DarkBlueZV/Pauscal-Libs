@@ -2,9 +2,9 @@
 Importar "Cadena.prp"
 Importar "WinCtrls.prp"
 
-'Privado:
-'	Var PtrEventos,PrevHwnd:Entero
-'P$FAblico:
+Privado:
+	Var PtrEventos,PrevHwnd:Entero,@temp:NMLISTVIEW
+P$FAblico:
 
 'Const LVN_ITEMCHANGING = LVN_FIRST
 'Const LVN_ITEMCHANGED = (LVN_FIRST-1)
@@ -31,35 +31,29 @@ Importar "WinCtrls.prp"
 'Const LVGIT_UNFOLDED = 1
 
 
-'Proc pscListView_wndproc(hWnd,Msg,wParam,lParam:Entero):Entero
-'	Var @Eventos:PSCVISORLISTA_EVENTINFO
-'	Eventos@ = PtrEventos
-'	Si (Eventos@)
-'	Seleccionar Msg
-'		Caso WM_PAINT
-'			Si (Eventos.AlCargarse@) Eventos.AlCargarse
-'		Caso WM_LBUTTONDOWN,WM_RBUTTONDOWN,WM_MBUTTONDOWN
-'			Si (Eventos.AlApretarBotonMouse@) Eventos.AlApretarBotonMouse( &gt;Msg=WM_LBUTTONDOWN?1:(&gt;Msg=WM_RBUTTONDOWN?2:3) ,wParam,LoWord(lParam),HiWord(lParam))
-'	   Caso WM_LBUTTONUP,WM_RBUTTONUP,WM_MBUTTONUP
-'			Si (Eventos.AlSoltarBotonMouse@) Eventos.AlSoltarBotonMouse( &gt;Msg=WM_LBUTTONUP?1:(&gt;Msg=WM_RBUTTONUP?2:3),wParam,LoWord(lParam),HiWord(lParam))
-'	   Caso WM_LBUTTONDBLCLK,WM_RBUTTONDBLCLK,WM_MBUTTONDBLCLK
-'			Si (Eventos.AlSoltarBotonMouse@) Eventos.AlSoltarBotonMouse( &gt;Msg=WM_LBUTTONDBLCLK?1:(&gt;Msg=WM_RBUTTONDBLCLK?2:3),wParam,LoWord(lParam),HiWord(lParam))
-'	   Caso WM_MOUSEMOVE
-'			Si (Eventos.AlMoverMouse@) Eventos.AlMoverMouse(wParam,LoWord(lParam),HiWord(lParam))
-'	   Caso WM_NOTIFY
-'		'	Seleccionar wParam
-'		'	  Caso BN_CLICKED
-'		'	    Si (Eventos.AlCliquear@) Eventos.AlCliquear
-'		'	  Caso BN_SETFOCUS
-'		'	    Si (Eventos.AlGanarFoco@) Eventos.AlGanarFoco
-'		'	  Caso BN_KILLFOCUS
-'		'	    Si (Eventos.AlPerderFoco@) Eventos.AlPerderFoco
-'		'	FinSeleccionar
-'		Salir
-'    FinSeleccionar
-'   FinSi
-'    Devolver CallWindowProc(PrevHwnd,hWnd,Msg,wParam,lParam)
-'FinProc
+Proc pscListView_wndproc(hWnd,Msg,wParam,lParam:Entero):Entero
+	Var @Eventos:PSCVISORLISTA_EVENTINFO
+	Eventos@ = PtrEventos
+	Si (Eventos@)
+	Seleccionar Msg
+	   Caso WM_NOTIFY
+			Seleccionar wParam
+			  Caso LVN_COLUMNCLICK
+				 Si (Eventos.AlCliquearColumna@) temp@ = lParam ; Eventos.AlCliquearColumna(temp.iSubItem)
+			  Caso NM_CLICK,NM_RCLICK
+			    Si (Eventos.AlCliquear@) Eventos.AlCliquear(wParam=NM_RCLICK)
+			  Caso NM_DBLCLK,NM_RDBLCLK
+			    Si (Eventos.AlDobleCliquear@) Eventos.AlDobleCliquear(wParam=NM_RDBLCLK)
+			  Caso NM_SETFOCUS
+			    Si (Eventos.AlGanarFoco@) Eventos.AlGanarFoco
+			  Caso NM_KILLFOCUS
+			    Si (Eventos.AlPerderFoco@) Eventos.AlPerderFoco
+			FinSeleccionar
+		Salir
+    FinSeleccionar
+   FinSi
+   Resultado = CallWindowProc(PrevHwnd,hWnd,Msg,wParam,lParam)
+FinProc
 
 'Estruc NMHDR,_
 '		 hwndFrom,_
@@ -76,6 +70,16 @@ Importar "WinCtrls.prp"
 '		 ptAction:POINT,_
 '		 lParam,_
 '		 uKeyFlags:Entero
+
+Estruc NMLISTVIEW,_
+		 hdr,_
+		 iItem,_
+		 iSubItem,_
+		 uNewState,_
+		 uOldState,_
+		 uChanged:Entero,_
+		 ptAction:POINT,_
+		 lParam:Entero
 
 Estruc LVCOLUMN,_
 		 mask,_
@@ -253,7 +257,7 @@ Proc ListView_LeerItems(hWnd,Indice,cantColumns:Entero,Opcional Longitud:Entero 
 	AdmErr
 		Contar i = 0 a cantColumns
 			Resultado[i] = Espacio(Longitud)
-			Resultado[i] = ParteCad(Resultado[i],1,ListView_GetItemText(hWnd,Indice,i,Resultado[i],CadLong(Resultado[i])))
+			Resultado[i] = Parte(Resultado[i],1,ListView_GetItemText(hWnd,Indice,i,Resultado[i],CadLong(Resultado[i])))
 		Seguir
 	Controlar
 		Salir
@@ -422,109 +426,117 @@ Clase PscImagenLista,hWnd,XImagenLista,YImagenLista,EstiloImagenLista:Entero,Dir
 			Si DirImagenLista = "" Entonces Salir
 			ListView_SetBkImage(hWnd,Image)
 		FinProc
+		Proc Extraer
+			Image.ulFlags = LVBKIF_SOURCE_NONE
+			ListView_SetBkImage(hWnd,Image)
+		FinProc
 FinClase
 
-Clase PscVisorLista,hWndLista,EstiloLista,ColorLista,XLista,YLista,AnchoLista,AltoLista,EstiloExLista,ColorTextoLista:Entero
-	ClaseVar Columna:PscColumnas,Items:PscItems,Imagen:PscImagenLista,Fuente:pscFuente',Eventos:PSCVISORLISTA_EVENTINFO
+Clase PscVisorLista(PscWinControl),ColorLista,EstiloExLista,EstiloLista,ColorTextoLista:Entero,_
+	sChild,sReport,sSelecS,sSelec,sPlano,sBorde:Booleano
+	ClaseVar Columnas:PscColumnas,_
+				Items:PscItems,_
+				Imagen:PscImagenLista,_
+				Fuente:pscFuente,Eventos:PSCVISORLISTA_EVENTINFO
 	Privado:
-		Proc ObtenerhWnd:Entero
-			Devolver hWndLista
-		FinProc
 		Proc Inicializar
 			InitCommonControls
+			PtrEventos = Eventos@
+			Child = Verd
+			Visible = Verd
+			Reporte = Verd
+			Selecci$F3nUnica = Verd
 			EstiloExLista = LVS_EX_FULLROWSELECT Or WS_EX_CLIENTEDGE
-			EstiloLista = WS_CHILD Or LVS_REPORT Or WS_VISIBLE Or LVS_SHOWSELALWAYS Or LVS_SINGLESEL
 		FinProc
 		Proc Finalizar
-			Si hWndLista = 0 Entonces Salir
-			DestroyWindow(hWndLista)
-			Destruir Columna,Items,Imagen
+			Si ObjhWnd = 0 Entonces Salir
+			DestroyWindow(ObjhWnd)
+			Destruir Columnas,Items,Imagen
 		FinProc
 		Constructor:Inicializar
 		Destructor:Finalizar
 		Proc EstablecerEstilo(Estilo:Entero)
 			EstiloLista = Estilo
-			Si hWndLista = 0 Entonces Salir
-			SetWindowLong(hWndLista,GWL_STYLE,EstiloLista)
+			Si ObjhWnd = 0 Entonces Salir
+			SetWindowLong(ObjhWnd,GWL_STYLE,EstiloLista)
 		FinProc
 		Proc ObtenerEstilo:Entero
-			Si hWndLista = 0 Entonces Devolver EstiloLista
-			Devolver GetWindowLong(hWndLista,GWL_STYLE)
+			Si ObjhWnd = 0 Entonces Devolver EstiloLista
+			Resultado = GetWindowLong(ObjhWnd,GWL_STYLE)
 		FinProc
 		Proc EstablecerColorFondo(Color:Entero)
 			ColorLista = Color
-			Si hWndLista = 0 Entonces Salir
-			ListView_SetBkColor(hWndLista,ColorLista)
+			Si ObjhWnd = 0 Entonces Salir
+			ListView_SetBkColor(ObjhWnd,ColorLista)
 		FinProc
 		Proc ObtenerColorFondo:Entero
-			Si hWndLista = 0 Entonces Devolver ColorLista
-			Devolver ListView_GetBkColor(hWndLista)
-		FinProc
-		Proc EstablecerX(X:Entero)
-			XLista = X
-		FinProc
-		Proc ObtenerX:Entero
-			Devolver XLista
-		FinProc
-		Proc EstablecerY(Y:Entero)
-			YLista = Y
-		FinProc
-		Proc ObtenerY:Entero
-			Devolver YLista
-		FinProc
-		Proc EstablecerAlto(Alto:Entero)
-			AltoLista = Alto
-		FinProc
-		Proc ObtenerAlto:Entero
-			Devolver AltoLista
-		FinProc
-		Proc EstablecerAncho(Ancho:Entero)
-			AnchoLista = Ancho
-		FinProc
-		Proc ObtenerAncho:Entero
-			Devolver AnchoLista
+			Si ObjhWnd = 0 Entonces Devolver ColorLista
+			Resultado = ListView_GetBkColor(ObjhWnd)
 		FinProc
 		Proc EstablecerEstiloExtendido(Estilo:Entero)
 			EstiloExLista = Estilo 
-			Si hWndLista = 0 Entonces Salir
-			ListView_SetExtendedListViewStyle(hWndLista,Estilo)
+			Si ObjhWnd = 0 Entonces Salir
+			ListView_SetExtendedListViewStyle(ObjhWnd,Estilo)
 		FinProc
 		Proc ObtenerEstiloExtendido:Entero
-			Si hWndLista = 0 Entonces Devolver EstiloExLista
-			Devolver ListView_GetExtendedListViewStyle(hWndLista)
+			Si ObjhWnd = 0 Entonces Devolver EstiloExLista
+			Resultado = ListView_GetExtendedListViewStyle(ObjhWnd)
 		FinProc
 		Proc EstablecerColorTexto(Color:Entero)
 			ColorTextoLista = Color
-			Si hWnd = 0 Entonces Salir
-			ListView_SetTextColor(hWnd,Color)
+			Si ObjhWnd = 0 Entonces Salir
+			ListView_SetTextColor(ObjhWnd,Color)
 		FinProc
 		Proc ObtenerColorTexto:Entero
-			Si hWnd = 0 Entonces Devolver ColorTextoLista
-			Devolver ListView_GetTextColor(hWnd)
+			Si ObjhWnd = 0 Entonces Devolver ColorTextoLista
+			Resultado = ListView_GetTextColor(ObjhWnd)
+		FinProc
+		Proc EstablecerSelecci$F3nUnica(Valor:Booleano)
+			sSelec = Valor
+		FinProc
+		Proc ObtenerSelecci$F3nUnica:Booleano
+			Resultado = sSelec
+		FinProc
+		Proc EstablecerReporte(Valor:Booleano)
+			sReport = Valor
+		FinProc
+		Proc ObtenerReporte:Booleano
+			Resultado = sReport
+		FinProc
+		Proc EstablecerChild(Valor:Booleano)
+			sChild = Valor
+		FinProc
+		Proc ObtenerChild:Booleano
+			Resultado = sChild
+		FinProc
+		Proc EstablecerPlano(Valor:Booleano)
+			sPlano = Valor
+		FinProc
+		Proc ObtenerPlano:Booleano
+			Resultado = sPlano
+		FinProc
+		Proc EstablecerBorde(Valor:Booleano)
+			sBorde = Valor
+		FinProc
+		Proc ObtenerBorde:Booleano
+			Resultado = sBorde
 		FinProc
 	P$FAblico:
 		Prop ColorTexto:Entero
 			Lec:ObtenerColorTexto
 			Esc:EstablecerColorTexto
 		FinProp
-		Prop X:Entero
-			Lec:ObtenerX
-			Esc:EstablecerX
+		Prop Selecci$F3nUnica:Booleano
+			Esc:EstablecerSelecci$F3nUnica
+			Lec:ObtenerSelecci$F3nUnica
 		FinProp
-		Prop Y:Entero
-			Lec:ObtenerY
-			Esc:EstablecerY
+		Prop Reporte:Booleano
+			Lec:ObtenerReporte
+			Esc:EstablecerReporte
 		FinProp
-		Prop Alto:Entero
-			Lec:ObtenerAlto
-			Esc:EstablecerAlto
-		FinProp
-		Prop Ancho:Entero
-			Lec:ObtenerAncho
-			Esc:EstablecerAncho
-		FinProp
-		Prop hWnd:Entero
-			Lec:ObtenerhWnd
+		Prop Child:Booleano
+			Lec:ObtenerChild
+			Esc:EstablecerChild
 		FinProp
 		Prop Estilo:Entero
 			Lec:ObtenerEstilo
@@ -538,18 +550,26 @@ Clase PscVisorLista,hWndLista,EstiloLista,ColorLista,XLista,YLista,AnchoLista,Al
 			Lec:ObtenerColorFondo
 			Esc:EstablecerColorFondo
 		FinProp
-		Proc Actualizar:Booleano
-			Si hWndLista = 0 Entonces Salir
-			Devolver UpdateWindow(hWndLista)
-		FinProc
-		Proc CrearVisorLista(hWndPadre:Entero)
-			hWndLista = CreateWindowEx(0,WC_LISTVIEW,NULL,EstiloLista,XLista,YLista,AnchoLista,AltoLista,hWndPadre,0,GetModuleHandle(""),Nulo)
-			Si hWndLista = 0 Entonces Salir
-			ListView_SetExtendedListViewStyle(hWndLista,EstiloExLista)
-			Si ColorLista Entonces ListView_SetBkColor(hWndLista,EstiloLista)
-			Si ColorTextoLista Entonces ListView_SetTextColor(hWnd,ColorTextoLista)
-			Crear Columna(hWndLista),Items(hWndLista),Imagen(hWndLista,XLista,YLista),Fuente
-			Fuente.InsertarFuente(hWndLista)
+		Prop Plano:Booleano
+			Lec:ObtenerPlano
+			Esc:EstablecerPlano
+		FinProp
+		Prop Borde:Booleano
+			Lec:ObtenerBorde
+			Esc:EstablecerBorde
+		FinProp
+		Proc CargarVisorLista(hWndPadre:Entero)
+			EstiloLista = (&gt;sBorde?WS_BORDER:0)+(&gt;sPlano?&amp;8000:0)+(&gt;sChild?WS_CHILD:0)+(&gt;sReport?LVS_REPORT:0)+(&gt;Habil?0:WS_DISABLED)+(&gt;Visib?WS_VISIBLE:0)+LVS_SHOWSELALWAYS+(&gt;sSelec?LVS_SINGLESEL:0)
+			ObjHwnd = CreateWindowEx(0,WC_LISTVIEW,NULL,EstiloLista,Coords.x,Coords.y,Coords.Width,Coords.Height,hWndPadre,0,GetModuleHandle(""),Nulo)
+			Si ObjHwnd = 0 Entonces Salir
+			ListView_SetExtendedListViewStyle(ObjHwnd,EstiloExLista)
+			Si ColorLista Entonces ListView_SetBkColor(ObjHwnd,EstiloLista)
+			Si ColorTextoLista Entonces ListView_SetTextColor(ObjHwnd,ColorTextoLista)
+			Crear Columnas(ObjHwnd),Items(ObjHwnd),Imagen(ObjHwnd,Coords.x,Coords.y),Fuente
+			Fuente.InsertarFuente(ObjHwnd)
+			PrevHwnd = SetWindowLong(ObjHwnd,-4,pscListView_wndproc@)
+			ObtenerDC
+			UpdateWindow(ObjHwnd)
 		FinProc
 FinClase
 </Contenido></Datos>

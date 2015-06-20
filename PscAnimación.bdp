@@ -1,0 +1,155 @@
+<Datos><Nombre></Nombre><Icono>AA==</Icono><Version><Mayor>0</Mayor><Menor>0</Menor><Revision>0</Revision><AutoIncr>0</AutoIncr></Version><Info/><Contenido>Importar "PscBin.prp"
+Importar "WinCtrls.prp"
+
+Proc Animate_Create(w,i,s,hI:Entero):Entero
+	Resultado = CreateWindow(ANIMATE_CLASS,NULL,s,0,0,0,0,w,i,hI,0)
+FinProc
+
+Proc Animate_Open(w:Entero,Referencia f:Cadena):Booleano
+	Resultado = SendMessage(w,ACM_OPEN,0,CadPtr(f))
+FinProc
+
+Proc Animate_OpenEx(w,h:Entero,Referencia s:Cadena):Booleano
+	Resultado = SendMessage(w,ACM_OPEN,h,CadPtr(s))
+FinProc
+
+Proc Animate_Play(w,f,t,r:Entero):Booleano
+	Resultado = SendMessage(w,ACM_PLAY,(r),MAKELONG(f,t))
+FinProc
+
+Proc Animate_Stop(w:Entero):Booleano
+	Resultado = SendMessage(w,ACM_STOP,0,0)
+FinProc
+
+Proc Animate_Close(w:Entero)
+	Animate_Open(w,NULL)
+FinProc
+
+Proc Animate_Seek(w,f:Entero)
+	Animate_Play(w,f,f,1)
+FinProc
+
+Proc Animate_IsPlaying(w:Entero):Booleano
+	Resultado = SendMessage(w,ACM_ISPLAYING,0,0)
+FinProc
+
+Clase PscAnimaci$F3n(PscWinControl),sCenter,sTimer,sTrans,sAuto,sChild,sBord,sPlano:Booleano
+	Privado:
+		Proc Inicializar
+			Alto=25
+			Ancho=81
+			Color=COLOR_BTNFACE+&amp;1000000
+			Habilitado=Verd
+			Visible=Verd
+			Child=Verd
+			Borde=Verd
+		FinProc
+		Proc Finalizar
+			Si (ObjHwnd=0) Salir
+			DestroyWindow(ObjHwnd)
+			Animate_Close(ObjHwnd)
+			ObjHwnd=0
+		FinProc
+		Constructor:Inicializar
+		Destructor:Finalizar
+		Proc EstablecerCentrar(Centrar:Booleano)
+			Si ObjhWnd Salir
+			sCenter = Centrar
+		FinProc
+		Proc ObtenerCentrar:Booleano
+			Resultado = sCenter
+		FinProc
+		Proc EstablecerTransparente(Transparente:Booleano)
+			Si ObjhWnd Salir
+			sTrans = Transparente
+		FinProc
+		Proc ObtenerTransparente:Booleano
+			Resultado = sTrans
+		FinProc
+		Proc EstablecerTemporizador(Temporizador:Booleano)
+			Si ObjhWnd Salir
+			sTimer = Temporizador
+		FinProc
+		Proc ObtenerTemporizador:Booleano
+			Resultado = sTimer
+		FinProc
+		Proc EstablecerAutoPlay(AutoPlay:Booleano)
+			Si ObjhWnd Salir
+			sAuto = AutoPlay
+		FinProc
+		Proc ObtenerAutoPlay:Booleano
+			Resultado = sAuto
+		FinProc
+		Proc EstablecerBorde(Borde:Booleano)
+			Si ObjhWnd Salir
+			sBord = Borde
+		FinProc
+		Proc ObtenerBorde:Booleano
+			Resultado = sBord
+		FinProc
+		Proc EstablecerChild(Child:Booleano)
+			Si ObjhWnd Salir
+			sChild = Child
+		FinProc
+		Proc ObtenerChild:Booleano
+			Resultado = sChild
+		FinProc
+		Proc EstablecerPlano(Plano:Booleano)
+			Si ObjhWnd Salir
+			sPlano = Plano
+		FinProc
+		Proc ObtenerPlano:Booleano
+			Resultado = sPlano
+		FinProc
+		Proc ObtenerReproduciendo:Booleano
+			Si ObjHwnd Entonces Resultado = Animate_IsPlaying(ObjHwnd)
+		FinProc
+	P$FAblico:
+		Prop Borde:Booleano
+			Lec:ObtenerBorde
+			Esc:EstablecerBorde
+		FinProp
+		Prop Child:Booleano
+			Lec:ObtenerChild
+			Esc:EstablecerChild
+		FinProp
+		Prop Transparente:Booleano
+			Lec:ObtenerTransparente
+			Esc:EstablecerTransparente
+		FinProp
+		Prop Temporizador:Booleano
+			Lec:ObtenerTemporizador
+			Esc:EstablecerTemporizador
+		Finprop
+		Prop Reproduciendo:Booleano
+			Lec:ObtenerReproduciendo
+		FinProp
+		Prop AutoPlay:Booleano
+			Lec:ObtenerAutoPlay
+			Esc:EstablecerAutoPlay
+		FinProp
+		Prop Centrar:Booleano
+			Lec:ObtenerCentrar
+			Esc:EstablecerCentrar
+		FinProp
+		Prop Plano:Booleano
+			Lec:ObtenerPlano
+			Esc:EstablecerPlano
+		FinProp
+		Proc Detener
+			Si ObjHwnd Entonces Animate_Stop(ObjHwnd)
+		FinProc
+		Proc Abrir(Referencia ArchivoPath:Cadena)
+			Si ObjHwnd Entonces Animate_Open(ObjHwnd,ArchivoPath)
+		FinProc
+		Proc Reproducir(Opcional De,Hasta:Entero = -1)
+			Si ObjHwnd Entonces Animate_Play(ObjHwnd,De,Hasta,-1)
+		FinProc
+		Proc CargarAnimaci$F3n(hWndParent:Entero)
+			ObjHwnd = Animate_Create(hWndParent,0,(&gt;Habil?0:WS_DISABLED)+(&gt;Visib?WS_VISIBLE:0)+(&gt;sPlano?&amp;8000:0)+(&gt;sBord?WS_BORDER:0)+(&gt;sChild?WS_CHILD:0)+(&gt;sCenter?ACS_CENTER:0)+(&gt;sTrans?ACS_TRANSPARENT:0)+(&gt;sTimer?ACS_TIMER:0)+(&gt;sAuto?ACS_AUTOPLAY:0),GetModuleHandle(""))
+			SetWindowPos(ObjHwnd,hWndParent,Coords.x,Coords.y,Coords.Width,Coords.Height,SWP_NOZORDER Or SWP_DRAWFRAME)
+			Si Visible Entonces ShowWindow(ObjHwnd,SW_SHOW)
+			UpdateWindow(ObjHwnd)
+		FinProc
+FinClase
+</Contenido></Datos>

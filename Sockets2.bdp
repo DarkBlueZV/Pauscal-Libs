@@ -1,5 +1,5 @@
 <Datos><Nombre></Nombre><Icono>AA==</Icono><Version><Mayor>0</Mayor><Menor>0</Menor><Revision>0</Revision><AutoIncr>0</AutoIncr></Version><Info/><Contenido>Importar "Utiles.prp"
-
+Importar "PscBin.prp"
 $24ADV-
 
 ' Codeado por Yuki.
@@ -103,7 +103,7 @@ Proc Socket_Recibir(Socket:Entero,Opcional Tama$F1o:Entero = 1024):Cadena
 	Resultado = Espacio(Tama$F1o)
 	ret = recv(Socket,CadPtr(Resultado), Tama$F1o, 0)
 	Si ret &lt;= 0 Entonces GenerarError 1,"[Socket_Recibir] error al recibir datos."
-	Devolver IzquierdaCad(Resultado,ret)
+	Devolver Izquierda(Resultado,ret)
 FinProc
 
 Proc Socket_Aceptar(Sckt:Entero):Entero

@@ -157,7 +157,7 @@ P$FAblico:
 		buff = Espacio(n)
 		ret = recv(handle, CadPtr(buff), n, 0)
 		Si ret &lt;= 0 Entonces GenerarError errSoquet
-		Resultado = IzquierdaCad(buff,ret)
+		Resultado = Izquierda(buff,ret)
 	FinProc
 
 	Proc LeerLn():Cadena

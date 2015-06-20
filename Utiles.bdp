@@ -1,4 +1,5 @@
 <Datos><Nombre></Nombre><Icono>AA==</Icono><Version><Mayor>0</Mayor><Menor>0</Menor><Revision>0</Revision><AutoIncr>0</AutoIncr></Version><Info/><Contenido>Importar "Convertir.prp"
+Importar "Estructuras.prp"
 
 $24EBC-
 $24ADV-
@@ -7,7 +8,7 @@ Privado:
 
 Const DivVal=1000000000
 Var Time[],Ptr:Entero
-Prototipo EjecutarProc:Entero
+
 Uni$F3n Union, Union_e:Entero, Union_b[4]:Byte, Union_w[2]:Word
 
 P$FAblico:
@@ -23,8 +24,8 @@ Proc Ejecutar(Referencia Ruta_Programa:Cadena,Opcional Parametros:Cadena = "",Op
    Devolver ShellExecute(0,"open",Ruta_Programa,Parametros,"",Modo)
 FinProc
 
-Proc No(Expresi$F3n:Booleano):Booleano
-	Devolver Neg(Expresi$F3n)
+Proc Porcentaje(Valor,De:Entero):Entero
+	Resultado = (Valor * De) \ 100
 FinProc
 
 'EsPar By Yuki!
@@ -130,7 +131,7 @@ FinProc
 Proc Semilla(Opcional Longi:Entero = 3):Entero
 	Var h_Time,h_Left,h_LeftB:Cadena,i:Entero
 	h_Time = EntCad(Tiempo)
-	h_Left = DerechaCad(h_Time,Longi)
+	h_Left = Derecha(h_Time,Longi)
 	Resultado = CadEnt(h_Left)
 FinProc
 
@@ -157,8 +158,8 @@ Proc HiloCrear(Ptr:Entero,Opcional Datos:Entero)
 	SHCreateThread(Ptr,Datos,&amp;00000001,0)
 FinProc
 
-Proc LlamarDLL2(Referencia Libreria,Funci$F3n:Cadena,Referencia Parametros[]:Entero):Entero
-	Var Matriz[]:Byte,EjecutarProc:EjecutarProc
+Proc Llamar2(Referencia Libreria,Funci$F3n:Cadena,Referencia Parametros[]:Entero):Entero
+	Var Matriz[]:Byte,EjecutarProc:PscCallProc
 	Var PtrProc,PtrDll:Entero ' Punteros a las Dll y Procedimientos
 	Var i:EnteroSig,@Ptr:Union ' i Contador, Ptr es un puntero a la uni$F3n.
 	ReDim Matriz, 60415
@@ -189,24 +190,31 @@ Proc LlamarDLL2(Referencia Libreria,Funci$F3n:Cadena,Referencia Parametros[]:Ent
 	Resultado = EjecutarProc()
 FinProc
 
-Proc LLamarDLL(Referencia Lib,Func:Cadena,Parametros[]:Entero):Entero
-	Var Matriz[]:Byte,Ptr,i:Entero,l:EjecutarProc
+Proc LLamar(Referencia Lib,Func:Cadena,Parametros[]:Entero,Opcional Cdecl:Booleano):Entero
+	Var ShellCode[]:Byte,Ptr,i:Entero,l:PscCallProc
 	Ptr = LoadLibrary(Lib)
-	Si i = 0 Entonces GenerarError 0, "Error al cargar la libreria."
+	Si Ptr = 0 Entonces GenerarError 1, "Error al cargar la libreria."
 	Ptr = GetProcAddress(Ptr,Func)
-	Si i = 0 Entonces GenerarError 1, "Funci$F3n no encontrada."
-	FreeLibrary(Ptr)
-	Contar i = L$EDmite(Parametros) a 0 Dec
-		'Si i = (-1) Entonces Salir Contar
-		Matriz = Matriz + [&amp;68] + EntMatByte(Parametros[i]) ' PUSH Parametro[i]
-	Seguir
-	Matriz = Matriz + [&amp;B8] + EntMatByte(Ptr) + [&amp;FF,&amp;D0,&amp;C3] ' Push CALL Funci$F3n
-	l@ = Matriz[0]@ ; Devolver l
+	Si Ptr = 0 Entonces GenerarError 2, "Funci$F3n no encontrada."
+	FreeLibrary(Ptr) ; i = LongMat(Parametros)
+	AdmErr
+		'ShellCode = [&amp;50]
+		Repetir
+			i = i - 1
+			ShellCode = ShellCode + [&amp;68] + EntMatByte(Parametros[i]) ' PUSH Parametro[i]
+		HastaQue i &lt;= 0
+		ShellCode = ShellCode + [&amp;B8] + EntMatByte(Ptr) + [&amp;FF,&amp;D0] + (&gt;(Cdecl)?[&amp;5C,&amp;C2,&amp;10,&amp;00]:[&amp;C2]) ' Push CALL Funci$F3n
+		l@ = ShellCode[0]@ ; Resultado = l
+	Controlar i
+		Mensaje("Error desconocido." + CrLf + "Valor del error: " + EntCad(i),"Error",PscCr$EDtico)
+	FinAdmErr
 FinProc
 
 Proc PtrMat(Referencia Matriz[]:Entero,Opcional Indice:Entero):Entero
 	Devolver Matriz[Indice]@
 FinProc
 
-
+Proc CreateWindow(Referencia a,b:Cadena,c,d,e,f,g,h,i,j,k:Entero):Entero
+	Resultado = CreateWindowEx(0,a,b,c,d,e,f,g,h,i,j,k)
+FinProc
 </Contenido></Datos>
