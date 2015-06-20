@@ -135,7 +135,6 @@ Clase PscHTTP,cUrl,cAgente,cMetodo,cObjetivo,cError,cCabecera,cVersi$F3n:Cadena,
 		Proc Enviar(Opcional Datos:Cadena):Entero
 			Var Len[],i:Entero,Str:Cadena
 			Si LongMat(Parametros) Entonces
-				Str = "?"
 				Repetir
 					Str = Str + Parametros[i] + "=" + Parametros[i+1] + "&amp;"
 					i = i + 2
