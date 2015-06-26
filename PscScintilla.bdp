@@ -1,0 +1,504 @@
+<Datos><Nombre></Nombre><Icono>AA==</Icono><Version><Mayor>0</Mayor><Menor>0</Menor><Revision>0</Revision><AutoIncr>0</AutoIncr></Version><Info/><Contenido>Importar "WinCtrls.prp"
+Importar "ConstScintilla.prp"
+
+Clase ScintillaPopupMenu,ObjHwnd:Entero ' Popupmenu de scintilla.
+	Privado:
+		Proc Enviar(Mensaje:Entero,Opcional Parametro1,Parametro2:Entero):Entero ' Envia un mensaje al control Scintilla.
+			SendMessage(ObjHwnd,Mensaje,Parametro1,Parametro2)
+		FinProc
+		Proc Inicializar(hWndParent:Entero)
+			ObjHwnd = hWndParent
+		FinProc
+		Constructor:Inicializar
+		Proc EstUsar(Valor:Booleano)
+			Enviar(SCI_USEPOPUP,Valor)
+		FinProc
+	P$FAblico:
+		Prop Usar:Booleano
+			Esc:EstUsar
+		FinProp
+FinClase
+
+Clase ScintillaMargen,ObjHwnd,eLen:Entero ' Editor de Margen.
+	ClaseVar Indice,L$EDnea,Longitud:Entero
+	Privado:
+		Proc Enviar(Mensaje:Entero,Opcional Parametro1,Parametro2:Entero):Entero ' Envia un mensaje al control Scintilla.
+			SendMessage(ObjHwnd,Mensaje,Parametro1,Parametro2)
+		FinProc
+		Proc Inicializar(hWndParent:Entero) ' &lt; Se inicializa con un puntero a la ventana creada.
+			ObjHwnd = hWndParent
+			Longitud = 1000
+		FinProc
+		Constructor:Inicializar
+		Proc EstablecerMargenTipo(Tipo:Entero)
+			Enviar(SCI_SETMARGINTYPEN,Indice,Tipo)
+		FinProc
+		Proc ObtenerMargenTipo(Margen:Entero):Entero
+			Resultado = Enviar(SCI_GETMARGINTYPEN,Indice)
+		FinProc
+		Proc EstablecerAnchura(PixelsAncho:Entero)
+			Enviar(SCI_SETMARGINWIDTHN,Indice,PixelsAncho)
+		FinProc
+		Proc ObtenerAnchura:Entero
+			Resultado = Enviar(SCI_GETMARGINWIDTHN,Indice)
+		FinProc
+		Proc ObtenerMascara:Entero
+			Resultado = Enviar(SCI_GETMARGINMASKN,Indice)
+		FinProc
+		Proc EstablecerMascara(Valor:Entero)
+			Enviar(SCI_SETMARGINMASKN,Indice,Valor)
+		FinProc
+		Proc ObtCursor:Entero
+			Resultado = Enviar(SCI_GETMARGINCURSORN,Indice)
+		FinProc
+		Proc EstCursor(Valor:Entero)
+			Enviar(SCI_SETMARGINCURSORN,Indice,Valor)
+		FinProc
+		Proc ObtSensible:Booleano
+			Resultado = Enviar(SCI_GETMARGINSENSITIVEN,Indice)
+		FinProc
+		Proc EstSensible(Valor:Booleano)
+			Enviar(SCI_SETMARGINSENSITIVEN,Valor)
+		FinProc
+		Proc EstIzq(Valor:Entero)
+			Enviar(SCI_SETMARGINLEFT,,Valor)
+		FinProc
+		Proc ObtIzq:Entero
+			Resultado = Enviar(SCI_GETMARGINLEFT)
+		FinProc
+		Proc EstDer(Valor:Entero)
+			Enviar(SCI_SETMARGINRIGHT,,Valor)
+		FinProc
+		Proc ObtDer:Entero
+			Resultado = Enviar(SCI_GETMARGINRIGHT)
+		FinProc
+		Proc EstColor(Valor:Entero)
+			Enviar(SCI_SETFOLDMARGINCOLOUR,1,Valor) 
+		FinProc
+		Proc EstTexto(Valor:Cadena)
+			eLen = CadLong(Valor)
+			Enviar(SCI_MARGINSETTEXT,Indice,CadPtr(Valor))
+		FinProc
+		Proc ObtTexto:Cadena
+			Resultado = Espacio(eLen)
+			Enviar(SCI_MARGINSETTEXT,Indice,CadPtr(Resultado))
+		FinProc
+		Proc EstEstilo(Valor:Entero)
+			Enviar(SCI_MARGINSETSTYLE,L$EDnea,Valor)
+		FinProc
+		Proc ObtEstilo:Entero
+			Resultado = Enviar(SCI_MARGINGETSTYLE,L$EDnea)
+		FinProc
+		Proc EstEstilos(Valor:Cadena)
+			Enviar(SCI_MARGINSETSTYLES,L$EDnea,CadPtr(Valor))
+		FinProc
+		Proc ObtEstilos:Cadena
+			Resultado = Espacio(Longitud)
+			Enviar(SCI_MARGINGETSTYLES,L$EDnea,CadPtr(Resultado))
+		FinProc
+	P$FAblico:
+		Prop Tipo:Entero
+			Esc:EstablecerMargenTipo
+			Lec:ObtenerMargenTipo
+		FinProp
+		Prop Ancho:Entero
+			Lec:ObtenerAnchura
+			Esc:EstablecerAnchura
+		FinProp
+		Prop Mascara:Entero
+			Lec:ObtenerMascara
+			Esc:EstablecerMascara
+		FinProp
+		Prop Cursor:Entero
+			Lec:ObtCursor
+			Esc:EstCursor
+		FinProp
+		Prop Sensible:Booleano
+			Lec:ObtSensible
+			Esc:EstSensible
+		FinProp
+		Prop Izquierda:Entero
+			Lec:ObtIzq
+			Esc:EstIzq
+		FinProp
+		Prop Derecha:Entero
+			Lec:ObtDer
+			Esc:EstDer
+		FinProp
+		Prop Color:Entero
+			Esc:EstColor
+		FinProp
+		Prop Texto:Cadena
+			Esc:EstTexto
+			Lec:ObtTexto
+		FinProp
+		Prop Estilo:Entero
+			Lec:ObtEstilo
+			Esc:EstEstilo
+		FinProp
+		Prop Estilos:Cadena
+			Lec:ObtEstilos
+			Esc:EstEstilos
+		FinProp
+		Proc TextoLimpiar
+			Enviar(SCI_MARGINTEXTCLEARALL)
+		FinProc
+FinClase
+
+Clase ScintillaTip,ObjHwnd:Entero ' Tooltip scintilla.
+	Privado:
+		Proc Enviar(Mensaje:Entero,Opcional Parametro1,Parametro2:Entero):Entero ' Envia un mensaje al control Scintilla.
+			SendMessage(ObjHwnd,Mensaje,Parametro1,Parametro2)
+		FinProc
+		Proc Inicializar(hWndParent:Entero) ' Se inicializa con un puntero a la ventana creada.
+			ObjHwnd = hWndParent
+		FinProc
+		Constructor:Inicializar
+		Proc ObtenerPosici$F3nInicio:Entero
+			Resultado = Enviar(SCI_CALLTIPPOSSTART)
+		FinProc
+		Proc EstablecerPosici$F3nInicio(Valor:Entero)
+			Enviar(SCI_CALLTIPSETPOSSTART,Valor)
+		FinProc
+		Proc EstablecerColorFondo(Color:Entero)
+			Enviar(SCI_CALLTIPSETBACK,Color) 
+		FinProc
+		Proc EstablecerColorFrente(Color:Entero)
+			Enviar(SCI_CALLTIPSETFORE,Color)
+		FinProc
+		Proc UsarEstilo(Estilo:Entero)
+			Enviar(SCI_CALLTIPUSESTYLE,Estilo)
+		FinProc
+		Proc EstablecerColorResaltador(Color:Entero)
+			Enviar(SCI_CALLTIPSETFOREHLT,Color)
+		FinProc
+	P$FAblico:
+		Prop Estilo:Entero
+			Esc:UsarEstilo
+		FinProp
+		Prop Posici$F3nInicio:Entero
+			Lec:ObtenerPosici$F3nInicio
+			Esc:EstablecerPosici$F3nInicio
+		FinProp
+		Prop ColorFondo:Entero
+			Esc:EstablecerColorFondo
+		FinProp
+		Prop ColorFrente:Entero
+			Esc:EstablecerColorFrente
+		FinProp
+		Prop ColorResaltador:Entero
+			Esc:EstablecerColorResaltador
+		FinProp
+		Proc Mostrar(PosInicio:Entero,Referencia Mensaje:Cadena)
+			Enviar(SCI_CALLTIPSHOW,PosInicio,CadPtr(Mensaje)) 
+		FinProc
+		Proc Cancelar
+			Enviar(SCI_CALLTIPCANCEL)
+		FinProc
+		Proc Activado:Booleano
+			Resultado = Enviar(SCI_CALLTIPACTIVE)
+		FinProc
+		Proc EstablecerResaltador(ResaltadorInicio,ResaltadorFin:Entero)
+			Enviar(SCI_CALLTIPSETHLT,ResaltadorInicio,ResaltadorFin)
+		FinProc
+		Proc EstablecerPosici$F3n(Anterior:Booleano)
+			Resultado = Enviar(SCI_CALLTIPSETPOSITION,Anterior)
+		FinProc
+FinClase
+
+Clase ScintillaAnotaci$F3n,ObjHwnd,eLen,eLen2:Entero ' Anotaciones.
+	ClaseVar L$EDnea:Entero
+	Privado:
+		Proc Enviar(Mensaje:Entero,Opcional Parametro1,Parametro2:Entero):Entero ' Envia un mensaje al control Scintilla.
+			SendMessage(ObjHwnd,Mensaje,Parametro1,Parametro2)
+		FinProc
+		Proc Inicializar(hWndParent:Entero) ' Se inicializa con un puntero a la ventana creada.
+			ObjHwnd = hWndParent
+		FinProc
+		Constructor:Inicializar
+		Proc EstablecerVisible(Visible:Entero)
+			Enviar(SCI_ANNOTATIONSETVISIBLE,Visible)
+		FinProc
+		Proc ObtenerVisible:Entero
+			Resultado = Enviar(SCI_ANNOTATIONGETVISIBLE)
+		FinProc
+		Proc EstablecerTexto(Texto:Cadena)
+			eLen = CadLong(Texto)
+			Enviar(SCI_ANNOTATIONSETTEXT,L$EDnea,CadPtr(Texto)) 
+		FinProc
+		Proc ObtenerTexto:Cadena
+			Resultado = Espacio(eLen)
+			Enviar(SCI_ANNOTATIONGETTEXT,L$EDnea,CadPtr(Resultado))
+		FinProc
+		Proc EstablecerEstilo(Estilo:Entero)
+			Enviar(SCI_ANNOTATIONSETSTYLE,L$EDnea,Estilo)
+		FinProc
+		Proc ObtenerEstilo:Entero
+			Resultado = Enviar(SCI_ANNOTATIONGETSTYLE,L$EDnea)
+		FinProc
+		Proc EstablecerEstilos(Estilo:Cadena)
+			eLen2 = CadLong(Estilo)
+			Enviar(SCI_ANNOTATIONSETSTYLES,L$EDnea,CadPtr(Estilo))
+		FinProc
+		Proc ObtenerEstilos:Cadena
+			Resultado = Espacio(eLen2)
+			Enviar(SCI_ANNOTATIONGETSTYLE,L$EDnea,CadPtr(Resultado))
+		FinProc
+	P$FAblico:
+		Prop Visible:Entero
+			Lec:ObtenerVisible
+			Esc:EstablecerVisible
+		FinProp
+		Prop Texto:Cadena
+			Lec:ObtenerTexto
+			Esc:EstablecerTexto
+		FinProp
+		Prop Estilo:Entero
+			Esc:EstablecerEstilo
+			Lec:ObtenerEstilo
+		FinProp
+		Prop Estilos:Cadena
+			Esc:EstablecerEstilos
+			Lec:ObtenerEstilos
+		FinProp
+		Proc ObtenerL$EDneas:Entero
+			Resultado = Enviar(SCI_ANNOTATIONGETLINES,L$EDnea)
+		FinProc
+		Proc AlojarEstiloEstendido
+			Enviar(SCI_ALLOCATEEXTENDEDSTYLES)
+		FinProc
+		Proc EstablecerEstiloOffset(Estilo:Entero)
+			Enviar(SCI_ANNOTATIONSETSTYLEOFFSET,Estilo)
+		FinProc
+		Proc ObtenerEstiloOffset:Entero
+			Resultado = Enviar(SCI_ANNOTATIONGETSTYLEOFFSET )
+		FinProc
+		Proc Limpiar
+			Enviar(SCI_ANNOTATIONCLEARALL)
+		FinProc
+FinClase
+
+' Esta clase me obligo a dejar de programar, no se como mierd4 utilizar el resaltador del control scintilla.
+' Quien quiera terminarlo, bienvenido sea.
+Clase ScintillaResaltador,ObjHwnd:Entero,cLenguaje:Cadena,Buffer[]:Cadena
+	ClaseVar Palabras[]:Cadena,Indice:Entero
+	Privado:
+		Proc Enviar(Mensaje:Entero,Opcional Parametro1,Parametro2:Entero):Entero ' Envia un mensaje al control Scintilla.
+			SendMessage(ObjHwnd,Mensaje,Parametro1,Parametro2)
+		FinProc
+		Proc Inicializar(hWndParent:Entero) ' Se inicializa con un puntero a la ventana creada.
+			ObjHwnd = hWndParent
+			ReDim Buffer,9
+		FinProc
+		'Proc Finalizar
+			
+		'FinProc
+		Constructor:Inicializar
+		'Destructor:Finalizar
+		Proc ObtenerResaltador:Entero
+			Resultado = Enviar(SCI_GETLEXER)
+		FinProc
+		Proc EstablecerResaltador(Valor:Entero)
+			Enviar(SCI_SETLEXER,Valor)
+		FinProc
+		Proc EstablecerLenguaje(Valor:Cadena)
+			cLenguaje = Valor
+			Enviar(SCI_SETLEXERLANGUAGE,,CadPtr(Valor))
+		FinProc
+		Proc ObtenerLenguaje:Cadena
+			Resultado = Espacio(1000)
+			Enviar(SCI_GetLexerLanguage,0,CadPtr(Resultado))
+		FinProc
+	P$FAblico:
+		Proc ObtenerPalabras:Cadena[]
+			Resultado = Separar(Buffer[Indice]," ")
+		FinProc
+		Proc ColorPalabras(Color:Entero)
+         Enviar(SCI_STYLESETFORE,Indice,Color) ' Palabras comunes.
+		FinProc
+		Proc InsertarPalabras
+			Var l,i:Entero,Temp:Cadena
+			i = LongMat(Palabras)
+			Si (i = 0) Or Indice &gt;= 9 Entonces Salir
+			Contar l = 0 a (i - 1)
+				Temp = Temp + Palabras[l] + " "
+			Seguir
+			Temp = Parte(Temp,1,CadLong(Temp) - 1)
+			Buffer[Indice] = Temp
+			Enviar(SCI_SETKEYWORDS,Indice,CadPtr(Temp))
+		FinProc
+		Prop Lenguaje:Cadena
+			Esc:EstablecerLenguaje
+			Lec:ObtenerLenguaje
+		FinProp
+		Prop Resaltador:Entero
+			Lec:ObtenerResaltador
+			Esc:EstablecerResaltador
+		FinProp
+		Proc CargarLib(Referencia Ruta:Cadena)
+			Enviar(SCI_LoadLexerLibrary,0,CadPtr(Ruta))
+		FinProc
+		
+FinClase
+
+' Control Scintilla
+Clase PscScintilla(PscWinControl),cTexto:Cadena,bBarraV,bBarraH:Booleano,PtrSciLexer,eLongBarra,ePuntero,eColor:Entero
+	ClaseVar Resaltador:ScintillaResaltador,Anotaci$F3n:ScintillaAnotaci$F3n,Tip:ScintillaTip,Margen:ScintillaMargen
+	Privado:
+		Proc Inicializar
+			PtrSciLexer = LoadLibrary("SciLexer.dll") ' Permite utilizar el control Scintilla.
+		FinProc
+		Proc Finalizar
+			FreeLibrary(PtrSciLexer)
+		FinProc
+		Constructor:Inicializar
+		Destructor:Finalizar
+		Proc EstablecerTexto(Valor:Cadena)
+			cTexto = Valor
+			Enviar(SCI_SETTEXT,0,CadPtr(cTexto))
+		FinProc
+		Proc ObtenerTexto:Cadena
+			Var Temp:Entero
+			Si ObjhWnd = 0 Entonces Devolver cTexto
+			Temp = LongitudTexto + 1
+			Resultado = Espacio(Temp)
+			SendMessage(ObjHwnd,SCI_GETTEXT,Temp,CadPtr(Resultado))
+		FinProc
+		Proc ObtenerLongitud:Entero
+			Resultado = Enviar(SCI_GETTEXTLENGTH,0,0)
+		FinProc
+		Proc EstablecerBarraVertical(Valor:Booleano)
+			bBarraV = Valor
+			Enviar(SCI_SETVSCROLLBAR,Valor)
+		FinProc
+		Proc ObtenerBarraVertical:Booleano
+			Si ObjHwnd = 0 Entonces Devolver bBarraV
+			Resultado = Enviar(SCI_GETVSCROLLBAR)
+		FinProc
+		Proc EstablecerBarraHorizontal(Valor:Booleano)
+			bBarraH = Valor
+			Enviar(SCI_SETHSCROLLBAR,Valor)
+		FinProc
+		Proc ObtenerBarraHorizontal:Booleano
+			Si ObjHwnd = 0 Entonces Devolver bBarraH
+			Resultado = Enviar(SCI_GETHSCROLLBAR)
+		FinProc
+		Proc ObtenerLongBarra:Entero
+			Si ObjHwnd = 0 Entonces Devolver eLongBarra
+			Resultado = Enviar(SCI_GETSCROLLWIDTH)
+		FinProc
+		Proc EstablecerLongBarra(Valor:Entero)
+			eLongBarra = Valor
+			Enviar(SCI_SETSCROLLWIDTH,Valor)
+		FinProc
+		Proc ObtenerPuntero:Entero
+			Si ObjHwnd = 0 Entonces Devolver ePuntero
+			Resultado = Enviar(SCI_GETCURSOR)
+		FinProc
+		Proc EstablecerPuntero(Valor:Entero)
+			ePuntero = Valor
+			Enviar(SCI_SETCURSOR,Valor)
+		FinProc
+		Proc ObtenerColorSel:Entero
+			Resultado = eColor
+		FinProc
+		Proc EstablecerColorSel(Valor:Entero)
+			eColor = Valor
+			Enviar(SCI_SETSELBACK,1,Valor)
+		FinProc
+	P$FAblico:
+		
+		Prop ColorSelecci$F3n:Entero
+			Lec:ObtenerColorSel
+			Esc:EstablecerColorSel
+		FinProp
+' ---------------------------------- Edici$F3n de contenido
+		Prop LongitudTexto:Entero
+			Lec:ObtenerLongitud
+		FinProp
+		Prop Texto:Cadena
+			Esc:EstablecerTexto
+			Lec:ObtenerTexto
+		FinProp
+		Proc InsertarTexto(Referencia Texto:Cadena)
+			Enviar(SCI_ADDTEXT,CadLong(Texto),CadPtr(Texto))
+		FinProc
+' ----------------------------------- Mouse
+		Prop Cursor:Entero
+			Lec:ObtenerPuntero
+			Esc:EstablecerPuntero
+		FinProp
+' ----------------------------------- Miscelaneo
+		Proc SaltarHacia(Indice:Entero)
+			Enviar(SCI_GOTOLINE,Indice)
+		FinProc
+		Proc Enviar(Mensaje:Entero,Opcional Parametro1,Parametro2:Entero):Entero ' Envia un mensaje al control Scintilla, solo si existe.
+			Si ObjHwnd Entonces Resultado = SendMessage(ObjHwnd,Mensaje,Parametro1,Parametro2)
+		FinProc
+' ----------------------------------- Barras
+		Prop BarraVertical:Booleano
+			Esc:EstablecerBarraVertical
+			Lec:ObtenerBarraVertical
+		FinProp
+		Prop BarraHorizontal:Booleano
+			Esc:EstablecerBarraHorizontal
+			Lec:ObtenerBarraHorizontal
+		FinProp
+		Prop LongitudBarra:Entero
+			Lec:ObtenerLongBarra
+			Esc:EstablecerLongBarra
+		FinProp
+' ----------------------------------- Edici$F3n
+		Proc SeleccionarTodo
+			Enviar(SCI_SELECTALL)
+		FinProc
+		Proc Cortar
+			Enviar(SCI_CUT)
+		FinProc
+		Proc Copiar
+			Enviar(SCI_COPY)
+		FinProc
+		Proc PuedePegar:Booleano
+			Resultado = Enviar(SCI_CANPASTE)
+		FinProc
+		Proc Pegar
+			Enviar(SCI_PASTE)
+		FinProc
+		Proc Despegar
+			Enviar(SCI_CANPASTE)
+		FinProc
+		Proc PuedeRehacer:Booleano
+			Resultado = Enviar(SCI_CANREDO)
+		FinProc
+		Proc ReHacer
+			Enviar(SCI_REDO)
+		FinProc
+		Proc LimpiarBufferDesHacer
+			Enviar(SCI_EMPTYUNDOBUFFER)
+		FinProc
+		Proc PuedeDesHacer:Booleano
+			Resultado = Enviar(SCI_CANUNDO)
+		FinProc
+		Proc DesHacer
+			Enviar(SCI_UNDO)
+		FinProc
+' ----------------------------------- Lectura
+		Proc ObtenerLongitudL$EDnea(Indice:Entero):Entero
+			Resultado = Enviar(SCI_LINELENGTH,Indice,0)
+		FinProc
+		Proc ObtenerL$EDnea(Indice:Entero):Cadena
+			Resultado = Espacio(ObtenerLongitudL$EDnea(Indice))
+			Enviar(SCI_GETLINE,Indice,CadPtr(Resultado))
+		FinProc
+' -----------------------------------
+		Proc CargarScintilla(hWndParent:Entero)
+			ObjhWnd = CreateWindowEx(WS_EX_CLIENTEDGE,"Scintilla","",WS_CHILD+(&gt;Visib?WS_VISIBLE:0)+(&gt;Habil?0:WS_DISABLED),Coords.X,Coords.Y,Coords.Width,Coords.Height,hWndParent,0,GetModuleHandle(""),0)
+			Si cTexto &lt;&gt; Vac$EDo Entonces Enviar(SCI_SETTEXT,0,CadPtr(cTexto))
+			Si bBarraH Entonces Enviar(SCI_SETHSCROLLBAR,1)
+			Si bBarraV Entonces Enviar(SCI_SETVSCROLLBAR,1)
+			Si eLongBarra Entonces Enviar(SCI_SETSCROLLWIDTH,eLongBarra)
+			Si ePuntero Entonces Enviar(SCI_SETCURSOR,ePuntero)
+			Si ObjHwnd Entonces Crear Resaltador(ObjHwnd),Anotaci$F3n(ObjHwnd),Tip(ObjHwnd),Margen(ObjHwnd)
+		FinProc
+FinClase
+</Contenido></Datos>
