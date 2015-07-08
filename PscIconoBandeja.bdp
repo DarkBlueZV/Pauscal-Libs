@@ -1,19 +1,42 @@
 <Datos><Nombre></Nombre><Icono>AA==</Icono><Version><Mayor>0</Mayor><Menor>0</Menor><Revision>0</Revision><AutoIncr>0</AutoIncr></Version><Info/><Contenido>Importar "Cadena.prp"
-
+Importar "Rnd.prp"
+Importar "WinCtrls.prp"
 ' Para saber si se cliqueo el boton TrayIcon es necesario utilizar el nuevo procedimiento
 ' "Ninguno" de PscForm, acepta 4 parametros.
 ' hWnd,Msg,wParam,lParam, Por defecto esta clase envia el valor 40 a Msg y los valores WM_LBUTTONUP,WM_RBUTTONUP,WM_MBUTTONUP
 ' a lParam.
 ' Esta clase supone que usted tiene conocimientos sobre GUI de Pauscal, envio de mensajes y recepci$F3n.
 
-Clase PscIconoBandeja,Data:NOTIFYICONDATA,IconoIcono:Cadena
+
+
+Privado:
+	Var ValorGlobal,PtrEventos:Entero
+P$FAblico:
+
+Proc CorazonIconoBandeja(hWnd,Msg,wParam,lParam:Entero)
+	Var @Eventos:PscIconoBandeja_EventInfo
+	Eventos@ = PtrEventos
+	Si Eventos@
+		Si Msg = ValorGlobal
+			Seleccionar lParam
+				Caso WM_LBUTTONUP,WM_RBUTTONUP,WM_MBUTTONUP
+					Si Eventos.AlCliquear@ Entonces Eventos.AlCliquear((&gt;lParam = WM_LBUTTONUP?0:(&gt;lParam = WM_RBUTTONUP?1:2)))
+			FinSeleccionar
+		FinSi
+	FinSi
+FinProc
+
+Clase PscIconoBandeja,Data:NOTIFYICONDATA,IconoIcono:Cadena,lPadre:PscForm
+	ClaseVar Eventos:PscIconoBandeja_EventInfo
+	ClaseVar Padre:pscForm
 	Privado:
 		Proc Inicializar
 			Eval Data
 				.cbSize = Long(Data)
-				.uFlags = NIF_MESSAGE Or NIF_ICON Or NIF_TIP
+				.uFlags = NIF_MESSAGE+NIF_ICON+NIF_TIP
 				.uID = IDC_MYICON
 				.uCallbackMessage = 40
+				ValorGlobal = .uCallbackMessage
 			FinEval
 		FinProc
 		Constructor:Inicializar
@@ -34,14 +57,15 @@ Clase PscIconoBandeja,Data:NOTIFYICONDATA,IconoIcono:Cadena
 		Proc ObtenerIconohWnd:Entero
 			Resultado = Data.hIcon
 		FinProc
-		Proc EstablecerT$EDtulo(T$EDtulo:Cadena)
-			CopyMemory(Data.szInfoTitle[0]@,CadPtr(T$EDtulo),Long(Data.szInfoTitle))
-		FinProc
-		Proc ObtenerT$EDtulo:Cadena
-			CopyMemory(CadPtr(Resultado),Data.szInfoTitle[0]@,Long(Data.szInfoTitle))
-		FinProc
+		'Proc EstablecerT$EDtulo(T$EDtulo:Cadena)
+		'	CopyMemory(Data.szInfoTitle[0]@,CadPtr(T$EDtulo),Long(Data.szInfoTitle))
+		'FinProc
+		'Proc ObtenerT$EDtulo:Cadena
+		'	CopyMemory(CadPtr(Resultado),Data.szInfoTitle[0]@,Long(Data.szInfoTitle))
+		'FinProc
 		Proc EstablecerMensaje(Mensaje:Entero)
 			Data.uCallbackMessage = Mensaje
+			ValorGlobal = Data.uCallbackMessage
 		FinProc
 		Proc ObtenerMensaje:Entero
 			Resultado = Data.uCallbackMessage
@@ -55,28 +79,26 @@ Clase PscIconoBandeja,Data:NOTIFYICONDATA,IconoIcono:Cadena
 			Lec:ObtenerIcono
 			Esc:EstablecerIcono
 		FinProp
-		Prop IconohWnd:Entero
+		Prop IconoPtr:Entero
 			Lec:ObtenerIconohWnd
 		FinProp
 		Prop Texto:Cadena
 			Lec:ObtenerTexto
 			Esc:EstablecerTexto
 		FinProp
-		Prop T$EDtulo:Cadena
-			Lec:ObtenerT$EDtulo
-			Esc:EstablecerT$EDtulo
-		FinProp
+		'Prop T$EDtulo:Cadena
+		'	Lec:ObtenerT$EDtulo
+		'	Esc:EstablecerT$EDtulo
+		'FinProp
 		Proc CargarIconoBandeja(hWnd:Entero)
-			Eval Data
-				.hWnd = hWnd
-				Si .hIcon = 0 Entonces LoadImage(0,IconoIcono, IMAGE_ICON, 0, 0, LR_LOADFROMFILE+LR_DEFAULTSIZE)
-			FinEval
+			Padre.Eventos.IconoBandeja@ = CorazonIconoBandeja@
+			PtrEventos = Eventos@
+			Data.hWnd = hWnd
+			Si Data.hIcon = 0 Entonces LoadImage(0,IconoIcono, IMAGE_ICON, 0, 0, LR_LOADFROMFILE+LR_DEFAULTSIZE)
 			Shell_NotifyIcon(NIM_ADD,Data)
 		FinProc
 		Proc Refrescar
-			Eval Data
-				Si .hIcon = 0 Entonces LoadImage(0,IconoIcono, IMAGE_ICON, 0, 0, LR_LOADFROMFILE+LR_DEFAULTSIZE)
-			FinEval
+			Si Data.hIcon = 0 Entonces LoadImage(0,IconoIcono, IMAGE_ICON, 0, 0, LR_LOADFROMFILE+LR_DEFAULTSIZE)
 			Shell_NotifyIcon(NIM_MODIFY,Data)
 		FinProc
 		Proc Extraer

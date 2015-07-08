@@ -1,0 +1,48 @@
+<Datos><Nombre></Nombre><Icono>AA==</Icono><Version><Mayor>0</Mayor><Menor>0</Menor><Revision>0</Revision><AutoIncr>0</AutoIncr></Version><Info/><Contenido>Prototipo pQueryInterface(:Entero,:GUID,:Entero):Entero
+Prototipo pAddRef(:Entero):Entero
+Prototipo pRelease(:Entero):Entero
+
+Prototipo pHrInit(:Entero):Entero
+Prototipo pAddTab(,:Entero):Entero
+Prototipo pDeleteTab(,:Entero):Entero
+Prototipo pActivateTab(,:Entero):Entero
+Prototipo pSetActivateAlt(,:Entero):Entero
+
+Prototipo pRealloc(:Entero):Entero
+Prototipo pAlloc(:Entero):Entero
+Prototipo pDidAlloc(,:Entero):Entero
+Prototipo pFree(,:Entero)
+Prototipo pGetSize(,:Entero):Entero
+Prototipo pHeapMinimize(,:Entero)
+
+Estruc pIMALLOC,_
+		 QueryInterface:pQueryInterface,_
+		 AddRef:pAddRef,_
+		 Release:pRelease,_
+		 Alloc:pAlloc,_
+		 ReAlloc:pRealloc,_
+		 Free:pFree,_
+		 GetSize:pGetSize,_
+		 DidAlloc:pDidAlloc,_
+		 HeapMinimize:pHeapMinimize
+
+Estruc pIUnknown,_
+		 QueryInterface:pQueryInterface,_
+		 AddRef:pAddRef,_
+		 Release:pRelease
+
+Estruc pITaskbarList,_
+		 QueryInterface:pQueryInterface,_
+		 AddRef:pAddRef,_
+		 Release:pRelease,_
+		 HrInit:pHrInit,_
+		 AddTab:pAddTab,_
+		 DeleteTab:pDeleteTab,_
+		 ActivateTab:pActivateTab,_
+		 SetActivateAlt:pSetActivateAlt
+
+' Interfaces.
+Estruc IMalloc,@Ptr:pIMALLOC
+Estruc ITaskbarList,@Ptr:pITaskbarList
+Estruc IUnknown,@Ptr:pIUnknown
+</Contenido></Datos>

@@ -33,6 +33,7 @@ Clase PscHTTP,cUrl,cAgente,cMetodo,cObjetivo,cError,cCabecera,cVersi$F3n:Cadena,
 		FinProc
 		Proc EstablecerAgente(Valor:Cadena)
 			cAgente = CadAUnicode(Valor)
+			Si (eRequest) Entonces WinHttpAddRequestHeaders(eRequest,cAgente,-1,WINHTTP_ADDREQ_FLAG_ADD_IF_NEW)
 		FinProc
 		Proc ObtenerMetodo:Cadena
 			Resultado = cMetodo
@@ -112,19 +113,19 @@ Clase PscHTTP,cUrl,cAgente,cMetodo,cObjetivo,cError,cCabecera,cVersi$F3n:Cadena,
 				SiNo
 					Seleccionar GetLastError
 						Caso ERROR_WINHTTP_INCORRECT_HANDLE_TYPE
-							cError = "El tipo de mango suministrado es incorrecto para esta operaci$F3n."
+							cError = "[Conectar] El tipo de mango suministrado es incorrecto para esta operaci$F3n."
 						Caso ERROR_WINHTTP_INTERNAL_ERROR
-							cError = "Ha ocurrido un error interno."
+							cError = "[Conectar] Ha ocurrido un error interno."
 						Caso ERROR_WINHTTP_INVALID_URL
-							cError = "La URL no es v$E1lida."
+							cError = "[Conectar] La URL no es v$E1lida."
 						Caso ERROR_WINHTTP_OPERATION_CANCELLED
-							cError = "La operaci$F3n fue cancelada, por lo general debido a que la manija en la que la solicitud se operava se cerr$F3 antes de que la operaci$F3n se complete."
+							cError = "[Conectar] La operaci$F3n fue cancelada, por lo general debido a que la manija en la que la solicitud se operava se cerr$F3 antes de que la operaci$F3n se complete."
 						Caso ERROR_WINHTTP_UNRECOGNIZED_SCHEME
-							cError = "El esquema de URL no pudo ser reconocido, o no es compatible."
+							cError = "[Conectar] El esquema de URL no pudo ser reconocido, o no es compatible."
 						Caso ERROR_WINHTTP_SHUTDOWN
-							cError = "La ayuda de la funci$F3n WinHTTP se est$E1 cerrando o se descarga."
+							cError = "[Conectar] La ayuda de la funci$F3n WinHTTP se est$E1 cerrando o se descarga."
 						Caso ERROR_NOT_ENOUGH_MEMORY
-							cError = "No hay suficiente memoria disponible para completar la operaci$F3n solicitada. (C$F3digo de error de Windows)"
+							cError = "[Conectar] No hay suficiente memoria disponible para completar la operaci$F3n solicitada. (C$F3digo de error de Windows)"
 					FinSeleccionar
 					Devolver Falso
 				FinSi
@@ -146,76 +147,77 @@ Clase PscHTTP,cUrl,cAgente,cMetodo,cObjetivo,cError,cCabecera,cVersi$F3n:Cadena,
 			Si (eRequest = 0) Entonces
 				Seleccionar GetLastError
 					Caso ERROR_WINHTTP_INCORRECT_HANDLE_TYPE
-						cError = "El tipo de mango suministrado es incorrecto para esta operaci$F3n."
+						cError = "[Enviar] El tipo de mango suministrado es incorrecto para esta operaci$F3n."
 					Caso ERROR_WINHTTP_INTERNAL_ERROR
-						cError = "Ha ocurrido un error interno."
+						cError = "[Enviar] Ha ocurrido un error interno."
 					Caso ERROR_WINHTTP_INVALID_URL
-						cError = "La URL no es v$E1lida."
+						cError = "[Enviar] La URL no es v$E1lida."
 					Caso ERROR_WINHTTP_OPERATION_CANCELLED
-						cError = "La operaci$F3n fue cancelada, por lo general debido a que la manija en la que la solicitud se operava se cerr$F3 antes de que la operaci$F3n se complete."
+						cError = "[Enviar] La operaci$F3n fue cancelada, por lo general debido a que la manija en la que la solicitud se operava se cerr$F3 antes de que la operaci$F3n se complete."
 					Caso ERROR_WINHTTP_UNRECOGNIZED_SCHEME
-						cError = "El esquema de URL no pudo ser reconocido, o no es compatible."
+						cError = "[Enviar] El esquema de URL no pudo ser reconocido, o no es compatible."
 					Caso ERROR_WINHTTP_SHUTDOWN
-						cError = "La ayuda de la funci$F3n WinHTTP se est$E1 cerrando o se descarga."
+						cError = "[Enviar] La ayuda de la funci$F3n WinHTTP se est$E1 cerrando o se descarga."
 					Caso ERROR_NOT_ENOUGH_MEMORY
-						cError = "No hay suficiente memoria disponible para completar la operaci$F3n solicitada. (C$F3digo de error de Windows)"
+						cError = "[Enviar] No hay suficiente memoria disponible para completar la operaci$F3n solicitada. (C$F3digo de error de Windows)"
 					Caso 87
-						cError = "Parametro invalido."
+						cError = "[Enviar] Parametro invalido."
 				FinSeleccionar
 				Devolver Falso
 			FinSi
-			Len = [LongMat(Parametros),CadLong(Str)]
+			Si cAgente &lt;&gt; "" Entonces WinHttpAddRequestHeaders(eRequest,cAgente,-1,WINHTTP_ADDREQ_FLAG_ADD_IF_NEW)
 			Seleccionar cMetodo
 				Caso "PUT"
-					Si WinHttpSendRequest(eRequest,cCabecera,CadLong(cCabecera),0,0,CadLong(Datos),0) = Falso Entonces IrHacia EscanearSendRequest
+					Si WinHttpSendRequest(eRequest,WINHTTP_NO_ADDITIONAL_HEADERS,0,0,0,CadLong(Datos),0) = Falso Entonces IrHacia EscanearSendRequest
 					Si WinHttpWriteData(eRequest,CadPtr(Datos),CadLong(Datos),Resultado) Entonces Salir
 				Caso "POST"
+					Len = [LongMat(Parametros),CadLong(Str)]
 					Si Len[0] &lt;&gt; 0 Entonces
-						Si WinHttpSendRequest(eRequest,cCabecera,CadLong(cCabecera),CadPtr(Str),Len[1],Len[1],0) = Falso Entonces
+						Si WinHttpSendRequest(eRequest,WINHTTP_NO_ADDITIONAL_HEADERS,0,CadPtr(Str),Len[1],Len[1],0) = Falso Entonces
 EscanearSendRequest:
 							Seleccionar GetLastError
 								Caso ERROR_WINHTTP_CANNOT_CONNECT
-									cError = "La conexi$F3n al servidor fall$F3."
+									cError = "[Enviar] La conexi$F3n al servidor fall$F3."
 								Caso ERROR_WINHTTP_CLIENT_AUTH_CERT_NEEDED
-									cError = "El servidor seguro HTTP requiere un certificado de cliente."
+									cError = "[Enviar] El servidor seguro HTTP requiere un certificado de cliente."
 								Caso ERROR_WINHTTP_CONNECTION_ERROR
-									cError = "La conexi$F3n con el servidor se ha restablecido o terminado, o fue encontrado con un protocolo SSL incompatibles."
+									cError = "[Enviar] La conexi$F3n con el servidor se ha restablecido o terminado, o fue encontrado con un protocolo SSL incompatibles."
 								Caso ERROR_WINHTTP_INCORRECT_HANDLE_STATE
-									cError = "La operaci$F3n solicitada no puede llevarse a cabo debido a que el mango no es suministrada en el estado correcto."
+									cError = "[Enviar] La operaci$F3n solicitada no puede llevarse a cabo debido a que el mango no es suministrada en el estado correcto."
 								Caso ERROR_WINHTTP_INCORRECT_HANDLE_TYPE
-									cError = "El tipo de mango suministrado es incorrecto para esta operaci$F3n."
+									cError = "[Enviar] El tipo de mango suministrado es incorrecto para esta operaci$F3n."
 								Caso ERROR_WINHTTP_INTERNAL_ERROR
-									cError = "Ha ocurrido un error interno."
+									cError = "[Enviar] Ha ocurrido un error interno."
 								Caso ERROR_WINHTTP_INVALID_URL
-									cError = "La URL no es v$E1lida."
+									cError = "[Enviar] La URL no es v$E1lida."
 								Caso ERROR_WINHTTP_LOGIN_FAILURE
-									cError = "El intento de conexi$F3n fall$F3. Cuando se encuentra este error, el mango solicitud debe ser cerrado con WinHttpCloseHandle."
+									cError = "[Enviar] El intento de conexi$F3n fall$F3. Cuando se encuentra este error, el mango solicitud debe ser cerrado con WinHttpCloseHandle."
 								Caso ERROR_WINHTTP_NAME_NOT_RESOLVED
-									cError = "El nombre del servidor no se puede resolver."
+									cError = "[Enviar] El nombre del servidor no se puede resolver."
 								Caso ERROR_WINHTTP_OPERATION_CANCELLED
-									cError = "La operaci$F3n fue cancelada, por lo general debido a que la manija en la que la solicitud se operava se cerr$F3 antes de que la operaci$F3n se complete."
+									cError = "[Enviar] La operaci$F3n fue cancelada, por lo general debido a que la manija en la que la solicitud se operava se cerr$F3 antes de que la operaci$F3n se complete."
 								Caso ERROR_WINHTTP_RESPONSE_DRAIN_OVERFLOW
-									cError = "La respuesta entrante excede un tama$F1o l$EDmite interno WinHTTP."
+									cError = "[Enviar] La respuesta entrante excede un tama$F1o l$EDmite interno WinHTTP."
 								Caso ERROR_WINHTTP_SECURE_FAILURE
-									cError = "Uno o m$E1s errores se encontraron en el certificado Secure Sockets Layer (SSL) enviado por el servidor."
+									cError = "[Enviar] Uno o m$E1s errores se encontraron en el certificado Secure Sockets Layer (SSL) enviado por el servidor."
 								Caso ERROR_WINHTTP_SHUTDOWN
-									cError = "La ayuda de la funci$F3n WinHTTP se apaga o fue descargada."
+									cError = "[Enviar] La ayuda de la funci$F3n WinHTTP se apaga o fue descargada."
 								Caso ERROR_WINHTTP_TIMEOUT
-									cError = "La solicitud de tiempo de espera se ha excedido."
+									cError = "[Enviar] La solicitud de tiempo de espera se ha excedido."
 								Caso ERROR_WINHTTP_UNRECOGNIZED_SCHEME
-									cError = "La URL especifica un esquema distinto de "#34"http:"#34" o "#34"https:"#34"."
+									cError = "[Enviar] La URL especifica un esquema distinto de "#34"http:"#34" o "#34"https:"#34"."
 								Caso ERROR_NOT_ENOUGH_MEMORY
-									cError = "No hay suficiente memoria disponible para completar la operaci$F3n solicitada."
+									cError = "[Enviar] No hay suficiente memoria disponible para completar la operaci$F3n solicitada."
 								Caso ERROR_INVALID_PARAMETER
-									cError = "La longitud de contenido especificado en el par$E1metro dwTotalLength no coincide con la longitud especificada en la cabecera Content-Length."
+									cError = "[Enviar] La longitud de contenido especificado en el par$E1metro dwTotalLength no coincide con la longitud especificada en la cabecera Content-Length."
 								Caso ERROR_WINHTTP_RESEND_REQUEST
-									cError = "La aplicaci$F3n debe llamar WinHttpSendRequest de nuevo debido a un problema de redirecci$F3n o la autenticaci$F3n."
+									cError = "[Enviar] La aplicaci$F3n debe llamar WinHttpSendRequest de nuevo debido a un problema de redirecci$F3n o la autenticaci$F3n."
 							FinSeleccionar
 							Devolver Falso
 						FinSi
 					FinSi
 				Caso "GET"
-					Si WinHttpSendRequest(eRequest,cCabecera,CadLong(cCabecera),WINHTTP_NO_REQUEST_DATA,0,0,0) = Falso Entonces IrHacia EscanearSendRequest
+					Si WinHttpSendRequest(eRequest,WINHTTP_NO_ADDITIONAL_HEADERS,0,WINHTTP_NO_REQUEST_DATA,0,0,0) = Falso Entonces IrHacia EscanearSendRequest
 			FinSeleccionar
 			Resultado = Verd
 		FinProc

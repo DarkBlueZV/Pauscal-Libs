@@ -209,7 +209,7 @@ P$FAblico:
 	Destructor:Finalizar
 	
 	'Cierra el Soquet
-	Proc cerrar()
+	Proc Cerrar()
 		Si handle = SOCKET_ERROR Entonces Salir
 		closesocket(handle)
 		handle = SOCKET_ERROR

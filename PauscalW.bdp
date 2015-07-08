@@ -33,5 +33,7 @@ Importar "PscTooltip.prp"
 Importar "PscBarraProgreso.prp"
 Importar "PscVisorLista.prp"
 Importar "PscIconoBandeja.prp"
+Importar "PscAnimaci$F3n.prp"
+
 'Importar "CajaIngreso.prp"
 </Contenido></Datos>

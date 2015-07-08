@@ -2,6 +2,8 @@
 Importar "Cadena.prp"
 Importar "WinCtrls.prp"
 
+$24ADV-
+
 Privado:
 	Var PtrEventos,PrevHwnd:Entero,@temp:NMLISTVIEW
 P$FAblico:
@@ -31,34 +33,32 @@ P$FAblico:
 'Const LVGIT_UNFOLDED = 1
 
 
-Proc pscListView_wndproc(hWnd,Msg,wParam,lParam:Entero):Entero
+Proc pscListView_wndproc(hWnd,Msg,wParam,lParam:Entero)
 	Var @Eventos:PSCVISORLISTA_EVENTINFO
 	Eventos@ = PtrEventos
 	Si (Eventos@)
-	Seleccionar Msg
-	   Caso WM_NOTIFY
-			Seleccionar wParam
-			  Caso LVN_COLUMNCLICK
-				 Si (Eventos.AlCliquearColumna@) temp@ = lParam ; Eventos.AlCliquearColumna(temp.iSubItem)
-			  Caso NM_CLICK,NM_RCLICK
-			    Si (Eventos.AlCliquear@) Eventos.AlCliquear(wParam=NM_RCLICK)
-			  Caso NM_DBLCLK,NM_RDBLCLK
-			    Si (Eventos.AlDobleCliquear@) Eventos.AlDobleCliquear(wParam=NM_RDBLCLK)
-			  Caso NM_SETFOCUS
-			    Si (Eventos.AlGanarFoco@) Eventos.AlGanarFoco
-			  Caso NM_KILLFOCUS
-			    Si (Eventos.AlPerderFoco@) Eventos.AlPerderFoco
-			FinSeleccionar
-		Salir
-    FinSeleccionar
+		Seleccionar Msg
+		   Caso WM_NOTIFY
+				temp@ = lParam
+				Si Temp@ Entonces
+					Seleccionar temp.hdr.code
+					  Caso LVN_COLUMNCLICK
+						 Si (Eventos.AlCliquearColumna@) Eventos.AlCliquearColumna(hWnd,temp.iItem)
+					  Caso NM_CLICK,NM_RCLICK
+					    Si (Eventos.AlCliquear@) Eventos.AlCliquear(hWnd,temp.hdr.code=NM_RCLICK,temp.iItem,temp.iSubItem,temp.ptAction.X,temp.ptAction.Y)
+					  Caso NM_DBLCLK,NM_RDBLCLK
+					    Si (Eventos.AlDobleCliquear@) Eventos.AlDobleCliquear(hWnd,temp.hdr.code=NM_RDBLCLK,temp.iItem,temp.iSubItem,temp.ptAction.X,temp.ptAction.Y)
+					  Caso NM_SETFOCUS
+					    Si (Eventos.AlGanarFoco@) Eventos.AlGanarFoco(hWnd)
+					  Caso NM_KILLFOCUS
+					    Si (Eventos.AlPerderFoco@) Eventos.AlPerderFoco(hWnd)
+					FinSeleccionar
+				FinSi
+	    FinSeleccionar
    FinSi
-   Resultado = CallWindowProc(PrevHwnd,hWnd,Msg,wParam,lParam)
 FinProc
 
-'Estruc NMHDR,_
-'		 hwndFrom,_
-'		 idFrom,_
-'		 code:Entero
+
  
 'Estruc NMITEMACTIVATE,_
 '		 hdr,_
@@ -72,14 +72,14 @@ FinProc
 '		 uKeyFlags:Entero
 
 Estruc NMLISTVIEW,_
-		 hdr,_
-		 iItem,_
-		 iSubItem,_
-		 uNewState,_
-		 uOldState,_
-		 uChanged:Entero,_
-		 ptAction:POINT,_
-		 lParam:Entero
+		 hdr:NMHDR,_		' Estructura que contiene informaci$F3n acerca del mensaje de notifiaci$F3n.
+		 iItem,_				' Identificador del list view item.
+		 iSubItem,_			' Identificador del sub-item, o cero si no hay ninguno.
+		 uNewState,_		' El nuevo estado del item, este miembro es cero para mensajes de notificaci$F3n que no usan este miembro, para una lista de posibles valores ver. https://msdn.microsoft.com/en-us/library/windows/desktop/bb774733(v=vs.85).aspx
+		 uOldState,_		' El viejo estado del item, este miembro es cero para mensajes de notificaci$F3n que no usan este miembro.
+		 uChanged:Entero,_' Establece la bandera que indica el atributo del item que fue cambiado.
+		 ptAction:POINT,_ ' Estructura que indica la localizaci$F3n del evento ocurrido.
+		 lParam:Entero		' Valor definido por la aplicaci$F3n del art$EDculo. Este miembro no est$E1 definido para los mensajes de notificaci$F3n que no lo utilizan.
 
 Estruc LVCOLUMN,_
 		 mask,_
@@ -339,7 +339,7 @@ P$FAblico:
 	Prop Cantidad:Entero
 		Lec:ObtenerCantidad
 	FinProp
-	Prop Tama$F1o:Entero
+	Prop Ancho:Entero
 		Lec:ObtenerTama$F1o
 		Esc:EstablecerTama$F1o
 	FinProp
@@ -567,7 +567,8 @@ Clase PscVisorLista(PscWinControl),ColorLista,EstiloExLista,EstiloLista,ColorTex
 			Si ColorTextoLista Entonces ListView_SetTextColor(ObjHwnd,ColorTextoLista)
 			Crear Columnas(ObjHwnd),Items(ObjHwnd),Imagen(ObjHwnd,Coords.x,Coords.y),Fuente
 			Fuente.InsertarFuente(ObjHwnd)
-			PrevHwnd = SetWindowLong(ObjHwnd,-4,pscListView_wndproc@)
+			'PrevHwnd = SetWindowLong(ObjHwnd,-4,pscListView_wndproc@)
+			Padre.Eventos.VisorLista@ = pscListView_wndproc@
 			ObtenerDC
 			UpdateWindow(ObjHwnd)
 		FinProc

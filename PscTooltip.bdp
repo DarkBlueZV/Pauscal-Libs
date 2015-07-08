@@ -9,46 +9,31 @@ Importar "PscBin.prp"
 
 $24ADV-
 
+Const TTN_FIRST = (-520)
+Const TTN_SHOW = (TTN_FIRST-1)
+Const TTN_POP = (TTN_FIRST-2)
+Const TTN_LINKCLICK = (-523)
+
 Privado:
 
-'Proc PtrMouseMov(Referencia a:pscEvMouseMov):Entero ' Declaramos esta funci$F3n debido a un bug en el compilador.
-'	Devolver a@
-'Finproc
+Var @hdr:NMHDR,EVENT:Entero
 
-'Proc PtrEvMouse(Referencia a:pscEvMouse):Entero ' Declaramos esta funci$F3n debido a un bug en el compilador.
-'	Devolver a@
-'Finproc
-
-'Proc PtrEvNotif(Referencia a:PscEvNotif):Entero
-'	Devolver a@
-'FinProc
-
-Var EVENT,PREVHWND:Entero
-
-Proc pscTooltip_wndproc(hWnd,Msg,wParam,lParam:Entero):Entero
-  Var @Eventos:PSCTOOLTIP_EVENTINFO
-  Eventos@=EVENT'GetProp(hWnd,"EVENT")
-  Si (Eventos@)
-    Seleccionar Msg
-      Caso WM_LBUTTONDOWN,WM_RBUTTONDOWN,WM_MBUTTONDOWN
-			Si Eventos.AlApretarBotonMouse@ Eventos.AlApretarBotonMouse( &gt;Msg=WM_LBUTTONDOWN?1:(&gt;Msg=WM_RBUTTONDOWN?2:3) ,wParam,LoWord(lParam),HiWord(lParam))
-      Caso WM_LBUTTONUP,WM_RBUTTONUP,WM_MBUTTONUP
-			Si Eventos.AlSoltarBotonMouse@ Eventos.AlSoltarBotonMouse( &gt;Msg=WM_LBUTTONUP?1:(&gt;Msg=WM_RBUTTONUP?2:3),wParam,LoWord(lParam),HiWord(lParam))
-			Si (Msg=WM_LBUTTONUP) And (Eventos.AlCliquear@ &lt;&gt; 0) Eventos.AlCliquear
-		Caso WM_MOUSEMOVE
-				Si (Eventos.AlMoverMouse@) Entonces Eventos.AlMoverMouse(wParam,LoWord(lParam),HiWord(lParam))
-      'Caso WM_USER
-        'Seleccionar wParam
-        '  Caso BN_CLICKED
-        '    Eventos.AlCliquear
-        '  Caso BN_DOUBLECLICKED
-        '    Eventos.AlDobleCliquear
-        'FinSeleccionar
-       Caso Otro
-			Salir
-    FinSeleccionar
-  FinSi
-  Devolver CallWindowProc(PREVHWND,hWnd,Msg,wParam,lParam)
+Proc pscTooltip_wndproc(hWnd,Msg,wParam,lParam:Entero)
+	Var @Eventos:PSCTOOLTIP_EVENTINFO
+	Eventos@=EVENT
+	Si Eventos@
+		hdr@ = lParam
+		Si Hdr@
+			Seleccionar hdr.code
+				Caso TTN_SHOW ' Notifica la ventana due$F1o que un control de informaci$F3n sobre herramientas est$E1 a punto de ser visualizada.
+					Si (Eventos.AlMostrarse@) Entonces (Eventos.AlMostrarse(hdr.hwndfrom))
+				Caso TTN_POP ' Notifica la ventana due$F1o que una informaci$F3n sobre herramientas est$E1 a punto de ocultarse.
+					Si Eventos.AlOcultarse@ Entonces Eventos.AlOcultarse(hdr.hwndfrom)
+				Caso TTN_LINKCLICK ' Se env$EDa cuando se hace clic en un enlace de texto dentro de una informaci$F3n sobre herramientas de globo.
+					Si Eventos.AlCliquearEnlace@ Entonces Eventos.AlCliquearEnlace(hdr.hwndfrom)
+			FinSeleccionar
+		FinSi
+	FinSi
 FinProc
 
 P$FAblico:
@@ -63,7 +48,7 @@ Estruc TOOLINFO,lSize,lFlags,hwnd,lId:Entero,lpRect:RECT1,hInstance:Entero,lpStr
 
 Clase pscTooltip,mvarTitle:Cadena,mvarStyle,mvarBackColor,mvarForeColor,mvarIcon,mvarVisibleTime,mvarDelayTime,hwndTooltip,mvarAnchor:Entero,tt:TOOLINFO
 ClaseVar Centrar:Booleano
-ClaseVar Eventos:PSCTOOLTIP_EVENTINFO
+'ClaseVar Eventos:PSCTOOLTIP_EVENTINFO
 Privado:
 	Proc Inicializar ' Inicializa el tooltip.
 			InitCommonControls
@@ -226,7 +211,7 @@ P$FAblico: ' Propiedades p$FAblicas.
 		Si hwndTooltip = 0 Entonces Salir
 		SendMessage(hwndTooltip,TTM_POPUP,0,0)
 	FinProc
-	Proc CargarToolTip(hWndPadre:Entero):Booleano ' Dibuja el tooltip.
+	Proc CargarToolTip(hWndPadre:Entero) ' Dibuja el tooltip.
 		Var Instancia,EstiloT:Entero
 		Si hWndPadre = 0 Entonces Salir
 		Si tt.lpStr = "" Entonces tt.lpStr = "Texto no establecido."
@@ -235,9 +220,8 @@ P$FAblico: ' Propiedades p$FAblicas.
 		Si hwndTooltip &lt;&gt; 0 Entonces DestroyWindow(hwndTooltip) ' Destruimos la ventana si es que existe.
 	   hwndTooltip = CreateWindowEx(0,TOOLTIPS_CLASS,NULL,EstiloT,CW_USEDEFAULT,CW_USEDEFAULT,CW_USEDEFAULT,CW_USEDEFAULT,hWndPadre,0,Instancia,Nulo)
 	   Si hwndTooltip = 0 Entonces Salir
-	   EVENT = Eventos@'SetProp(hwndTooltip,"EVENT",Eventos@)
-		PREVHWND = SetWindowLong(hwndTooltip,GWL_WNDPROC,pscTooltip_wndproc@)'SetProp(hwndTooltip,"PREVHWND",SetWindowLong(hwndTooltip,GWL_WNDPROC,pscTooltip_wndproc@))
-      Eval tt
+	   EVENT = Eventos@
+		Eval tt
 			.lSize = Long(tt)
 			.hwnd = hWndPadre
 			.lId = hWndPadre
@@ -251,7 +235,7 @@ P$FAblico: ' Propiedades p$FAblicas.
 		SendMessage(hwndTooltip,TTM_SETDELAYTIME,TTDT_AUTOPOP,LOWORD(mvarVisibleTime))
 		SendMessage(hwndTooltip,TTM_SETDELAYTIME,TTDT_INITIAL,LOWORD(mvarDelayTime))
 		SendMessage(hwndTooltip, TTM_ADDTOOLA, 0, tt@)
-		Devolver Verd
+		Padre.Eventos.Tooltip@ = pscTooltip_wndproc@
 	FinProc
 FinClase
 </Contenido></Datos>

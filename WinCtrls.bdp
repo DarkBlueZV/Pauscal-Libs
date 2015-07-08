@@ -128,9 +128,12 @@ Proc pscForm_wndproc(hWnd,Msg,wParam,lParam:Entero):Entero
         FinSi
       Caso WM_USER+1 'acomodar men$FA
         This.Alto=This.Alto+GetSystemMetrics(SM_CYMENU)
-		Caso Otro
-			Si (Eventos.Ninguno@) Eventos.Ninguno(hWnd,Msg,wParam,lParam)
     FinSeleccionar
+    Si Eventos.Tooltip@ Entonces Eventos.Tooltip(hWnd,Msg,wParam,lParam)
+    Si Eventos.Scintilla@ Entonces Eventos.Scintilla(hWnd,Msg,wParam,lParam)
+    Si Eventos.VisorLista@ Entonces Eventos.VisorLista(hWnd,Msg,wParam,lParam)
+    Si Eventos.IconoBandeja@ Entonces Eventos.IconoBandeja(hWnd,Msg,wParam,lParam)
+    Si Eventos.Alternativo@ Entonces Eventos.Alternativo(hWnd,Msg,wParam,lParam)
   FinSi
   Resultado=DefWindowProc(hWnd,Msg,wParam,lParam)
 FinProc

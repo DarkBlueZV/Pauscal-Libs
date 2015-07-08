@@ -1,11 +1,18 @@
-<Datos><Nombre></Nombre><Icono>AA==</Icono><Version><Mayor>0</Mayor><Menor>0</Menor><Revision>0</Revision><AutoIncr>0</AutoIncr></Version><Info/><Contenido>Const CrLf=#13#10
+<Datos><Nombre></Nombre><Icono>AA==</Icono><Version><Mayor>0</Mayor><Menor>0</Menor><Revision>0</Revision><AutoIncr>0</AutoIncr></Version><Info/><Contenido>
+Const CrLf=#13#10
 Const Cr = #13
 Const Lf = #10
 Const Null=#0
 Const Verdad = &amp;1,Verdadero = &amp;1
 Const Defecto = 0
 Const S_OK = 0
+Const Vac$EDo = ""
 Const Pi2 = 3.1446055 ' Nuevo valor de PI 2015.
+
+Const NIF_INFO = &amp;00000010
+Const NIF_GUID = &amp;00000020
+Const NIF_REALTIME = &amp;00000040
+Const NIF_SHOWTIP = &amp;00000080
 
 Const INTERNET_DEFAULT_PORT = 0
 Const INTERNET_DEFAULT_HTTP_PORT = 80
@@ -385,7 +392,7 @@ Const WINHTTP_AUTH_TARGET_SERVER = &amp;00000000
 Const WINHTTP_AUTH_TARGET_PROXY = &amp;00000001
 Const WINHTTP_TIME_FORMAT_BUFSIZE = 62
 
-' Animaci$F3n
+' Animaci$24242424F3n
 Const ACS_CENTER = &amp;0001
 Const ACS_TRANSPARENT = &amp;0002
 Const ACS_AUTOPLAY = &amp;0004
@@ -807,7 +814,7 @@ Const OFN_NONETWORKBUTTON = &amp;20000, OFN_NOTESTFILECREATE = &amp;10000, OFN_N
 Const OFN_READONLY = &amp;1, OFN_SHAREAWARE = &amp;4000, OFN_SHOWHELP = &amp;10
 
 
-'Errores en tiempo de ejecuci$F3n
+'Errores en tiempo de ejecuci$24242424F3n
 Const errAccMem = &amp;C0000005, errPag = &amp;C0000006, errSinMem = &amp;C0000017, errInstInv = &amp;C000001D
 'Const errErrInc = &amp;C0000025, errDispInv = &amp;C0000026, errFueraMatLim = &amp;C000008C
 Const errInstPriv = &amp;C0000096, errDesbordPila = &amp;C00000FD, errSalidaCtrlC = &amp;C000013A
@@ -1369,7 +1376,7 @@ Const AF_NETBIOS = 17	 '
 Const AF_INET6 = 23		 '
 Const AF_IRDA = 26		 '
 Const AF_BTH = 32			 '
-Const INADDR_ANY = 0	    'Se usa para que el sistema determine una direcci$F3n local (Se utiliza mucho en procesos servidores)
+Const INADDR_ANY = 0	    'Se usa para que el sistema determine una direcci$24242424F3n local (Se utiliza mucho en procesos servidores)
 Const SOCK_STREAM = 1	 'Servicio de flujo confiable [TCP]
 Const SOCK_DGRAM = 2 	 'Servicio de Datagramas (no confiable) [UDP]
 Const SOCK_RAW = 3		 '
@@ -1382,7 +1389,7 @@ Const IPPROTO_TCP = 6	 '
 Const IPPROTO_UDP = 17	 '
 Const IPPROTO_ICMPV6 = 58'
 Const IPPROTO_RM = 113	 '
-'Las siguientes constantes se utilizan unicamente en la declaraci$F3n del tipo de dato
+'Las siguientes constantes se utilizan unicamente en la declaraci$24242424F3n del tipo de dato
 'WSAData_Type (ver declaraciones de tipos)
 Const WSADESCRIPTION_LEN = 256
 Const WSASYSSTATUS_LEN = 128

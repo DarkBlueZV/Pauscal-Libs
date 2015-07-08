@@ -1,0 +1,760 @@
+<Datos><Nombre></Nombre><Icono>AA==</Icono><Version><Mayor>0</Mayor><Menor>0</Menor><Revision>0</Revision><AutoIncr>0</AutoIncr></Version><Info/><Contenido>Importar "WinCtrls.prp"
+Importar "ConstScintilla.prp"
+
+Estruc Sci_CharacterRange,cpMin,cpMax:Entero
+Estruc SciTextRange,chrg:Sci_CharacterRange,lpstrText:Cadena
+Estruc Sci_TextToFind,chrg:Sci_CharacterRange,lpstrText:Cadena,chrgText:Sci_CharacterRange
+
+Clase PscScintilla(PscWinControl),cTexto:Cadena,bBarraV,bBarraH:Booleano,PtrSciLexer,eLongBarra,ePuntero,eColor:Entero
+	Privado:
+		Proc Inicializar
+			PtrSciLexer = LoadLibrary("SciLexer.dll") ' Permite utilizar el control Scintilla.
+		FinProc
+		Proc Finalizar
+			FreeLibrary(PtrSciLexer)
+		FinProc
+		Constructor:Inicializar
+		Destructor:Finalizar
+	P$FAblico:
+		Proc Enviar(Mensaje:Entero,Opcional Parametro1,Parametro2:Entero):Entero ' Envia un mensaje al control Scintilla, solo si existe.
+			Si ObjHwnd Entonces Resultado = SendMessage(ObjHwnd,Mensaje,Parametro1,Parametro2)
+		FinProc
+		Proc SCI_GETTEXT(length:Entero,Referencia text:Cadena):Entero
+			Resultado = Enviar(SCI_GETTEXT,length,CadPtr(text))
+		FinProc
+		Proc SCI_SETTEXT(Referencia text:Cadena):Entero
+			Resultado = Enviar(SCI_SETTEXT,,CadPtr(text))
+		FinProc
+		Proc SCI_SETSAVEPOINT:Entero
+			Resultado = Enviar(SCI_SETSAVEPOINT)
+		FinProc
+		Proc SCI_GETLINE(line:Entero,Referencia text:Cadena):Entero
+			Resultado = Enviar(SCI_GETLINE,line,CadPtr(text))
+		FinProc
+		Proc SCI_REPLACESEL(Referencia text:Cadena):Entero
+			Resultado = Enviar(SCI_REPLACESEL,0,CadPtr(text))
+		FinProc
+		Proc SCI_SETREADONLY(readOnly:Booleano):Entero
+			Resultado = Enviar(SCI_SETREADONLY,readOnly)
+		FinProc
+		Proc SCI_GETREADONLY:Entero
+			Resultado = Enviar(SCI_GETREADONLY)
+		FinProc
+		Proc SCI_GETTEXTRANGE(Referencia tr:SciTextRange):Entero
+			Resultado = Enviar(SCI_GETTEXTRANGE,0,tr@)
+		FinProc
+		Proc SCI_ALLOCATE(bytes:Entero):Entero
+			Resultado = Enviar(SCI_ALLOCATE,bytes)
+		FinProc
+		Proc SCI_ADDTEXT(length:Entero,Referencia s:Cadena):Entero
+			Resultado = Enviar(SCI_ADDTEXT,length,CadPtr(s))
+		FinProc
+		Proc SCI_ADDSTYLEDTEXT(length:Entero,Referencia s:Cadena):Entero
+			Resultado = Enviar(SCI_ADDSTYLEDTEXT,length,CadPtr(s))
+		FinProc
+		Proc SCI_APPENDTEXT(length:Entero,Referencia char:Cadena):Entero
+			Resultado = Enviar(SCI_APPENDTEXT,length,CadPtr(char))
+		FinProc
+		Proc SCI_INSERTTEXT(pos:Entero,Referencia text:Cadena):Entero
+			Resultado = Enviar(SCI_INSERTTEXT,pos,CadPtr(text))
+		FinProc
+		Proc SCI_CHANGEINSERTION(length:Entero,Referencia text:Cadena):Entero
+			Resultado = Enviar(SCI_CHANGEINSERTION,length,CadPtr(text))
+		FinProc
+		Proc SCI_CLEARALL:Entero
+			Resultado = Enviar(SCI_CLEARALL)
+		FinProc
+		Proc SCI_DELETERANGE(pos,deleteLength:Entero):Entero
+			Resultado = Enviar(SCI_DELETERANGE,pos,deleteLength)
+		FinProc
+		Proc SCI_CLEARDOCUMENTSTYLE:Entero
+			Resultado = Enviar(SCI_CLEARDOCUMENTSTYLE)
+		FinProc
+		Proc SCI_GETCHARAT(position:Entero):Entero
+			Resultado = Enviar(SCI_GETCHARAT,position)
+		FinProc
+		Proc SCI_GETSTYLEAT(position:Entero):Entero
+			Resultado = Enviar(SCI_GETSTYLEAT,position)
+		FinProc
+		Proc SCI_GETSTYLEDTEXT(Referencia tr:SciTextRange):Entero
+			Resultado = Enviar(SCI_GETSTYLEDTEXT,0,tr@)
+		FinProc
+		Proc SCI_RELEASEALLEXTENDEDSTYLES:Entero
+			Resultado = Enviar(SCI_RELEASEALLEXTENDEDSTYLES)
+		FinProc
+		Proc SCI_ALLOCATEEXTENDEDSTYLES(numberStyles:Entero):Entero
+			Resultado = Enviar(SCI_ALLOCATEEXTENDEDSTYLES)
+		FinProc
+		Proc SCI_TARGETASUTF8(Referencia s:Cadena):Entero
+			Resultado = Enviar(SCI_TARGETASUTF8,0,CadPtr(s))
+		FinProc
+		Proc SCI_ENCODEDFROMUTF8(Referencia utf8,encoded:Cadena):Entero
+			Resultado = Enviar(SCI_ENCODEDFROMUTF8,CadPtr(utf8),CadPtr(encoded))
+		FinProc
+		Proc SCI_SETLENGTHFORENCODE(bytes:Entero):Entero
+			Resultado = Enviar(SCI_SETLENGTHFORENCODE,bytes)
+		FinProc
+		Proc SCI_SETTARGETSTART(pos:Entero):Entero
+			Resultado = Enviar(SCI_SETTARGETSTART,pos)
+		FinProc
+		Proc SCI_GETTARGETSTART:Entero
+			Resultado = Enviar(SCI_GETTARGETSTART)
+		FinProc
+		Proc SCI_SETTARGETEND(pos:Entero):Entero
+			Resultado = Enviar(SCI_SETTARGETEND,pos)
+		FinProc
+		Proc SCI_GETTARGETEND:Entero
+			Resultado = Enviar(SCI_GETTARGETEND)
+		FinProc
+		Proc SCI_SETTARGETRANGE(start,end:Entero):Entero
+			Resultado = Enviar(SCI_SETTARGETRANGE,start,end)
+		FinProc
+		Proc SCI_TARGETFROMSELECTION:Entero
+			Resultado = Enviar(SCI_TARGETFROMSELECTION)
+		FinProc
+		Proc SCI_TARGETWHOLEDOCUMENT:Entero
+			Resultado = Enviar(SCI_TARGETWHOLEDOCUMENT)
+		FinProc
+		Proc SCI_SETSEARCHFLAGS(searchFlags:Entero):Entero
+			Resultado = Enviar(SCI_SETSEARCHFLAGS,searchFlags)
+		FinProc
+		Proc SCI_GETSEARCHFLAGS:Entero
+			Resultado = Enviar(SCI_GETSEARCHFLAGS)
+		FinProc
+		Proc SCI_SEARCHINTARGET(length:Entero,Referencia text:Cadena):Entero
+			Resultado = Enviar(SCI_SEARCHINTARGET,length,CadPtr(text))
+		FinProc
+		Proc SCI_GETTARGETTEXT(Referencia text:Cadena):Entero
+			Resultado = Enviar(SCI_GETTARGETTEXT,0,CadPtr(text))
+		FinProc
+		Proc SCI_REPLACETARGET(length:Entero,Referencia text:Cadena):Entero
+			Resultado = Enviar(SCI_REPLACETARGET,length,CadPtr(text))
+		FinProc
+		Proc SCI_REPLACETARGETRE(length:Entero,Referencia text:Cadena):Entero
+			Resultado = Enviar(SCI_REPLACETARGETRE,length,CadPtr(text))
+		FinProc
+		Proc SCI_GETTAG(tagNumber:Entero,Referencia tagValue:Cadena):Entero
+			Resultado = Enviar(SCI_GETTAG,tagNumber,CadPtr(tagValue))
+		FinProc
+		Proc SCI_FINDTEXT(flags:Entero,Referencia ttf:Sci_TextToFind):Entero
+			Resultado = Enviar(SCI_FINDTEXT,flags,ttf@)
+		FinProc
+		Proc SCI_SEARCHANCHOR:Entero
+			Resultado = Enviar(SCI_SEARCHANCHOR)
+		FinProc
+		Proc SCI_SEARCHNEXT(searchFlags:Entero,Referencia text:Cadena):Entero
+			Resultado = Enviar(SCI_SEARCHNEXT,searchFlags,CadPtr(text))
+		FinProc
+		Proc SCI_SEARCHPREV(searchFlags:Entero,Referencia text:Cadena):Entero
+			Resultado = Enviar(SCI_SEARCHPREV,searchFlags,CadPtr(text))
+		FinProc
+		Proc SCI_CUT:Entero
+			Resultado = Enviar(SCI_CUT)
+		FinProc
+		Proc SCI_COPY:Entero
+			Resultado = Enviar(SCI_COPY)
+		FinProc
+		Proc SCI_PASTE:Entero
+			Resultado = Enviar(SCI_PASTE)
+		FinProc
+		Proc SCI_CLEAR:Entero
+			Resultado = Enviar(SCI_CLEAR)
+		FinProc
+		Proc SCI_CANPASTE:Booleano
+			Resultado = Enviar(SCI_CANPASTE)
+		FinProc
+		Proc SCI_COPYRANGE(start,end:Entero):Entero
+			Resultado = Enviar(SCI_COPYRANGE,start,end)
+		FinProc
+		Proc SCI_COPYTEXT(length:Entero,Referencia text:Cadena):Entero
+			Resultado = Enviar(SCI_COPYTEXT,length,CadPtr(text))
+		FinProc
+		Proc SCI_COPYALLOWLINE:Entero
+			Resultado = Enviar(SCI_COPYALLOWLINE)
+		FinProc
+		Proc SCI_SETPASTECONVERTENDINGS(convert:Booleano):Entero
+			Resultado = Enviar(SCI_SETPASTECONVERTENDINGS,convert)
+		FinProc
+		Proc SCI_GETPASTECONVERTENDINGS:Booleano
+			Resultado = Enviar(SCI_GETPASTECONVERTENDINGS)
+		FinProc
+		Proc SCI_UNDO:Entero
+			Resultado = Enviar(SCI_UNDO)
+		FinProc
+		Proc SCI_CANUNDO:Booleano
+			Resultado = Enviar(SCI_CANUNDO)
+		FinProc
+		Proc SCI_EMPTYUNDOBUFFER:Entero
+			Resultado = Enviar(SCI_EMPTYUNDOBUFFER)
+		FinProc
+		Proc SCI_REDO:Entero
+			Resultado = Enviar(SCI_REDO)
+		FinProc
+		Proc SCI_CANREDO:Booleano
+			Resultado = Enviar(SCI_CANREDO)
+		FinProc
+		Proc SCI_SETUNDOCOLLECTION(collectUndo:Booleano):Entero
+			Resultado = Enviar(SCI_SETUNDOCOLLECTION,collectUndo)
+		FinProc
+		Proc SCI_GETUNDOCOLLECTION:Entero
+			Resultado = Enviar(SCI_GETUNDOCOLLECTION)
+		FinProc
+		Proc SCI_BEGINUNDOACTION:Entero
+			Resultado = Enviar(SCI_BEGINUNDOACTION)
+		FinProc
+		Proc SCI_ENDUNDOACTION:Entero
+			Resultado = Enviar(SCI_ENDUNDOACTION)
+		FinProc
+		Proc SCI_ADDUNDOACTION(token,flags:Entero):Entero
+			Resultado = Enviar(SCI_ADDUNDOACTION,token,flags)
+		FinProc
+		Proc SCI_GETTEXTLENGTH:Entero
+			Resultado = Enviar(SCI_GETTEXTLENGTH)
+		FinProc
+		Proc SCI_GETLENGTH:Entero
+			Resultado = Enviar(SCI_GETLENGTH)
+		FinProc
+		Proc SCI_GETLINECOUNT:Entero
+			Resultado = Enviar(SCI_GETLINECOUNT)
+		FinProc
+		Proc SCI_SETFIRSTVISIBLELINE(lineDisplay:Entero):Entero
+			Resultado = Enviar(SCI_SETFIRSTVISIBLELINE,lineDisplay)
+		FinProc
+		Proc SCI_GETFIRSTVISIBLELINE:Entero
+			Resultado = Enviar(SCI_GETFIRSTVISIBLELINE)
+		FinProc
+		Proc SCI_LINESONSCREEN:Entero
+			Resultado = Enviar(SCI_LINESONSCREEN)
+		FinProc
+		Proc SCI_GETMODIFY:Entero
+			Resultado = Enviar(SCI_GETMODIFY)
+		FinProc
+		Proc SCI_SETSEL(anchorPos,currentPos:Entero):Entero
+			Resultado = Enviar(SCI_SETSEL,anchorPos,currentPos)
+		FinProc
+		Proc SCI_GOTOPOS(position:Entero):Entero
+			Resultado = Enviar(SCI_GOTOPOS,position)
+		FinProc
+		Proc SCI_GOTOLINE(line:Entero):Entero
+			Resultado = Enviar(SCI_GOTOLINE,line)
+		FinProc
+		Proc SCI_SETCURRENTPOS(position:Entero):Entero
+			Resultado = Enviar(SCI_SETCURRENTPOS,position)
+		FinProc
+		Proc SCI_GETCURRENTPOS:Entero
+			Resultado = Enviar(SCI_GETCURRENTPOS)
+		FinProc
+		Proc SCI_SETANCHOR(position:Entero):Entero
+			Resultado = Enviar(SCI_SETANCHOR,position)
+		FinProc
+		Proc SCI_GETANCHOR:Entero
+			Resultado = Enviar(SCI_GETANCHOR)
+		FinProc
+		Proc SCI_SETSELECTIONSTART(position:Entero):Entero
+			Resultado = Enviar(SCI_SETSELECTIONSTART,position)
+		FinProc
+		Proc SCI_GETSELECTIONSTART:Entero
+			Resultado = Enviar(SCI_GETSELECTIONSTART)
+		FinProc
+		Proc SCI_SETSELECTIONEND(position:Entero):Entero
+			Resultado = Enviar(SCI_SETSELECTIONEND,position)
+		FinProc
+		Proc SCI_GETSELECTIONEND:Entero
+			Resultado = Enviar(SCI_GETSELECTIONEND)
+		FinProc
+		Proc SCI_SETEMPTYSELECTION(pos:Entero):Entero
+			Resultado = Enviar(SCI_SETEMPTYSELECTION,pos)
+		FinProc
+		Proc SCI_SELECTALL:Entero
+			Resultado = Enviar(SCI_SELECTALL)
+		FinProc
+		Proc SCI_LINEFROMPOSITION(position:Entero):Entero
+			Resultado = Enviar(SCI_LINEFROMPOSITION,position)
+		FinProc
+		Proc SCI_POSITIONFROMLINE(line:Entero):Entero
+			Resultado = Enviar(SCI_POSITIONFROMLINE,line)
+		FinProc
+		Proc SCI_GETLINEENDPOSITION(line:Entero):Entero
+			Resultado = Enviar(SCI_GETLINEENDPOSITION,line)
+		FinProc
+		Proc SCI_LINELENGTH(line:Entero):Entero
+			Resultado = Enviar(SCI_LINELENGTH,line)
+		FinProc
+		Proc SCI_GETCOLUMN(position:Entero):Entero
+			Resultado = Enviar(SCI_GETCOLUMN,position)
+		FinProc
+		Proc SCI_FINDCOLUMN(line:Entero, column:Entero):Entero
+			Resultado = Enviar(SCI_FINDCOLUMN)
+		FinProc
+		Proc SCI_POSITIONFROMPOINT(x:Entero, y:Entero):Entero
+			Resultado = Enviar(SCI_POSITIONFROMPOINT,x,y)
+		FinProc
+		Proc SCI_POSITIONFROMPOINTCLOSE(x:Entero, y:Entero):Entero
+			Resultado = Enviar(SCI_POSITIONFROMPOINTCLOSE,x,y)
+		FinProc
+		Proc SCI_CHARPOSITIONFROMPOINT(x:Entero, y:Entero):Entero
+			Resultado = Enviar(SCI_CHARPOSITIONFROMPOINT,x,y)
+		FinProc
+		Proc SCI_CHARPOSITIONFROMPOINTCLOSE(x:Entero, y:Entero):Entero
+			Resultado = Enviar(SCI_CHARPOSITIONFROMPOINTCLOSE,x,y)
+		FinProc
+		Proc SCI_POINTXFROMPOSITION(position:Entero):Entero
+			Resultado = Enviar(SCI_POINTXFROMPOSITION,0,position)
+		FinProc
+		Proc SCI_POINTYFROMPOSITION(position:Entero):Entero
+			Resultado = Enviar(SCI_POINTYFROMPOSITION,0,position)
+		FinProc
+		Proc SCI_HIDESELECTION(hide:Booleano):Entero
+			Resultado = Enviar(SCI_HIDESELECTION,hide)
+		FinProc
+		Proc SCI_GETSELTEXT(Referencia text:Cadena):Entero
+			Resultado = Enviar(SCI_GETSELTEXT,0,CadPtr(text))
+		FinProc
+		Proc SCI_GETCURLINE(textLen:Entero,Referencia text:Cadena):Entero
+			Resultado = Enviar(SCI_GETCURLINE,textLen,CadPtr(text))
+		FinProc
+		Proc SCI_SELECTIONISRECTANGLE:Entero
+			Resultado = Enviar(SCI_SELECTIONISRECTANGLE)
+		FinProc
+		Proc SCI_SETSELECTIONMODE(mode:Entero):Entero
+			Resultado = Enviar(SCI_SETSELECTIONMODE,mode)
+		FinProc
+		Proc SCI_GETSELECTIONMODE:Entero
+			Resultado = Enviar(SCI_GETSELECTIONMODE)
+		FinProc
+		Proc SCI_GETLINESELSTARTPOSITION(line:Entero):Entero
+			Resultado = Enviar(SCI_GETLINESELSTARTPOSITION,line)
+		FinProc
+		Proc SCI_GETLINESELENDPOSITION(line:Entero):Entero
+			Resultado = Enviar(SCI_GETLINESELENDPOSITION,line)
+		FinProc
+		Proc SCI_MOVECARETINSIDEVIEW:Entero
+			Resultado = Enviar(SCI_MOVECARETINSIDEVIEW)
+		FinProc
+		Proc SCI_WORDENDPOSITION(position:Entero,onlyWordCharacters:Booleano):Entero
+			Resultado = Enviar(SCI_WORDENDPOSITION,position,onlyWordCharacters)
+		FinProc
+		Proc SCI_WORDSTARTPOSITION(position:Entero,onlyWordCharacters:Booleano):Entero
+			Resultado = Enviar(SCI_WORDSTARTPOSITION,position,onlyWordCharacters)
+		FinProc
+		Proc SCI_ISRANGEWORD(start:Entero, end:Entero):Entero
+			Resultado = Enviar(SCI_ISRANGEWORD,start,end)
+		FinProc
+		Proc SCI_POSITIONBEFORE(position:Entero):Entero
+			Resultado = Enviar(SCI_POSITIONBEFORE,position)
+		FinProc
+		Proc SCI_POSITIONAFTER(position:Entero):Entero
+			Resultado = Enviar(SCI_POSITIONAFTER,position)
+		FinProc
+		Proc SCI_POSITIONRELATIVE(position:Entero, relative:Entero):Entero
+			Resultado = Enviar(SCI_POSITIONRELATIVE,position,relative)
+		FinProc
+		Proc SCI_COUNTCHARACTERS(startPos:Entero, endPos:Entero):Entero
+			Resultado = Enviar(SCI_COUNTCHARACTERS,startpos,endpos)
+		FinProc
+		Proc SCI_TEXTWIDTH(styleNumber:Entero,Referencia text:Cadena):Entero
+			Resultado = Enviar(SCI_TEXTWIDTH,styleNumber,CadPtr(text))
+		FinProc
+		Proc SCI_TEXTHEIGHT(line:Entero):Entero
+			Resultado = Enviar(SCI_TEXTHEIGHT,line)
+		FinProc
+		Proc SCI_CHOOSECARETX:Entero
+			Resultado = Enviar(SCI_CHOOSECARETX)
+		FinProc
+		Proc SCI_MOVESELECTEDLINESUP:Entero
+			Resultado = Enviar(SCI_MOVESELECTEDLINESUP)
+		FinProc
+		Proc SCI_MOVESELECTEDLINESDOWN:Entero
+			Resultado = Enviar(SCI_MOVESELECTEDLINESDOWN)
+		FinProc
+		Proc SCI_SETMOUSESELECTIONRECTANGULARSWITCH(mouseSelectionRectangularSwitch:Booleano):Entero
+			Resultado = Enviar(SCI_SETMOUSESELECTIONRECTANGULARSWITCH,mouseSelectionRectangularSwitch)
+		FinProc
+		Proc SCI_GETMOUSESELECTIONRECTANGULARSWITCH:Entero
+			Resultado = Enviar(SCI_GETMOUSESELECTIONRECTANGULARSWITCH)
+		FinProc
+		Proc SCI_SETMULTIPLESELECTION(multipleSelection:Booleano):Entero
+			Resultado = Enviar(SCI_SETMULTIPLESELECTION,multipleSelection)
+		FinProc
+		Proc SCI_GETMULTIPLESELECTION:Entero
+			Resultado = Enviar(SCI_GETMULTIPLESELECTION)
+		FinProc
+		Proc SCI_SETADDITIONALSELECTIONTYPING(additionalSelectionTyping:Booleano):Entero
+			Resultado = Enviar(SCI_SETADDITIONALSELECTIONTYPING,additionalSelectionTyping)
+		FinProc
+		Proc SCI_GETADDITIONALSELECTIONTYPING:Entero
+			Resultado = Enviar(SCI_GETADDITIONALSELECTIONTYPING)
+		FinProc
+		Proc SCI_SETMULTIPASTE(multiPaste:Entero):Entero
+			Resultado = Enviar(SCI_SETMULTIPASTE,multiPaste)
+		FinProc
+		Proc SCI_GETMULTIPASTE:Entero
+			Resultado = Enviar(SCI_GETMULTIPASTE)
+		FinProc
+		Proc SCI_SETVIRTUALSPACEOPTIONS(virtualSpaceOptions:Entero):Entero
+			Resultado = Enviar(SCI_SETVIRTUALSPACEOPTIONS,virtualSpaceOptions)
+		FinProc
+		Proc SCI_GETVIRTUALSPACEOPTIONS:Entero
+			Resultado = Enviar(SCI_GETVIRTUALSPACEOPTIONS)
+		FinProc
+		Proc SCI_SETRECTANGULARSELECTIONMODIFIER(modifier:Entero):Entero
+			Resultado = Enviar(SCI_SETRECTANGULARSELECTIONMODIFIER,modifier)
+		FinProc
+		Proc SCI_GETRECTANGULARSELECTIONMODIFIER:Entero
+			Resultado = Enviar(SCI_GETRECTANGULARSELECTIONMODIFIER)
+		FinProc
+		Proc SCI_GETSELECTIONS:Entero
+			Resultado = Enviar(SCI_GETSELECTIONS)
+		FinProc
+		Proc SCI_GETSELECTIONEMPTY:Entero
+			Resultado = Enviar(SCI_GETSELECTIONEMPTY)
+		FinProc
+		Proc SCI_CLEARSELECTIONS:Entero
+			Resultado = Enviar(SCI_CLEARSELECTIONS)
+		FinProc
+		Proc SCI_SETSELECTION(caret,anchor:Entero):Entero
+			Resultado = Enviar(SCI_SETSELECTION,caret,anchor)
+		FinProc
+		Proc SCI_ADDSELECTION(caret,anchor:Entero):Entero
+			Resultado = Enviar(SCI_ADDSELECTION,caret,anchor)
+		FinProc
+		Proc SCI_DROPSELECTIONN(selection:Entero):Entero
+			Resultado = Enviar(SCI_DROPSELECTIONN,selection)
+		FinProc
+		Proc SCI_SETMAINSELECTION(selection:Entero):Entero
+			Resultado = Enviar(SCI_SETMAINSELECTION,selection)
+		FinProc
+		Proc SCI_GETMAINSELECTION:Entero
+			Resultado = Enviar(SCI_GETMAINSELECTION)
+		FinProc
+		Proc SCI_SETSELECTIONNCARET(selection,pos:Entero):Entero
+			Resultado = Enviar(SCI_SETSELECTIONNCARET,selection,pos)
+		FinProc
+		Proc SCI_GETSELECTIONNCARET(selection:Entero):Entero
+			Resultado = Enviar(SCI_GETSELECTIONNCARET,selection)
+		FinProc
+		Proc SCI_SETSELECTIONNCARETVIRTUALSPACE(selection,space:Entero):Entero
+			Resultado = Enviar(SCI_SETSELECTIONNCARETVIRTUALSPACE,selection,space)
+		FinProc
+		Proc SCI_GETSELECTIONNCARETVIRTUALSPACE(selection:Entero):Entero
+			Resultado = Enviar(SCI_GETSELECTIONNCARETVIRTUALSPACE,selection)
+		FinProc
+		Proc SCI_SETSELECTIONNANCHOR(selection,posAnchor:Entero):Entero
+			Resultado = Enviar(SCI_SETSELECTIONNANCHOR,selection,posAnchor)
+		FinProc
+		Proc SCI_GETSELECTIONNANCHOR(selection:Entero):Entero
+			Resultado = Enviar(SCI_GETSELECTIONNANCHOR,selection)
+		FinProc
+		Proc SCI_SETSELECTIONNANCHORVIRTUALSPACE(selection,space:Entero):Entero
+			Resultado = Enviar(SCI_SETSELECTIONNANCHORVIRTUALSPACE,selection,space)
+		FinProc
+		Proc SCI_GETSELECTIONNANCHORVIRTUALSPACE(selection:Entero):Entero
+			Resultado = Enviar(SCI_GETSELECTIONNANCHORVIRTUALSPACE,selection)
+		FinProc
+		Proc SCI_SETSELECTIONNSTART(selection,pos:Entero):Entero
+			Resultado = Enviar(SCI_SETSELECTIONNSTART,selection,pos)
+		FinProc
+		Proc SCI_GETSELECTIONNSTART(selection:Entero):Entero
+			Resultado = Enviar(SCI_GETSELECTIONNSTART,selection)
+		FinProc
+		Proc SCI_SETSELECTIONNEND(selection,pos:Entero):Entero
+			Resultado = Enviar(SCI_SETSELECTIONNEND,selection,pos)
+		FinProc
+		Proc SCI_GETSELECTIONNEND(selection:Entero):Entero
+			Resultado = Enviar(SCI_GETSELECTIONNEND,selection)
+		FinProc
+		Proc SCI_SETRECTANGULARSELECTIONCARET(pos:Entero):Entero
+			Resultado = Enviar(SCI_SETRECTANGULARSELECTIONCARET,pos)
+		FinProc
+		Proc SCI_GETRECTANGULARSELECTIONCARET:Entero
+			Resultado = Enviar(SCI_GETRECTANGULARSELECTIONCARET)
+		FinProc
+		Proc SCI_SETRECTANGULARSELECTIONCARETVIRTUALSPACE(space:Entero):Entero
+			Resultado = Enviar(SCI_SETRECTANGULARSELECTIONCARETVIRTUALSPACE,space)
+		FinProc
+		Proc SCI_GETRECTANGULARSELECTIONCARETVIRTUALSPACE:Entero
+			Resultado = Enviar(SCI_GETRECTANGULARSELECTIONCARETVIRTUALSPACE)
+		FinProc
+		Proc SCI_SETRECTANGULARSELECTIONANCHOR(posAnchor:Entero):Entero
+			Resultado = Enviar(SCI_SETRECTANGULARSELECTIONANCHOR,posAnchor)
+		FinProc
+		Proc SCI_GETRECTANGULARSELECTIONANCHOR:Entero
+			Resultado = Enviar(SCI_GETRECTANGULARSELECTIONANCHOR)
+		FinProc
+		Proc SCI_SETRECTANGULARSELECTIONANCHORVIRTUALSPACE(space:Entero):Entero
+			Resultado = Enviar(SCI_SETRECTANGULARSELECTIONANCHORVIRTUALSPACE,space)
+		FinProc
+		Proc SCI_GETRECTANGULARSELECTIONANCHORVIRTUALSPACE:Entero
+			Resultado = Enviar(SCI_GETRECTANGULARSELECTIONANCHORVIRTUALSPACE)
+		FinProc
+		Proc SCI_SETADDITIONALSELALPHA(alpha:Entero):Entero
+			Resultado = Enviar(SCI_SETADDITIONALSELALPHA,alpha)
+		FinProc
+		Proc SCI_GETADDITIONALSELALPHA:Entero
+			Resultado = Enviar(SCI_GETADDITIONALSELALPHA)
+		FinProc
+		Proc SCI_SETADDITIONALSELFORE(colour:Entero):Entero
+			Resultado = Enviar(SCI_SETADDITIONALSELFORE,colour)
+		FinProc
+		Proc SCI_SETADDITIONALSELBACK(colour:Entero):Entero
+			Resultado = Enviar(SCI_SETADDITIONALSELBACK,colour)
+		FinProc
+		Proc SCI_SETADDITIONALCARETFORE(colour:Entero):Entero
+			Resultado = Enviar(SCI_SETADDITIONALCARETFORE,colour)
+		FinProc
+		Proc SCI_GETADDITIONALCARETFORE:Entero
+			Resultado = Enviar(SCI_GETADDITIONALCARETFORE)
+		FinProc
+		Proc SCI_SETADDITIONALCARETSBLINK(additionalCaretsBlink:Booleano):Entero
+			Resultado = Enviar(SCI_SETADDITIONALCARETSBLINK,additionalCaretsBlink)
+		FinProc
+		Proc SCI_GETADDITIONALCARETSBLINK:Entero
+			Resultado = Enviar(SCI_GETADDITIONALCARETSBLINK)
+		FinProc
+		Proc SCI_SETADDITIONALCARETSVISIBLE(additionalCaretsVisible:Booleano):Entero
+			Resultado = Enviar(SCI_SETADDITIONALCARETSVISIBLE,additionalCaretsVisible)
+		FinProc
+		Proc SCI_GETADDITIONALCARETSVISIBLE:Entero
+			Resultado = Enviar(SCI_GETADDITIONALCARETSVISIBLE)
+		FinProc
+		Proc SCI_SWAPMAINANCHORCARET:Entero
+			Resultado = Enviar(SCI_SWAPMAINANCHORCARET)
+		FinProc
+		Proc SCI_ROTATESELECTION:Entero
+			Resultado = Enviar(SCI_ROTATESELECTION)
+		FinProc
+		Proc SCI_MULTIPLESELECTADDNEXT:Entero
+			Resultado = Enviar(SCI_MULTIPLESELECTADDNEXT)
+		FinProc
+		Proc SCI_MULTIPLESELECTADDEACH:Entero
+			Resultado = Enviar(SCI_MULTIPLESELECTADDEACH)
+		FinProc
+		Proc SCI_LINESCROLL(column,line:Entero):Entero
+			Resultado = Enviar(SCI_LINESCROLL,column,line)
+		FinProc
+		Proc SCI_SCROLLCARET:Entero
+			Resultado = Enviar(SCI_SCROLLCARET)
+		FinProc
+		Proc SCI_SCROLLRANGE(secondary,primary:Entero):Entero
+			Resultado = Enviar(SCI_SCROLLRANGE,secondary,primary)
+		FinProc
+		Proc SCI_SETXCARETPOLICY(caretPolicy,caretSlop:Entero):Entero
+			Resultado = Enviar(SCI_SETXCARETPOLICY,caretPolicy,caretSlop)
+		FinProc
+		Proc SCI_SETYCARETPOLICY(caretPolicy,caretSlop:Entero):Entero
+			Resultado = Enviar(SCI_SETYCARETPOLICY,caretPolicy,caretSlop)
+		FinProc
+		Proc SCI_SETVISIBLEPOLICY(caretPolicy,caretSlop:Entero):Entero
+			Resultado = Enviar(SCI_SETVISIBLEPOLICY,caretPolicy,caretSlop)
+		FinProc
+		Proc SCI_SETHSCROLLBAR(visible:Booleano):Entero
+			Resultado = Enviar(SCI_SETHSCROLLBAR,visible)
+		FinProc
+		Proc SCI_GETHSCROLLBAR:Entero
+			Resultado = Enviar(SCI_GETHSCROLLBAR)
+		FinProc
+		Proc SCI_SETVSCROLLBAR(visible:Booleano):Entero
+			Resultado = Enviar(SCI_SETVSCROLLBAR,visible)
+		FinProc
+		Proc SCI_GETVSCROLLBAR:Entero
+			Resultado = Enviar(SCI_GETVSCROLLBAR)
+		FinProc
+		Proc SCI_GETXOFFSET:Entero
+			Resultado = Enviar(SCI_GETXOFFSET)
+		FinProc
+		Proc SCI_SETXOFFSET(xOffset:Entero):Entero
+			Resultado = Enviar(SCI_SETXOFFSET,xOffset)
+		FinProc
+		Proc SCI_SETSCROLLWIDTH(pixelWidth:Entero):Entero
+			Resultado = Enviar(SCI_SETSCROLLWIDTH,pixelWidth)
+		FinProc
+		Proc SCI_GETSCROLLWIDTH:Entero
+			Resultado = Enviar(SCI_GETSCROLLWIDTH)
+		FinProc
+		Proc SCI_SETSCROLLWIDTHTRACKING(tracking:Booleano):Entero
+			Resultado = Enviar(SCI_SETSCROLLWIDTHTRACKING,tracking)
+		FinProc
+		Proc SCI_GETSCROLLWIDTHTRACKING:Entero
+			Resultado = Enviar(SCI_GETSCROLLWIDTHTRACKING)
+		FinProc
+		Proc SCI_SETENDATLASTLINE(endAtLastLine:Booleano):Entero
+			Resultado = Enviar(SCI_SETENDATLASTLINE,endAtLastLine)
+		FinProc
+		Proc SCI_GETENDATLASTLINE:Entero
+			Resultado = Enviar(SCI_GETENDATLASTLINE)
+		FinProc
+		Proc SCI_SETVIEWWS(wsMode:Entero):Entero
+			Resultado = Enviar(SCI_SETVIEWWS,wsMode)
+		FinProc
+		Proc SCI_GETVIEWWS:Entero
+			Resultado = Enviar(SCI_GETVIEWWS)
+		FinProc
+		Proc SCI_SETWHITESPACEFORE(useWhitespaceForeColour:Booleano, colour:Entero):Entero
+			Resultado = Enviar(SCI_SETWHITESPACEFORE,useWhitespaceForeColour,colour)
+		FinProc
+		Proc SCI_SETWHITESPACEBACK(useWhitespaceBackColour:Booleano, colour:Entero):Entero
+			Resultado = Enviar(SCI_SETWHITESPACEBACK,useWhitespaceBackColour,colour)
+		FinProc
+		Proc SCI_SETWHITESPACESIZE(size:Entero):Entero
+			Resultado = Enviar(SCI_SETWHITESPACESIZE,size)
+		FinProc
+		Proc SCI_GETWHITESPACESIZE:Entero
+			Resultado = Enviar(SCI_GETWHITESPACESIZE)
+		FinProc
+		Proc SCI_SETEXTRAASCENT(extraAscent:Entero):Entero
+			Resultado = Enviar(SCI_SETEXTRAASCENT,extraAscent)
+		FinProc
+		Proc SCI_GETEXTRAASCENT:Entero
+			Resultado = Enviar(SCI_GETEXTRAASCENT)
+		FinProc
+		Proc SCI_SETEXTRADESCENT(extraDescent:Entero):Entero
+			Resultado = Enviar(SCI_SETEXTRADESCENT,extraDescent)
+		FinProc
+		Proc SCI_GETEXTRADESCENT:Entero
+			Resultado = Enviar(SCI_GETEXTRADESCENT)
+		FinProc
+		Proc SCI_SETEOLMODE(eolMode:Entero):Entero
+			Resultado = Enviar(SCI_SETEOLMODE,eolMode)
+		FinProc
+		Proc SCI_GETEOLMODE:Entero
+			Resultado = Enviar(SCI_GETEOLMODE)
+		FinProc
+		Proc SCI_CONVERTEOLS(eolMode:Entero):Entero
+			Resultado = Enviar(SCI_CONVERTEOLS,eolMode)
+		FinProc
+		Proc SCI_SETVIEWEOL(visible:Booleano):Entero
+			Resultado = Enviar(SCI_SETVIEWEOL,visible)
+		FinProc
+		Proc SCI_GETVIEWEOL:Entero
+			Resultado = Enviar(SCI_GETVIEWEOL)
+		FinProc
+		Proc SCI_GETLINEENDTYPESSUPPORTED:Entero
+			Resultado = Enviar(SCI_GETLINEENDTYPESSUPPORTED)
+		FinProc
+		Proc SCI_SETLINEENDTYPESALLOWED(lineEndBitSet:Entero):Entero
+			Resultado = Enviar(SCI_SETLINEENDTYPESALLOWED,lineEndBitSet)
+		FinProc
+		Proc SCI_GETLINEENDTYPESALLOWED:Entero
+			Resultado = Enviar(SCI_GETLINEENDTYPESALLOWED)
+		FinProc
+		Proc SCI_GETLINEENDTYPESACTIVE:Entero
+			Resultado = Enviar(SCI_GETLINEENDTYPESACTIVE)
+		FinProc
+
+		Proc CargarScintilla(hWndParent:Entero)
+			ObjhWnd = CreateWindowEx(WS_EX_CLIENTEDGE,"Scintilla","",WS_CHILD+(&gt;Visib?WS_VISIBLE:0)+(&gt;Habil?0:WS_DISABLED),Coords.X,Coords.Y,Coords.Width,Coords.Height,hWndParent,0,GetModuleHandle(""),0)
+		FinProc
+FinClase
+
+Proc SCI_AUTOCSHOW(lenEntered:Entero, const char *list)
+	Enviar(SCI_AUTOCSHOW)
+FinProc
+Proc SCI_AUTOCCANCEL
+	Enviar(SCI_AUTOCCANCEL)
+FinProc
+Proc SCI_AUTOCACTIVE
+	Enviar(SCI_AUTOCACTIVE)
+FinProc
+Proc SCI_AUTOCPOSSTART
+	Enviar(SCI_AUTOCPOSSTART)
+FinProc
+Proc SCI_AUTOCCOMPLETE
+	Enviar(SCI_AUTOCCOMPLETE)
+FinProc
+Proc SCI_AUTOCSTOPS(&lt;unused&gt;, const char *chars)
+	Enviar(SCI_AUTOCSTOPS)
+FinProc
+Proc SCI_AUTOCSETSEPARATOR(char separator)
+	Enviar(SCI_AUTOCSETSEPARATOR)
+FinProc
+Proc SCI_AUTOCGETSEPARATOR
+	Enviar(SCI_AUTOCGETSEPARATOR)
+FinProc
+Proc SCI_AUTOCSELECT(&lt;unused&gt;, const char *select)
+	Enviar(SCI_AUTOCSELECT)
+FinProc
+Proc SCI_AUTOCGETCURRENT
+	Enviar(SCI_AUTOCGETCURRENT)
+FinProc
+Proc SCI_AUTOCGETCURRENTTEXT(&lt;unused&gt;, char *text)
+	Enviar(SCI_AUTOCGETCURRENTTEXT)
+FinProc
+Proc SCI_AUTOCSETCANCELATSTART(cancel:Booleano)
+	Enviar(SCI_AUTOCSETCANCELATSTART)
+FinProc
+Proc SCI_AUTOCGETCANCELATSTART
+	Enviar(SCI_AUTOCGETCANCELATSTART)
+FinProc
+Proc SCI_AUTOCSETFILLUPS(&lt;unused&gt;, const char *chars)
+	Enviar()
+FinProc
+Proc SCI_AUTOCSETCHOOSESINGLE(chooseSingle:Booleano)
+	Enviar()
+FinProc
+Proc SCI_AUTOCGETCHOOSESINGLE
+	Enviar()
+FinProc
+Proc SCI_AUTOCSETIGNORECASE(ignoreCase:Booleano)
+	Enviar()
+FinProc
+Proc SCI_AUTOCGETIGNORECASE
+	Enviar()
+FinProc
+Proc SCI_AUTOCSETCASEINSENSITIVEBEHAVIOUR(behaviour:Entero)
+	Enviar()
+FinProc
+Proc SCI_AUTOCGETCASEINSENSITIVEBEHAVIOUR
+	Enviar()
+FinProc
+Proc SCI_AUTOCSETMULTI(multi:Entero)
+	Enviar()
+FinProc
+Proc SCI_AUTOCGETMULTI
+	Enviar()
+FinProc
+Proc SCI_AUTOCSETORDER(order:Entero)
+	Enviar()
+FinProc
+Proc SCI_AUTOCGETORDER
+	Enviar()
+FinProc
+Proc SCI_AUTOCSETAUTOHIDE(autoHide:Booleano)
+	Enviar()
+FinProc
+Proc SCI_AUTOCGETAUTOHIDE
+	Enviar()
+FinProc
+Proc SCI_AUTOCSETDROPRESTOFWORD(dropRestOfWord:Booleano)
+	Enviar()
+FinProc
+Proc SCI_AUTOCGETDROPRESTOFWORD
+	Enviar()
+FinProc
+Proc SCI_REGISTERIMAGE(type:Entero, const char *xpmData)
+	Enviar()
+FinProc
+Proc SCI_REGISTERRGBAIMAGE(type:Entero, const char *pixels)
+	Enviar()
+FinProc
+Proc SCI_CLEARREGISTEREDIMAGES
+	Enviar()
+FinProc
+Proc SCI_AUTOCSETTYPESEPARATOR(char separatorCharacter)
+	Enviar()
+FinProc
+Proc SCI_AUTOCGETTYPESEPARATOR
+	Enviar()
+FinProc
+Proc SCI_AUTOCSETMAXHEIGHT(rowCount:Entero)
+	Enviar()
+FinProc
+Proc SCI_AUTOCGETMAXHEIGHT
+	Enviar()
+FinProc
+Proc SCI_AUTOCSETMAXWIDTH(characterCount:Entero)
+	Enviar()
+FinProc
+Proc SCI_AUTOCGETMAXWIDTH
+	Enviar()
+FinProc
+</Contenido></Datos>

@@ -51,7 +51,7 @@ Clase pscArchivo, _
   Handle:Entero
 
 P$FAblico:
-  ClaseVar Nombre:Cadena
+  ClaseVar Ruta:Cadena
 
   'Procs privados
 Privado:
@@ -87,12 +87,12 @@ P$FAblico:
   FinProc
   Proc Abrir(Opcional bCrear:Booleano)
     Si (Handle) Cerrar()
-    Handle = CreateFile(Nombre, GENERIC_READ Or GENERIC_WRITE, FILE_SHARE_READ Or FILE_SHARE_WRITE, Nulo, &gt;bCrear?OPEN_ALWAYS:OPEN_EXISTING, 0, 0)
+    Handle = CreateFile(Ruta, GENERIC_READ Or GENERIC_WRITE, FILE_SHARE_READ Or FILE_SHARE_WRITE, Nulo, &gt;bCrear?OPEN_ALWAYS:OPEN_EXISTING, 0, 0)
     Si (Handle = INVALID_HANDLE) GenerarError errErrorEnArchivo
   FinProc
   Proc CrearNuevo(Opcional bBorrar:Booleano)
     Si (Handle) Cerrar()
-    Handle = CreateFile(Nombre, GENERIC_READ Or GENERIC_WRITE, FILE_SHARE_READ, Nulo, &gt;bBorrar?CREATE_ALWAYS:CREATE_NEW, 0, 0)
+    Handle = CreateFile(Ruta, GENERIC_READ Or GENERIC_WRITE, FILE_SHARE_READ, Nulo, &gt;bBorrar?CREATE_ALWAYS:CREATE_NEW, 0, 0)
     Si (Handle = INVALID_HANDLE) GenerarError errErrorEnArchivo
   FinProc
   Proc Leer(BuffPtr,Longitud:Entero):Entero
@@ -106,16 +106,6 @@ P$FAblico:
     Si (Longitud=0) Salir
     Temp=Espacio(Longitud)
     Leer(CadPtr(Temp),Longitud)
-    Resultado=Temp
-  FinProc
-  Proc LeerEnt():Entero
-    Var Temp:Entero
-    Leer(Temp@,Long(Temp))
-    Resultado=Temp
-  FinProc
-  Proc LeerReal():Real
-    Var Temp:Real
-    Leer(Temp@,Long(Temp))
     Resultado=Temp
   FinProc
   Proc LeerL$EDnea:Cadena
@@ -425,7 +415,7 @@ Proc ExisteArchivo(Arch:Cadena):Booleano
 
   AdmErr
     Crear Temp
-    Temp.Nombre=Arch
+    Temp.Ruta=Arch
     Temp.Abrir
     Resultado=Verd
   Finalmente

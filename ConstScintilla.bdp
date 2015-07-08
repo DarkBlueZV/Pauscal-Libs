@@ -1,46 +1,268 @@
-<Datos><Nombre></Nombre><Icono>AA==</Icono><Version><Mayor>0</Mayor><Menor>0</Menor><Revision>0</Revision><AutoIncr>0</AutoIncr></Version><Info/><Contenido>' Mensajes Scintilla
+<Datos><Nombre></Nombre><Icono>AA==</Icono><Version><Mayor>0</Mayor><Menor>0</Menor><Revision>0</Revision><AutoIncr>0</AutoIncr></Version><Info/><Contenido>Const INVALID_POSITION = -1
 Const SCI_START = 2000
+Const SCI_ADDTEXT = SCI_START + 1
+Const SCI_SETSELBACK = SCI_START + 68
+Const SCI_SETLEXER = 4001
+Const SCLEX_AUTOMATIC = 1000
+
+'-------------------NOTIFICACI$D3N DE EVENTOS-----------------------
+Const SCEN_CHANGE = 768
+Const SCEN_SETFOCUS = 512
+Const SCEN_KILLFOCUS = 256
+Const SCN_STYLENEEDED = 2000
+Const SCN_CHARADDED = 2001
+Const SCN_SAVEPOINTREACHED = 2002
+Const SCN_SAVEPOINTLEFT = 2003
+Const SCN_MODIFYATTEMPTRO = 2004
+Const SCN_DOUBLECLICK = 2006
+Const SCN_UPDATEUI = 2007
+Const SCN_MODIFIED = 2008
+Const SCN_MACRORECORD = 2009
+Const SCN_MARGINCLICK = 2010
+Const SCN_NEEDSHOWN = 2011
+Const SCN_PAINTED = 2013
+Const SCN_USERLISTSELECTION = 2014
+Const SCN_URIDROPPED = 2015
+Const SCN_DWELLSTART = 2016
+Const SCN_DWELLEND = 2017
+
+'-------------------M$C1SCARA DE EVENTOS PARA SCN_MODIFIED----------
+Const SC_MOD_INSERTTEXT = &amp;1
+Const SC_MOD_DELETETEXT = &amp;2
+Const SC_MOD_CHANGESTYLE = &amp;4
+Const SC_MOD_CHANGEFOLD = &amp;8
+Const SC_PERFORMED_USER = &amp;10
+Const SC_PERFORMED_UNDO = &amp;20
+Const SC_PERFORMED_REDO = &amp;40
+Const SC_LASTSTEPINUNDOREDO = &amp;100
+Const SC_MOD_CHANGEMARKER = &amp;200
+Const SC_MOD_BEFOREINSERT = &amp;400
+Const SC_MOD_BEFOREDELETE = &amp;800
+Const SC_MODEVENTMASKALL = &amp;F77
+Const SCI_SETMODEVENTMASK = 2359
+Const SCI_GETMODEVENTMASK = 2378
+
+'-------------------ASIGNACI$D3N DE ESTILOS-----------------------------
+Const STYLE_DEFAULT = 32
+Const SCI_STYLECLEARALL = 2050       '
+Const SCI_STYLESETFORE = 2051
+Const SCI_STYLESETBACK = 2052
+Const SCI_STYLESETBOLD = 2053
+Const SCI_STYLESETITALIC = 2054
+Const SCI_STYLESETSIZE = 2055
+Const SCI_STYLESETFONT = 2056
+Const SCI_STYLESETEOLFILLED = 2057
+Const SCI_STYLERESETDEFAULT = 2058
+Const SCI_STYLESETUNDERLINE = 2059
+Const SCI_STYLESETCASE = 2060
+Const SCI_STYLESETCHARACTERSET = 2066
+Const SCI_STYLESETVISIBLE = 2074
+Const SCI_SETSTYLEBITS = 2090        ' Determinar el n$FAmero de bits adicionales de estilo que se usar$E1n
+Const SCI_SETKEYWORDS = 4005         ' Asignar una lista de palabras clave a Scintilla
+
+'-------------------RECUPERACI$D3N DE TEXTO-----------------------------
+Const SCI_GETTEXT = 2182             ' Recupera el texto del documento. Devuelve el n$FAmero de caracteres recuperados.
+Const SCI_SETTEXT = 2181
+Const SCI_GETLENGTH = 2006           ' Devuelve el n$FAmero de caracteres del documento
+Const SCI_GETCURLINE = 2027          ' Recupera el texto de la l$EDnea actual (que contiene el cursor).
+                                     ' Devuelve, adem$E1s, la posici$F3n del cursor en la l$EDnea.
+Const SCI_GETLINECOUNT = 2154        ' Devuelve el n$FAmero de l$EDneas del documento. Siempre hay al menos una.
+Const SCI_GETTEXTRANGE = 2162        ' Recupera un intervalo de texto; devuelve la longitud del intervalo.
+Const SCI_GETCHARAT = 2007           ' Devuelve el car$E1cter situado en una posici$F3n
+
+'-------------------POSICI$D3N Y CURSOR---------------------------------
+Const SCI_GOTOLINE = 2024            ' Coloca el cursor al inicio de una l$EDnea y la sit$FAa en zona visible.
+Const SCI_GOTOPOS = 2025             ' Coloca el cursor en una posici$F3n y lo sit$FAa en zona visible.
+Const SCI_SETANCHOR = 2026           ' Coloca el ancla de selecci$F3n en una posici$F3n. El anccla es
+                                     ' el final de la selecci$F3n (a partir de la situaci$F3n del cursor).
+Const SCI_GETCURRENTPOS = 2008       ' Devuelve la posici$F3n actual del cursor.
+Const SCI_LINEFROMPOSITION = 2166    ' Devuelve el n$FAmero de l$EDnea de una posici$F3n.
+Const SCI_GETCOLUMN = 2129           ' Devuelve la columna de una posici$F3n
+
+'-------------------M$C1RGENES------------------------------------------
+Const SC_MARGIN_SYMBOL = 0
+Const SC_MARGIN_NUMBER = 1
+Const SCI_SETMARGINTYPEN = 2240      ' Configura un margen como num$E9rico o de s$EDmbolos
+Const SCI_GETMARGINYPEN = 2241       ' Recupera el tipo de margen
+Const SCI_SETMARGINWIDTHN = 2242     ' Fija en pixels el ancho del margen
+Const SCI_GETMARGINWIDTHN = 2243     ' Devuelve los p$EDxeles de ancho de un margen
+Const SCI_SETMARGINMASKN = 2244      ' Determina los marcadores que se mostrar$E1n en un margen usando una m$E1scara.
+Const SCI_GETMARGINMASKN = 2245      ' Devuelve la m$E1scara de un margen
+Const SCI_SETMARGINSENSITIVEN = 2246 ' Hace que un margen sea sensible o no al rat$F3n.
+Const SCI_GETMARGINSENSITIVEN = 2247 ' Devuelve si un margen es sensible o no al rat$F3n.
+
+'-------------------AYUDA CONTEXTUAL----------------------------------
+Const SCI_CALLTIPSHOW = 2200         ' Muestra el globo de ayuda
+Const SCI_CALLTIPCANCEL = 2201       ' Elimina el globo de ayuda
+Const SCI_CALLTIPACTIVE = 2202       ' Indica si existe un globo activo
+Const SCI_CALLTIPPOSSTART = 2203     ' Devuelve la posici$F3n del cursor previa al despliegue del globo.
+Const SCI_CALLTIPSETHLT = 2204       ' Realza un segmento de la definici$F3n
+Const SCI_CALLTIPSETBACK = 2205      ' Asgina un color de fondo al globo
+
+'-------------------FINAL DE L$CDNEA------------------------------------
+Const SCI_GETEOLMODE = 2030          ' Recupera el tipo de fin de l$EDnea vigente: CRLF, CR o LF.
+Const SCI_SETEOLMODE = 2031          ' Fija el tipo de fin de l$EDnea.
+Const SCI_SETVIEWEOL = 2356          ' Hace visibles o invisibles los finales de l$EDnea.
+Const SCI_CONVERTEOLS = 2029        ' Convierte los finales de l$EDnea al final especificado.
+
+'-------------------B$DASQUEDA Y SUSTITUCI$D3N DE TEXTO-------------------
+Const SCFIND_WHOLEWORD = 2           ' Modificadores de b$FAsqueda. Palabra completa.
+Const SCFIND_MATCHCASE = 4           ' Modificadores de b$FAsqueda. Coincidir mays/min.
+Const SCFIND_WORDSTART = &amp;100000     ' Modificadores de b$FAsqueda. Comienzo de palabra.
+Const SCFIND_REGEXP = &amp;200000        ' Modificadores de b$FAsqueda. Expresi$F3n regular.
+
+Const SCI_SETTARGETSTART = 2190      ' Fija la posici$F3n de inicio del intervalo de texto a tratar.
+Const SCI_GETTARGETSTART = 2191      ' Devuelve la posici$F3n de inicio del intervalo.
+Const SCI_SETTARGETEND = 2192        ' Fija la posici$F3n final del intervalo.
+Const SCI_GETTARGETEND = 2193        ' Devuelve la posici$F3n final del intervalo.
+Const SCI_REPLACETARGET = 2194       ' Reemplaza un intervalo de texto. Devuelve la longitud del
+                                     ' texto reemplazado. La cadena puede contener nulos.
+Const SCI_REPLACETARGETRE = 2195     ' B$FAsqueda y reemplazo con expresiones regulares.
+Const SCI_SEARCHINTARGET = 2197      ' B$FAsqueda en el intervalo. Devuelve la longitud del
+                                     ' nuevo intervalo o -1 si no se encuentra.
+Const SCI_SETSEARCHFLAGS = 2198      ' Fija los modificadores de b$FAsqueda.
+Const SCI_GETSEARCHFLAGS = 2199      ' Devuelve los modificadores de b$FAsqueda actuales.
+Const SCI_FINDTEXT = 2150            ' Busca un fragmento de texto en el documento. Devuelve la posici$F3n
+                                     ' si se encuentra o -1 si no.
+                                            
+'-------------------SELECCION DE TEXTO--------------------------------
+Const SCI_SETSELECTIONSTART = 2142   ' Fija el inicio de la selecci$F3n (ancla).
+Const SCI_GETSELECTIONSTART = 2143   ' Devuelve la posici$F3n inicial de una selecci$F3n.
+Const SCI_SETSELECTIONEND = 2144     ' Fija el fin de la selecci$F3n (posici$F3n actual).
+Const SCI_GETSELECTIONEND = 2145     ' Devuelve la posici$F3n final de la selecci$F3n.
+Const SCI_SETSEL = 2160              ' Fija el inicio y el final de la selecci$F3n
+Const SCI_GETSELTEXT = 2161          ' Devuelve la longitud de la selecci$F3n y el texto seleccionado.
+
+'-------------------CORTAR, COPIAR, PEGAR Y DESHACER------------------
+Const SCI_REDO = 2011                ' Vuelve a realizar la siguiente acci$F3n.
+Const SCI_SETUNDOCOLLECTION = 2012   ' Establece si se guardan las acciones en la historia o no.
+Const SCI_CANREDO = 2016             ' Confirma si se puede rehacer.
+Const SCI_GETUNDOCOLLECTION = 2019   ' Verdadero si se est$E1 recolectando la historia de acciones o no.
+Const SCI_CANPASTE = 2173            ' Devuelve verdadero si es posible pegar.
+Const SCI_CANUNDO = 2174             ' Devuelve verdadero si se puede deshacer.
+Const SCI_EMPTYUNDOBUFFER = 2175     ' Borrar el historial de acciones.
+Const SCI_UNDO = 2176                ' Deshacer una acci$F3n del historial.
+Const SCI_CUT = 2177                 ' Corta la selecci$F3n al portapapeles.
+Const SCI_COPY = 2178                ' Copia la selecci$F3n al portapapeles.
+Const SCI_PASTE = 2179               ' Pega el contenido del portapapeles.
+Const SCI_CLEAR = 2180               ' Borra la selecci$F3n.
+
+'-------------------ESPACIOS EN BLANCO--------------------------------
+Const SCI_SETVIEWWS = 2021           ' Hace visibles los espacios en blanco
+
+'-------------------LISTAS AUTOM$C1TICAS--------------------------------
+Const SCI_AUTOCSHOW = 2100           ' Despliega una lista autom$E1tica. Necesita los
+                                            ' par$E1metros (INT LENENTERED, STRING ITEMLIST);
+                                            ' El primero indica cu$E1ntos caracteres antes del
+                                            ' cursor se usar$E1n para buscar en la lista; el
+                                            ' segundo, una lista (separada por espacios),
+                                            ' que se mostrar$E1.
+Const SCI_AUTOCCANCEL = 2101         ' Oculta la lista
+Const SCI_AUTOCACTIVE = 2102         ' Indica si hay una lista visible
+Const SCI_AUTOCPOSSTART = 2103       ' Devuelve la posici$F3n del cursor al desplegar la lista
+Const SCI_AUTOCCOMPLETE = 2104       ' Indica que el usuario ha seleccionado un elemento;
+                                            ' se oculta la lista y se inserta la selecci$F3n
+Const SCI_AUTOCSTOPS = 2105          ' Define un conjunto de caracteres que al ser tecleados
+                                            ' cancelan la lista.
+Const SCI_AUTOCSETSEPARATOR = 2106   ' Cambia el car$E1cter de separaci$F3n de los elementos
+                                            ' de la lista, espacio por defecto.
+Const SCI_AUTOCGETSEPARATOR = 2107   ' Devuelve el car$E1cter de separaci$F3n
+Const SCI_AUTOCSELECT = 2108         ' Selecciona el elemento de la lista que empieza por la cadena
+Const SCI_AUTOCSETCANCELATSTART = 2110 ' Establece la cancelaci$F3n de la lista cuando se vuelve
+                                              ' a la posici$F3n en la que se activ$F3.
+Const SCI_AUTOCGETCANCELATSTART = 2111 ' Si la cancelaci$F3n al regresar a la posici$F3n inicial est$E1
+                                              ' activada.
+Const SCI_AUTOCSETFILLUPS = 2112     ' Define un conjunto de caracteres que al ser tecleados
+                                            ' insertan la palabra seleccionada de la lista.
+'' SHOULD A SINGLE ITEM AUTO-COMPLETION LIST AUTOMATICALLY CHOOSE THE ITEM.
+'Const SCI_AUTOCSETCHOOSESINGLE = 2113
+'
+'' RETRIEVE WHETHER A SINGLE ITEM AUTO-COMPLETION LIST AUTOMATICALLY CHOOSE THE ITEM.
+'Const SCI_AUTOCGETCHOOSESINGLE = 2114
+
+Const SCI_AUTOCSETIGNORECASE = 2115  ' Establece si afectan mays/min a la b$FAsqueda en la lista
+Const SCI_AUTOCGETIGNORECASE = 2116  ' Devuelve si afectan mays/min a la b$FAsqueda en la lista
+Const SCI_AUTOCSETAUTOHIDE = 2118    ' Establece si la lista se oculta si no existen coindicencias.
+Const SCI_AUTOCGETAUTOHIDE = 2119    ' Devuelve el comportamiento de la lista si no existen coincidencias.
+
+' DISPLAY A LIST OF STRINGS AND SEND NOTIFICATION WHEN USER CHOOSES ONE.
+' Const SCI_USERLISTSHOW=2117(INT LISTTYPE, STRING ITEMLIST)
+
+'-------------------CORRESPONDENCIA DE PAR$C9NTESIS---------------------
+' Los caracteres implicados son ( ) [ ] &lt; &gt;
+' El estilo de ambos debe coincidir para encontrar la concordancia
+Const SCI_BRACEHIGHLIGHT = 2351          ' Destaca los brazos en dos posiciones
+Const SCI_BRACEBADLIGHT = 2352           ' Destaca el brazo en una posici$F3n, inicando que no tiene
+                                                ' correspondencia.
+Const SCI_BRACEMATCH = 2353              ' Devuelve la posici$F3n del otro brazo o INVALID_POSITION
+
+
+'-------------------GU$CDAS DE INDENTACI$D3N------------------------------
+Const SCI_SETINDENTATIONGUIDES = 2132    ' Gu$EDas visibles o no
+Const SCI_SETHIGHLIGHTGUIDE = 2134       ' Realza la gu$EDa de una determinada columna
+
+'-------------------CONJUNTOS DE CARACTERES---------------------------
+
+Const SC_CHARSET_ANSI = 0
+Const SC_CHARSET_DEFAULT = 1
+Const SC_CHARSET_BALTIC = 186
+Const SC_CHARSET_CHINESEBIG5 = 136
+Const SC_CHARSET_EASTEUROPE = 238
+Const SC_CHARSET_GB2312 = 134
+Const SC_CHARSET_GREEK = 161
+Const SC_CHARSET_HANGUL = 129
+Const SC_CHARSET_MAC = 77
+Const SC_CHARSET_OEM = 255
+Const SC_CHARSET_RUSSIAN = 204
+Const SC_CHARSET_SHIFTJIS = 128
+Const SC_CHARSET_SYMBOL = 2
+Const SC_CHARSET_TURKISH = 162
+Const SC_CHARSET_JOHAB = 130
+Const SC_CHARSET_HEBREW = 177
+Const SC_CHARSET_ARABIC = 178
+Const SC_CHARSET_VIETNAMESE = 163
+Const SC_CHARSET_THAI = 222
+
+'-------------------MAY$DASCULAS/MIN$DASCULAS-----------------------------
+Const SC_CASE_MIXED = 0
+Const SC_CASE_UPPER = 1
+Const SC_CASE_LOWER = 2
+
+'-------------------BARRA DE DESPLAZAMIENTO HORIZONTAL----------------
+Const SCI_SETHSCROLLBAR = 2130
+
+Const DEFCONST = "defstyles/defstyle[@code="""          ' B$FAsqueda de estilos por defecto
+Const LNGCONST = "languages/language[@name="""          ' B$FAsqueda de lenguaje
+Const STYLECONST = """]/styles/style[@code="""          ' B$FAsqueda de estilo
+Const KEYWCONST = """]/keywordlists/keywords[@code="""  ' B$FAsqueda de palabras reservadas
+Const SQLEND = """]"                                    ' Final para la cadena XPath
+
+' Mensajes Scintilla
 Const SCI_OPTIONAL_START = 3000
 Const SCI_LEXER_START = 4000
-Const SCI_ADDTEXT = 2001
 Const SCI_ADDSTYLEDTEXT = 2002
 Const SCI_INSERTTEXT = 2003
 Const SCI_CHANGEINSERTION = 2672
 Const SCI_CLEARALL = 2004
 Const SCI_DELETERANGE = 2645
 Const SCI_CLEARDOCUMENTSTYLE = 2005
-Const SCI_GETLENGTH = 2006
-Const SCI_GETCHARAT = 2007
-Const SCI_GETCURRENTPOS = 2008
 Const SCI_GETANCHOR = 2009
 Const SCI_GETSTYLEAT = 2010
-Const SCI_REDO = 2011
-Const SCI_SETUNDOCOLLECTION = 2012
 Const SCI_SELECTALL = 2013
 Const SCI_SETSAVEPOINT = 2014
 Const SCI_GETSTYLEDTEXT = 2015
-Const SCI_CANREDO = 2016
 Const SCI_MARKERLINEFROMHANDLE = 2017
 Const SCI_MARKERDELETEHANDLE = 2018
-Const SCI_GETUNDOCOLLECTION = 2019
 Const SCWS_INVISIBLE = 0
 Const SCWS_VISIBLEALWAYS = 1
 Const SCWS_VISIBLEAFTERINDENT = 2
 Const SCI_GETVIEWWS = 2020
-Const SCI_SETVIEWWS = 2021
 Const SCI_POSITIONFROMPOINT = 2022
 Const SCI_POSITIONFROMPOINTCLOSE = 2023
-Const SCI_GOTOLINE = 2024
-Const SCI_GOTOPOS = 2025
-Const SCI_SETANCHOR = 2026
-Const SCI_GETCURLINE = 2027
 Const SCI_GETENDSTYLED = 2028
 Const SC_EOL_CRLF = 0
 Const SC_EOL_CR = 1
 Const SC_EOL_LF = 2
-Const SCI_CONVERTEOLS = 2029
-Const SCI_GETEOLMODE = 2030
-Const SCI_SETEOLMODE = 2031
 Const SCI_STARTSTYLING = 2032
 Const SCI_SETSTYLING = 2033
 Const SCI_GETBUFFEREDDRAW = 2034
@@ -113,23 +335,13 @@ Const SCI_MARKERDEFINEPIXMAP = 2049
 Const SCI_MARKERADDSET = 2466
 Const SCI_MARKERSETALPHA = 2476
 Const SC_MAX_MARGIN = 4
-Const SC_MARGIN_SYMBOL = 0
-Const SC_MARGIN_NUMBER = 1
 Const SC_MARGIN_BACK = 2
 Const SC_MARGIN_FORE = 3
 Const SC_MARGIN_TEXT = 4
 Const SC_MARGIN_RTEXT = 5
-Const SCI_SETMARGINTYPEN = 2240
 Const SCI_GETMARGINTYPEN = 2241
-Const SCI_SETMARGINWIDTHN = 2242
-Const SCI_GETMARGINWIDTHN = 2243
-Const SCI_SETMARGINMASKN = 2244
-Const SCI_GETMARGINMASKN = 2245
-Const SCI_SETMARGINSENSITIVEN = 2246
-Const SCI_GETMARGINSENSITIVEN = 2247
 Const SCI_SETMARGINCURSORN = 2248
 Const SCI_GETMARGINCURSORN = 2249
-Const STYLE_DEFAULT = 32
 Const STYLE_LINENUMBER = 33
 Const STYLE_BRACELIGHT = 34
 Const STYLE_BRACEBAD = 35
@@ -138,40 +350,8 @@ Const STYLE_INDENTGUIDE = 37
 Const STYLE_CALLTIP = 38
 Const STYLE_LASTPREDEFINED = 39
 Const STYLE_MAX = 255
-Const SC_CHARSET_ANSI = 0
-Const SC_CHARSET_DEFAULT = 1
-Const SC_CHARSET_BALTIC = 186
-Const SC_CHARSET_CHINESEBIG5 = 136
-Const SC_CHARSET_EASTEUROPE = 238
-Const SC_CHARSET_GB2312 = 134
-Const SC_CHARSET_GREEK = 161
-Const SC_CHARSET_HANGUL = 129
-Const SC_CHARSET_MAC = 77
-Const SC_CHARSET_OEM = 255
-Const SC_CHARSET_RUSSIAN = 204
 Const SC_CHARSET_CYRILLIC = 1251
-Const SC_CHARSET_SHIFTJIS = 128
-Const SC_CHARSET_SYMBOL = 2
-Const SC_CHARSET_TURKISH = 162
-Const SC_CHARSET_JOHAB = 130
-Const SC_CHARSET_HEBREW = 177
-Const SC_CHARSET_ARABIC = 178
-Const SC_CHARSET_VIETNAMESE = 163
-Const SC_CHARSET_THAI = 222
 Const SC_CHARSET_8859_15 = 1000
-Const SCI_STYLECLEARALL = 2050
-Const SCI_STYLESETFORE = 2051
-Const SCI_STYLESETBACK = 2052
-Const SCI_STYLESETBOLD = 2053
-Const SCI_STYLESETITALIC = 2054
-Const SCI_STYLESETSIZE = 2055
-Const SCI_STYLESETFONT = 2056
-Const SCI_STYLESETEOLFILLED = 2057
-Const SCI_STYLERESETDEFAULT = 2058
-Const SCI_STYLESETUNDERLINE = 2059
-Const SC_CASE_MIXED = 0
-Const SC_CASE_UPPER = 1
-Const SC_CASE_LOWER = 2
 Const SCI_STYLEGETFORE = 2481
 Const SCI_STYLEGETBACK = 2482
 Const SCI_STYLEGETBOLD = 2483
@@ -185,7 +365,6 @@ Const SCI_STYLEGETCHARACTERSET = 2490
 Const SCI_STYLEGETVISIBLE = 2491
 Const SCI_STYLEGETCHANGEABLE = 2492
 Const SCI_STYLEGETHOTSPOT = 2493
-Const SCI_STYLESETCASE = 2060
 Const SC_FONT_SIZE_MULTIPLIER = 100
 Const SCI_STYLESETSIZEFRACTIONAL = 2061
 Const SCI_STYLEGETSIZEFRACTIONAL = 2062
@@ -194,10 +373,8 @@ Const SC_WEIGHT_SEMIBOLD = 600
 Const SC_WEIGHT_BOLD = 700
 Const SCI_STYLESETWEIGHT = 2063
 Const SCI_STYLEGETWEIGHT = 2064
-Const SCI_STYLESETCHARACTERSET = 2066
 Const SCI_STYLESETHOTSPOT = 2409
 Const SCI_SETSELFORE = 2067
-Const SCI_SETSELBACK = 2068
 Const SCI_GETSELALPHA = 2477
 Const SCI_SETSELALPHA = 2478
 Const SCI_GETSELEOLFILLED = 2479
@@ -207,7 +384,6 @@ Const SCI_ASSIGNCMDKEY = 2070
 Const SCI_CLEARCMDKEY = 2071
 Const SCI_CLEARALLCMDKEYS = 2072
 Const SCI_SETSTYLINGEX = 2073
-Const SCI_STYLESETVISIBLE = 2074
 Const SCI_GETCARETPERIOD = 2075
 Const SCI_SETCARETPERIOD = 2076
 Const SCI_SETWORDCHARS = 2077
@@ -259,7 +435,6 @@ Const SCI_SETWHITESPACEFORE = 2084
 Const SCI_SETWHITESPACEBACK = 2085
 Const SCI_SETWHITESPACESIZE = 2086
 Const SCI_GETWHITESPACESIZE = 2087
-Const SCI_SETSTYLEBITS = 2090
 Const SCI_GETSTYLEBITS = 2091
 Const SCI_SETLINESTATE = 2092
 Const SCI_GETLINESTATE = 2093
@@ -269,25 +444,9 @@ Const SCI_SETCARETLINEVISIBLE = 2096
 Const SCI_GETCARETLINEBACK = 2097
 Const SCI_SETCARETLINEBACK = 2098
 Const SCI_STYLESETCHANGEABLE = 2099
-Const SCI_AUTOCSHOW = 2100
-Const SCI_AUTOCCANCEL = 2101
-Const SCI_AUTOCACTIVE = 2102
-Const SCI_AUTOCPOSSTART = 2103
-Const SCI_AUTOCCOMPLETE = 2104
-Const SCI_AUTOCSTOPS = 2105
-Const SCI_AUTOCSETSEPARATOR = 2106
-Const SCI_AUTOCGETSEPARATOR = 2107
-Const SCI_AUTOCSELECT = 2108
-Const SCI_AUTOCSETCANCELATSTART = 2110
-Const SCI_AUTOCGETCANCELATSTART = 2111
-Const SCI_AUTOCSETFILLUPS = 2112
 Const SCI_AUTOCSETCHOOSESINGLE = 2113
 Const SCI_AUTOCGETCHOOSESINGLE = 2114
-Const SCI_AUTOCSETIGNORECASE = 2115
-Const SCI_AUTOCGETIGNORECASE = 2116
 Const SCI_USERLISTSHOW = 2117
-Const SCI_AUTOCSETAUTOHIDE = 2118
-Const SCI_AUTOCGETAUTOHIDE = 2119
 Const SCI_AUTOCSETDROPRESTOFWORD = 2270
 Const SCI_AUTOCGETDROPRESTOFWORD = 2271
 Const SCI_REGISTERIMAGE = 2405
@@ -305,27 +464,19 @@ Const SCI_GETUSETABS = 2125
 Const SCI_SETLINEINDENTATION = 2126
 Const SCI_GETLINEINDENTATION = 2127
 Const SCI_GETLINEINDENTPOSITION = 2128
-Const SCI_GETCOLUMN = 2129
 Const SCI_COUNTCHARACTERS = 2633
-Const SCI_SETHSCROLLBAR = 2130
 Const SCI_GETHSCROLLBAR = 2131
 Const SC_IV_NONE = 0
 Const SC_IV_REAL = 1
 Const SC_IV_LOOKFORWARD = 2
 Const SC_IV_LOOKBOTH = 3
-Const SCI_SETINDENTATIONGUIDES = 2132
 Const SCI_GETINDENTATIONGUIDES = 2133
-Const SCI_SETHIGHLIGHTGUIDE = 2134
 Const SCI_GETHIGHLIGHTGUIDE = 2135
 Const SCI_GETLINEENDPOSITION = 2136
 Const SCI_GETCODEPAGE = 2137
 Const SCI_GETCARETFORE = 2138
 Const SCI_GETREADONLY = 2140
 Const SCI_SETCURRENTPOS = 2141
-Const SCI_SETSELECTIONSTART = 2142
-Const SCI_GETSELECTIONSTART = 2143
-Const SCI_SETSELECTIONEND = 2144
-Const SCI_GETSELECTIONEND = 2145
 Const SCI_SETEMPTYSELECTION = 2556
 Const SCI_SETPRINTMAGNIFICATION = 2146
 Const SCI_GETPRINTMAGNIFICATION = 2147
@@ -336,29 +487,19 @@ Const SC_PRINT_COLOURONWHITE = 3
 Const SC_PRINT_COLOURONWHITEDEFAULTBG = 4
 Const SCI_SETPRINTCOLOURMODE = 2148
 Const SCI_GETPRINTCOLOURMODE = 2149
-Const SCFIND_WHOLEWORD = &amp;2
-Const SCFIND_MATCHCASE = &amp;4
-Const SCFIND_WORDSTART = &amp;00100000
-Const SCFIND_REGEXP = &amp;00200000
 Const SCFIND_POSIX = &amp;00400000
 Const SCFIND_CXX11REGEX = &amp;00800000
-Const SCI_FINDTEXT = 2150
 Const SCI_FORMATRANGE = 2151
 Const SCI_GETFIRSTVISIBLELINE = 2152
 Const SCI_GETLINE = 2153
-Const SCI_GETLINECOUNT = 2154
 Const SCI_SETMARGINLEFT = 2155
 Const SCI_GETMARGINLEFT = 2156
 Const SCI_SETMARGINRIGHT = 2157
 Const SCI_GETMARGINRIGHT = 2158
 Const SCI_GETMODIFY = 2159
-Const SCI_SETSEL = 2160
-Const SCI_GETSELTEXT = 2161
-Const SCI_GETTEXTRANGE = 2162
 Const SCI_HIDESELECTION = 2163
 Const SCI_POINTXFROMPOSITION = 2164
 Const SCI_POINTYFROMPOSITION = 2165
-Const SCI_LINEFROMPOSITION = 2166
 Const SCI_POSITIONFROMLINE = 2167
 Const SCI_LINESCROLL = 2168
 Const SCI_SCROLLCARET = 2169
@@ -366,16 +507,6 @@ Const SCI_SCROLLRANGE = 2569
 Const SCI_REPLACESEL = 2170
 Const SCI_SETREADONLY = 2171
 Const SCI_NULL = 2172
-Const SCI_CANPASTE = 2173
-Const SCI_CANUNDO = 2174
-Const SCI_EMPTYUNDOBUFFER = 2175
-Const SCI_UNDO = 2176
-Const SCI_CUT = 2177
-Const SCI_COPY = 2178
-Const SCI_PASTE = 2179
-Const SCI_CLEAR = 2180
-Const SCI_SETTEXT = 2181
-Const SCI_GETTEXT = 2182
 Const SCI_GETTEXTLENGTH = 2183
 Const SCI_GETDIRECTFUNCTION = 2184
 Const SCI_GETDIRECTPOINTER = 2185
@@ -383,26 +514,11 @@ Const SCI_SETOVERTYPE = 2186
 Const SCI_GETOVERTYPE = 2187
 Const SCI_SETCARETWIDTH = 2188
 Const SCI_GETCARETWIDTH = 2189
-Const SCI_SETTARGETSTART = 2190
-Const SCI_GETTARGETSTART = 2191
-Const SCI_SETTARGETEND = 2192
-Const SCI_GETTARGETEND = 2193
 Const SCI_SETTARGETRANGE = 2686
 Const SCI_GETTARGETTEXT = 2687
 Const SCI_TARGETFROMSELECTION = 2287
 Const SCI_TARGETWHOLEDOCUMENT = 2690
-Const SCI_REPLACETARGET = 2194
-Const SCI_REPLACETARGETRE = 2195
-Const SCI_SEARCHINTARGET = 2197
-Const SCI_SETSEARCHFLAGS = 2198
-Const SCI_GETSEARCHFLAGS = 2199
-Const SCI_CALLTIPSHOW = 2200
-Const SCI_CALLTIPCANCEL = 2201
-Const SCI_CALLTIPACTIVE = 2202
-Const SCI_CALLTIPPOSSTART = 2203
 Const SCI_CALLTIPSETPOSSTART = 2214
-Const SCI_CALLTIPSETHLT = 2204
-Const SCI_CALLTIPSETBACK = 2205
 Const SCI_CALLTIPSETFORE = 2206
 Const SCI_CALLTIPSETFOREHLT = 2207
 Const SCI_CALLTIPUSESTYLE = 2212
@@ -581,16 +697,11 @@ Const SCI_VCHOMEWRAPEXTEND = 2454
 Const SCI_LINECOPY = 2455
 Const SCI_MOVECARETINSIDEVIEW = 2401
 Const SCI_LINELENGTH = 2350
-Const SCI_BRACEHIGHLIGHT = 2351
 Const SCI_BRACEHIGHLIGHTINDICATOR = 2498
-Const SCI_BRACEBADLIGHT = 2352
 Const SCI_BRACEBADLIGHTINDICATOR = 2499
-Const SCI_BRACEMATCH = 2353
 Const SCI_GETVIEWEOL = 2355
-Const SCI_SETVIEWEOL = 2356
 Const SCI_GETDOCPOINTER = 2357
 Const SCI_SETDOCPOINTER = 2358
-Const SCI_SETMODEVENTMASK = 2359
 Const EDGE_NONE = 0
 Const EDGE_LINE = 1
 Const EDGE_BACKGROUND = 2
@@ -611,7 +722,6 @@ Const SCI_GETZOOM = 2374
 Const SCI_CREATEDOCUMENT = 2375
 Const SCI_ADDREFDOCUMENT = 2376
 Const SCI_RELEASEDOCUMENT = 2377
-Const SCI_GETMODEVENTMASK = 2378
 Const SCI_SETFOCUS = 2380
 Const SCI_GETFOCUS = 2381
 Const SC_STATUS_OK = 0
@@ -891,12 +1001,10 @@ Const SCI_GETREPRESENTATION = 2666
 Const SCI_CLEARREPRESENTATION = 2667
 Const SCI_STARTRECORD = 3001
 Const SCI_STOPRECORD = 3002
-Const SCI_SETLEXER = 4001
 Const SCI_GETLEXER = 4002
 Const SCI_COLOURISE = 4003
 Const SCI_SETPROPERTY = 4004
 Const KEYWORDSET_MAX = 8
-Const SCI_SETKEYWORDS = 4005
 Const SCI_SETLEXERLANGUAGE = 4006
 Const SCI_LOADLEXERLIBRARY = 4007
 Const SCI_GETPROPERTY = 4008
@@ -922,18 +1030,7 @@ Const SCI_FREESUBSTYLES = 4023
 Const SCI_SETIDENTIFIERS = 4024
 Const SCI_DISTANCETOSECONDARYSTYLES = 4025
 Const SCI_GETSUBSTYLEBASES = 4026
-Const SC_MOD_INSERTTEXT = &amp;1
-Const SC_MOD_DELETETEXT = &amp;2
-Const SC_MOD_CHANGESTYLE = &amp;4
-Const SC_MOD_CHANGEFOLD = &amp;8
-Const SC_PERFORMED_USER = &amp;10
-Const SC_PERFORMED_UNDO = &amp;20
-Const SC_PERFORMED_REDO = &amp;40
 Const SC_MULTISTEPUNDOREDO = &amp;80
-Const SC_LASTSTEPINUNDOREDO = &amp;100
-Const SC_MOD_CHANGEMARKER = &amp;200
-Const SC_MOD_BEFOREINSERT = &amp;400
-Const SC_MOD_BEFOREDELETE = &amp;800
 Const SC_MULTILINEUNDOREDO = &amp;1000
 Const SC_STARTACTION = &amp;2000
 Const SC_MOD_CHANGEINDICATOR = &amp;4000
@@ -944,14 +1041,10 @@ Const SC_MOD_CONTAINER = &amp;40000
 Const SC_MOD_LEXERSTATE = &amp;80000
 Const SC_MOD_INSERTCHECK = &amp;100000
 Const SC_MOD_CHANGETABSTOPS = &amp;200000
-Const SC_MODEVENTMASKALL = &amp;3FFFFF
 Const SC_UPDATE_CONTENT = &amp;1
 Const SC_UPDATE_SELECTION = &amp;2
 Const SC_UPDATE_V_SCROLL = &amp;4
 Const SC_UPDATE_H_SCROLL = &amp;8
-Const SCEN_CHANGE = 768
-Const SCEN_SETFOCUS = 512
-Const SCEN_KILLFOCUS = 256
 Const SCK_DOWN = 300
 Const SCK_UP = 301
 Const SCK_LEFT = 302
@@ -978,23 +1071,10 @@ Const SCMOD_CTRL = 2
 Const SCMOD_ALT = 4
 Const SCMOD_SUPER = 8
 Const SCMOD_META = 16
-Const SCN_STYLENEEDED = 2000
-Const SCN_CHARADDED = 2001
-Const SCN_SAVEPOINTREACHED = 2002
-Const SCN_SAVEPOINTLEFT = 2003
-Const SCN_MODIFYATTEMPTRO = 2004
 Const SCN_KEY = 2005
-Const SCN_DOUBLECLICK = 2006
-Const SCN_UPDATEUI = 2007
-Const SCN_MODIFIED = 2008
-Const SCN_MACRORECORD = 2009
-Const SCN_MARGINCLICK = 2010
-Const SCN_NEEDSHOWN = 2011
-Const SCN_PAINTED = 2013
-Const SCN_USERLISTSELECTION = 2014
-Const SCN_URIDROPPED = 2015
-Const SCN_DWELLSTART = 2016
-Const SCN_DWELLEND = 2017
+'Const SCN_USERLISTSELECTION = 2014
+'Const SCN_URIDROPPED = 2015
+'Const SCN_DWELLSTART = 2016
 Const SCN_ZOOM = 2018
 Const SCN_HOTSPOTCLICK = 2019
 Const SCN_HOTSPOTDOUBLECLICK = 2020
@@ -1127,7 +1207,6 @@ Const SCLEX_BIBTEX = 116
 Const SCLEX_SREC = 117
 Const SCLEX_IHEX = 118
 Const SCLEX_TEHEX = 119
-Const SCLEX_AUTOMATIC = 1000
 Const SCE_P_DEFAULT = 0
 Const SCE_P_COMMENTLINE = 1
 Const SCE_P_NUMBER = 2

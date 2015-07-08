@@ -1,0 +1,140 @@
+<Datos><Nombre></Nombre><Icono>AA==</Icono><Version><Mayor>0</Mayor><Menor>0</Menor><Revision>0</Revision><AutoIncr>0</AutoIncr></Version><Info/><Contenido>Importar "Interfaces.prp"
+Importar "Utiles.prp"
+
+$24ADV-
+
+Const IID_IUnknown = "{00000000-0000-0000-C000-000000000046}"
+Const CLSID_ITaskbarList = "{56FDF344-FD6D-11D0-958A-006097C9A090}"
+Const IID_ITaskbarList = "{56FDF342-FD6D-11D0-958A-006097C9A090}"
+Const IID_IMalloc = "{00000002-0000-0000-C000-000000000046}"
+
+Const E_ABORT = &amp;80004004					' Operaci$F3n abortada
+Const E_ACCESSDENIED = &amp;80070005			' Acceso general denegado error
+Const E_FAIL = &amp;80004005					' Fallo inespecificado
+Const E_HANDLE = &amp;80070006					' Identificador que no es valido
+Const E_INVALIDARG = &amp;80070057			' Uno o mas argumentos no son validos
+Const E_NOINTERFACE = &amp;80004002			' Interface no soportada
+Const E_NOTIMPL = &amp;80004001				' No implementado
+Const E_OUTOFMEMORY = &amp;8007000E			' Fallo al alojar la memoria nececaria
+Const E_POINTER = &amp;80004003				' Puntero que no es valido
+Const E_UNEXPECTED = &amp;8000FFFF			' Fallo inesperado
+Const CLASS_E_NOAGGREGATION = &amp;80040110
+Const REGDB_E_CLASSNOTREG = &amp;80040154
+Const REGDB_E_READREGDB = &amp;80040150
+Const CO_E_CLASSSTRING = &amp;800401F3
+Const CLSCTX_INPROC_SERVER = &amp;1
+Const CLSCTX_INPROC_HANDLER = &amp;2
+Const CLSCTX_LOCAL_SERVER = &amp;4
+Const CLSCTX_INPROC_SERVER16 = &amp;8
+Const CLSCTX_REMOTE_SERVER = &amp;10
+Const CLSCTX_INPROC_HANDLER16 = &amp;20
+Const CLSCTX_RESERVED1 = &amp;40
+Const CLSCTX_RESERVED2 = &amp;80
+Const CLSCTX_RESERVED3 = &amp;100
+Const CLSCTX_RESERVED4 = &amp;200
+Const CLSCTX_NO_CODE_DOWNLOAD = &amp;400
+Const CLSCTX_RESERVED5 = &amp;800
+Const CLSCTX_NO_CUSTOM_MARSHAL = &amp;1000
+Const CLSCTX_ENABLE_CODE_DOWNLOAD = &amp;2000
+Const CLSCTX_NO_FAILURE_LOG = &amp;4000
+Const CLSCTX_DISABLE_AAA = &amp;8000
+Const CLSCTX_ENABLE_AAA = &amp;10000
+Const CLSCTX_FROM_DEFAULT_CONTEXT = &amp;20000
+Const CLSCTX_ACTIVATE_32_BIT_SERVER = &amp;40000
+Const CLSCTX_ACTIVATE_64_BIT_SERVER = &amp;80000
+Const CLSCTX_ENABLE_CLOAKING = &amp;100000
+Const CLSCTX_APPCONTAINER = &amp;400000
+Const CLSCTX_ACTIVATE_AAA_AS_IU = &amp;800000
+Const CLSCTX_PS_DLL = &amp;80000000
+Const CLSCTX_ALL = CLSCTX_INPROC_SERVER Or CLSCTX_INPROC_HANDLER Or CLSCTX_LOCAL_SERVER Or CLSCTX_REMOTE_SERVER
+
+Proc MostrarGUID(Referencia GUID:GUID,Opcional Hex,Rellenar:Booleano,Opcional T$EDtulo:Cadena = "Pauscal",Opcional Bandera:Entero)
+	Si Hex Entonces
+		Mensaje("Data1 = " + EntHex(GUID.Data1,Rellenar) + CrLf + _
+				  "Data2 = " + EntHex(GUID.Data2,Rellenar) + CrLf + _
+				  "Data3 = " + EntHex(GUID.Data3,Rellenar) + CrLf + _
+				  "Data4[0] = " + EntHex(GUID.Data4[0],Rellenar) + CrLf + _
+				  "Data4[1] = " + EntHex(GUID.Data4[1],Rellenar) + CrLf + _
+				  "Data4[2] = " + EntHex(GUID.Data4[2],Rellenar) + CrLf + _
+				  "Data4[3] = " + EntHex(GUID.Data4[3],Rellenar) + CrLf + _
+				  "Data4[4] = " + EntHex(GUID.Data4[4],Rellenar) + CrLf + _
+				  "Data4[5] = " + EntHex(GUID.Data4[5],Rellenar) + CrLf + _
+				  "Data4[6] = " + EntHex(GUID.Data4[6],Rellenar) + CrLf + _
+				  "Data4[7] = " + EntHex(GUID.Data4[7],Rellenar) + CrLf + _
+				  "GUID = " + GUIDCad(GUID),T$EDtulo,Bandera)
+	SiNo
+		Mensaje("Data1 = " + EntCad(GUID.Data1) + CrLf + _
+				  "Data2 = " + EntCad(GUID.Data2) + CrLf + _
+				  "Data3 = " + EntCad(GUID.Data3) + CrLf + _
+				  "Data4[0] = " + EntCad(GUID.Data4[0]) + CrLf + _
+				  "Data4[1] = " + EntCad(GUID.Data4[1]) + CrLf + _
+				  "Data4[2] = " + EntCad(GUID.Data4[2]) + CrLf + _
+				  "Data4[3] = " + EntCad(GUID.Data4[3]) + CrLf + _
+				  "Data4[4] = " + EntCad(GUID.Data4[4]) + CrLf + _
+				  "Data4[5] = " + EntCad(GUID.Data4[5]) + CrLf + _
+				  "Data4[6] = " + EntCad(GUID.Data4[6]) + CrLf + _
+				  "Data4[7] = " + EntCad(GUID.Data4[7]) + CrLf + _
+				  "GUID = " + GUIDCad(GUID),T$EDtulo,Bandera)
+	FinSi
+FinProc
+
+Proc GenerarGUID:Cadena
+	Var GUID:GUID
+	Si CoCreateGuid(GUID) = 0 Entonces Resultado = GUIDCad(GUID)
+FinProc
+
+Proc GUIDCad(Referencia GUID:GUID):Cadena
+	Resultado = Espacio(80)
+	Si StringFromGUID2(GUID,Resultado,80) = 0 Entonces Resultado = "" ; Salir
+	Resultado = UnicodeACad(Resultado)
+FinProc
+
+Proc CadGuid(Referencia Str:Cadena):GUID
+	Var Caracteres[]:Cadena
+	Caracteres = [Izquierda(Str,1),Derecha(Str,1),Parte(Str,2,CadLong(Str) - 1)]
+	Si (Caracteres[0] &lt;&gt; "{") Y (Caracteres[1] &lt;&gt; "}") Entonces Salir
+	Si CLSIDFromString(CadPtr(CadaUnicode(Str)),Resultado) &lt;&gt; 0 Entonces Salir
+FinProc
+
+Proc GUIDDeProgID(Referencia Str:Cadena):GUID
+	Si CLSIDFromProgID(CadPtr(CadAUnicode(Str)),Resultado) &lt;&gt; S_OK Entonces Salir
+FinProc
+
+Proc COM_Iniciar
+	CoInitialize
+FinProc
+
+Proc IIDDeCad(Referencia Str:Cadena):GUID
+	Si IIDFromString(CadAUnicode(Str),Resultado) Entonces Salir
+FinProc
+
+Proc COM_CrearInstanciaGUID(Referencia GUID:Cadena,Opcional IID:Cadena = "{00000000-0000-0000-C000-000000000046}"):Entero
+	Seleccionar CoCreateInstance(CadGUID(GUID),&amp;0,CLSCTX_ALL,CadGUID(IID),Resultado@)
+		Caso REGDB_E_CLASSNOTREG
+			GenerarError 1, "Una clase especificada no est$E1 registrada en la base de datos de registro."
+		Caso CLASS_E_NOAGGREGATION
+			GenerarError 2, "Esta clase no puede ser creado como parte de un agregado."
+		Caso E_NOINTERFACE
+			GenerarError 3, "La clase especificada no implementa la interfaz requerida, o el control de IUnknown no expone la interfaz solicitada."
+		Caso E_POINTER
+			GenerarError 4, "El par$E1metro ppv es NULO."
+	FinSeleccionar
+FinProc
+
+Proc COM_CrearInstancia(Referencia ProgID:Cadena,Opcional IID:Cadena = "{00000000-0000-0000-C000-000000000046}"):Entero
+	Seleccionar CoCreateInstance(GUIDDeProgID(ProgID),&amp;0,CLSCTX_ALL,CadGUID(IID),Resultado@)
+		Caso REGDB_E_CLASSNOTREG
+			GenerarError 1, "Una clase especificada no est$E1 registrada en la base de datos de registro."
+		Caso CLASS_E_NOAGGREGATION
+			GenerarError 2, "Esta clase no puede ser creado como parte de un agregado."
+		Caso E_NOINTERFACE
+			GenerarError 3, "La clase especificada no implementa la interfaz requerida, o el control de IUnknown no expone la interfaz solicitada."
+		Caso E_POINTER
+			GenerarError 4, "El par$E1metro ppv es NULO."
+	FinSeleccionar
+FinProc
+
+Proc COM_Terminar
+	CoUninitialize
+FinProc
+</Contenido></Datos>

@@ -9,11 +9,27 @@ Prototipo pscEvFormCierra(Referencia Cancelar:Booleano)
 Prototipo pscEvTxtNavegar(Horizontal:Booleano)
 Prototipo pscEvCadNotif(hWnd,Pos:EnteroSig)
 Prototipo pscEvGrphNotif(,:Entero)
-Prototipo PscEvNing(hWnd,Msg,wParam,lParam:Entero):Entero
-Prototipo PscEvClic(Izquierdo:Booleano)
-Prototipo PscEvClicColumn(Columna:Entero)
-'Estruc Variante,iType,reserved,lLen:Entero
-Estruc Variante,Tipo:Word,Reservado:Booleano,Ptr:Entero
+Prototipo PscEvControl(hWnd,Msg,wParam,lParam:Entero)
+Prototipo PscEvClic(Izquierdo:Booleano,Item,SubItem,X,Y:Entero)
+Prototipo PscEvClic2(hWnd:Entero,Izquierdo:Booleano,Item,SubItem,X,Y:Entero)
+Prototipo pscEvNotif2(hWnd:Entero)
+Prototipo pscEvTecla2(hWnd,Tecla:Entero)
+Prototipo PscEvClicColumn(hWnd,Columna:Entero)
+Prototipo PscEvClic3(hWnd:Entero)
+Prototipo pscEvTecla3(hWnd,Posici$F3n:Entero,Opcional,L$EDnea,Teclas:Entero)
+
+Estruc PSCSCINTILLA_EVENTINFO,_
+		 AlCambiar:pscEvTecla2,_
+		 AlCliquear,_
+		 AlDobleCliquear,_
+		 AlCliquearTip:pscEvTecla3,_
+		 AlGanarFoco,_
+		 AlPerderFoco:pscEvNotif2
+
+Estruc PSCICONOBANDEJA_EVENTINFO,_
+		 AlCliquear:PscEvNotif2
+
+Estruc Variante,Tipo,Reservado,Ptr:Entero
 
 Estruc URL_COMPONENTS,_
 		 dwStructSize:Entero,_
@@ -146,6 +162,11 @@ Estruc OPENFILENAME, _
   lpfnHook: Entero, _
   lpTemplateName: Cadena
 
+Estruc NMHDR,_				'
+		 hwndFrom,_			' Una identificador de ventana a el control del mensaje enviado.
+		 idFrom,_			' Un identificador al control que envio el mensaje.
+		 code:Entero		' El c$F3digo de notificaci$F3n.
+
 Estruc COORD, _
   x, _
   y:Word
@@ -209,21 +230,21 @@ Estruc POSANDSIZE, _
   x,y, _
   Width,Height:EnteroSig
 
+		 
+
 Estruc PSCTOOLTIP_EVENTINFO, _
-  AlCliquear:pscEvNotif, _
-  AlDobleCliquear:pscEvNotif,_
-  AlMoverMouse:pscEvMouseMov,_
-  AlApretarBotonMouse:pscEvMouse, _
-  AlSoltarBotonMouse:pscEvMouse
+  AlMostrarse,_
+  AlOcultarse,_
+  AlCliquearEnlace:PcsEvClic3
 
 Estruc PSCFUENTE_EVENTINFO, _
   AlCambiar:pscEvNotif
 
 Estruc PSCVISORLISTA_EVENTINFO,_
 		 AlCliquear,_
-		 AlDobleCliquear:PscEvClic,_
+		 AlDobleCliquear:PscEvClic2,_
 		 AlGanarFoco,_
-		 AlPerderFoco:pscEvNotif,_
+		 AlPerderFoco:pscEvNotif2,_
 		 AlCliquearColumna:PscEvClicColumn
 
 Estruc PSCFORM_EVENTINFO, _
@@ -239,7 +260,11 @@ Estruc PSCFORM_EVENTINFO, _
   AlPerderFoco:pscEvNotif, _
   AlCerrarse:pscEvFormCierra, _
   AlCargarse:pscEvNotif,_
-  Ninguno:PscEvNing
+  VisorLista,_
+  Scintilla,_
+  Tooltip,_
+  IconoBandeja,_
+  Alternativo:PscEvControl
   
 Estruc PSCETIQUETA_EVENTINFO, _
   AlCliquear:pscEvNotif, _
@@ -492,7 +517,7 @@ Estruc hostent, _
 	@h_addr_list:Entero
 	
 'Estruc POINTAPI,X,Y:Entero
-Estruc LPRECT,Left,Top,Right,Bottom:Entero
+'Estruc RECT,Left,Top,Right,Bottom:Entero
 Estruc MOUSEINPUT,Dx,Dy,MouseData,dwFlags,Time,dwExtraInfo:EnteroSig
 Estruc KEYBOARDINPUT,wVk,wScan,dwFlags,time,dwExtraInfo:EnteroSig
 Estruc HARDWAREINPUT, uMsg,wParamL,wParamH:EnteroSig
