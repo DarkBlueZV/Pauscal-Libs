@@ -187,7 +187,7 @@ FinProc
 ' Estado: Funcional
 ' ==================================================================================================================
 Proc FTP_BuscarPrimerArchivo(l_FTPSession:Entero,Referencia s_RemotePath,Matriz[]:Cadena,Opcional l_Flags,l_Context:Entero = 0):Entero
-	Var l_DllStruct:FTPInformaci$F3n
+	Var l_DllStruct:WIN32_FIND_DATA
 	Si s_RemotePath = "" Entonces GenerarError 0,"[FTP_BuscarPrimerArchivo] el primer parametro es vacio."
 	Si (ghWinInet_FTP = Falso) Salir
 	ReDim Matriz,12
@@ -213,7 +213,7 @@ FinProc
 ' Estado: Funcional
 ' ==================================================================================================================
 Proc FTP_BuscarSiguienteArchivo(hFind:Entero,Referencia Matriz[]:Cadena):Booleano
-	Var l_DllStruct:FTPInformaci$F3n
+	Var l_DllStruct:WIN32_FIND_DATA
 	Si (ghWinInet_FTP = Falso) Salir
 	ReDim Matriz,12
 	Repetir

@@ -198,12 +198,13 @@ Proc LLamar(Referencia Lib,Func:Cadena,Parametros[]:Entero,Opcional Cdecl:Boolea
 	Si Ptr = 0 Entonces GenerarError 2, "Funci$F3n no encontrada."
 	FreeLibrary(Ptr) ; i = LongMat(Parametros)
 	AdmErr
-		'ShellCode = [&amp;50]
-		Repetir
-			i = i - 1
-			ShellCode = ShellCode + [&amp;68] + EntMatByte(Parametros[i]) ' PUSH Parametro[i]
-		HastaQue i &lt;= 0
-		ShellCode = ShellCode + [&amp;B8] + EntMatByte(Ptr) + [&amp;FF,&amp;D0] + (&gt;(Cdecl)?[&amp;5C,&amp;C2,&amp;10,&amp;00]:[&amp;C2]) ' Push CALL Funci$F3n
+		Si i Entonces
+			Repetir
+				i = i - 1
+				ShellCode = ShellCode + [&amp;68] + EntMatByte(Parametros[i]) ' PUSH Parametro[i]
+			HastaQue i &lt;= 0
+		FinSi
+		ShellCode = ShellCode + [&amp;E8] + EntMatByte(Ptr) + [&amp;FF,&amp;D0] + (&gt;(Cdecl Y i)?[&amp;5C,&amp;C3]:[&amp;C3]) ' Push CALL Funci$F3n
 		l@ = ShellCode[0]@ ; Resultado = l
 	Controlar i
 		Mensaje("Error desconocido." + CrLf + "Valor del error: " + EntCad(i),"Error",PscCr$EDtico)
@@ -216,5 +217,23 @@ FinProc
 
 Proc CreateWindow(Referencia a,b:Cadena,c,d,e,f,g,h,i,j,k:Entero):Entero
 	Resultado = CreateWindowEx(0,a,b,c,d,e,f,g,h,i,j,k)
+FinProc
+
+' Este es un prototipo de funci$F3n que permite llamar a otras funciones.
+' Contiene algunos errores al llamar a procedimientos con parametros de cadena.
+Proc LLamarFunci$F3n(Direcci$F3n,Parametros[]:Entero):Entero
+	Var ShellCode[]:Byte,i:Entero,l:PscCallProc
+	AdmErr
+		i = LongMat(Parametros)
+		'ShellCode = [&amp;50]
+		Repetir
+			i = i - 1
+			ShellCode = ShellCode + [&amp;68] + EntMatByte(Parametros[i]) ' PUSH Parametro[i]
+		HastaQue i &lt;= 0
+		ShellCode = ShellCode + [&amp;B8] + EntMatByte(Direcci$F3n) + [&amp;FF,&amp;D0,&amp;C3]
+		l@ = ShellCode[0]@ ; Resultado = l
+	Controlar i
+		Mensaje("Error desconocido." + CrLf + "Valor del error: " + EntCad(i),"Error",PscCr$EDtico)
+	FinAdmErr
 FinProc
 </Contenido></Datos>

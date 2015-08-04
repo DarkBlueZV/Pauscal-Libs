@@ -23,6 +23,5 @@ Importar "Archivos.prp"
 Importar "Win.prp"
 Importar "Encriptar.prp"
 Importar "Teclado.prp"
-Importar "Temporizador.prp"
 Importar "ConstIpaError.prp"
 </Contenido></Datos>

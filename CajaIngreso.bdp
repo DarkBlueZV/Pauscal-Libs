@@ -1,0 +1,150 @@
+<Datos><Nombre></Nombre><Icono>AA==</Icono><Version><Mayor>0</Mayor><Menor>0</Menor><Revision>0</Revision><AutoIncr>0</AutoIncr></Version><Info/><Contenido>'Archivo generado por Visual Pauscal
+'El c$F3digo de los eventos y dem$E1s procedimientos
+'se encuentra al final de este archivo
+
+$24ADV-
+
+Importar "WinCtrls.prp"
+Importar "PscBoton.prp"
+Importar "PscEtiqueta.prp"
+Importar "PscCajaTexto.prp"
+
+Privado:
+
+Clase c_Form1(pscForm)
+P$FAblico:
+
+  ClaseVar _
+    Control4:pscBoton, _
+    Control3:pscBoton, _
+    Control2:pscEtiqueta, _
+    Control1:pscCajaTexto
+
+Privado:
+  Proc Init
+    X=0
+    Y=0
+    Ancho=392
+    Alto=136
+    Texto="Caja de escritura"
+    Visible=Verd
+    Habilitado=Verd
+    PuedeCambiarDeTama$F1o=Verd
+    BotonMaximizar=Verd
+    BotonMinimizar=Verd
+    MenuSistema=Verd
+    Borde=Verd
+    Eval Eventos
+    FinEval
+    CrearForm
+    Crear Control4
+    Eval Control4
+      .Padre = EsteObjeto
+      .X=8
+      .Y=64
+      .Ancho=89
+      .Alto=25
+      .Texto="Cancelar"
+      .Visible=Verd
+      .Habilitado=Verd
+      Eval .Eventos
+        .AlCliquear@=f0_Control4_AlCliquear@
+      FinEval
+    FinEval
+    Crear Control3
+    Eval Control3
+      .Padre = EsteObjeto
+      .X=280
+      .Y=64
+      .Ancho=89
+      .Alto=25
+      .Texto="Aceptar"
+      .Visible=Verd
+      .Habilitado=Verd
+      Eval .Eventos
+        .AlCliquear@=f0_Control3_AlCliquear@
+      FinEval
+    FinEval
+    Crear Control2
+    Eval Control2
+      .Padre = EsteObjeto
+      .X=8
+      .Y=32
+      .Ancho=360
+      .Alto=17
+      .Texto="Texto Informaci$F3n"
+      .Visible=Verd
+      .Habilitado=Verd
+      Eval .Eventos
+      FinEval
+    FinEval
+    Crear Control1
+    Eval Control1
+      .Padre = EsteObjeto
+      .X=8
+      .Y=8
+      .Ancho=360
+      .Alto=19
+      .Texto="Ingrese los datos requeridos..."
+      .Visible=Verd
+      .Habilitado=Verd
+      Eval .Eventos
+      FinEval
+    FinEval
+  FinProc
+P$FAblico:
+  Proc CargarForm
+    Si (hWnd=0)
+      Init
+      Control4.CargarBoton(hWnd)
+      Control3.CargarBoton(hWnd)
+      Control2.CargarEtiqueta(hWnd)
+      Control1.CargarCajaTexto(hWnd)
+      FormCargado
+    FinSi
+  FinProc
+  Proc Mostrar(Opcional EsModal:Booleano)
+    CargarForm
+    Si (EsModal) MostrarModalInt; SiNo; MostrarInt
+  FinProc
+
+'Eventos
+
+  Proc Control4_AlCliquear() Adelantado
+  Proc Control3_AlCliquear() Adelantado
+
+FinClase
+
+'Alias
+
+Proc f0_Control4_AlCliquear()
+  Form1.Control4_AlCliquear()
+FinProc
+Proc f0_Control3_AlCliquear()
+  Form1.Control3_AlCliquear()
+FinProc
+
+Proc c_Form1.Control4_AlCliquear()
+	dTa = "" ; Programa.Terminar
+FinProc
+
+Proc c_Form1.Control3_AlCliquear()
+	dTa = Control1.Texto ; Programa.Terminar
+FinProc
+
+Var Form1:c_Form1
+Var dTa:Cadena
+
+P$FAblico:
+
+Proc CajaIngreso(Opcional Texto:Cadena = "",Opcional Texto2:Cadena = "Ingrese los datos requeridos...",Opcional T$EDtulo:Cadena = "Caja de escritura"):Cadena
+  Crear Form1
+  Form1.CargarForm
+  Form1.Mostrar
+  Form1.Texto = T$EDtulo
+  Form1.Control1.Texto = Texto2
+  Form1.Control2.Texto = Texto
+  Programa.Ejecutar
+  Devolver dTa
+FinProc
+</Contenido></Datos>

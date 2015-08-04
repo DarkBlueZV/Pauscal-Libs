@@ -529,18 +529,6 @@ Estruc INPUT,Tipo:Entero,Union:Mikihi
 '   dwHighDateTime:Entero
 
 
-Estruc FTPInformaci$F3n, _
-   dwFileAttributes:Entero, _
-   ftCreationTime, _
-   ftLastAccessTime, _
-   ftLastWriteTime:FILETIME, _
-   nFileSizeHigh, _
-   nFileSizeLow, _
-   dwReserved0, _
-   dwReserved1:Entero, _
-   cFileName[255]:Byte, _
-   cAlternateFileName[14]:Byte
-
 Estruc PSCPINCEL_EVENTINFO, _
   AlCambiar:pscEvGrphNotif
 

@@ -26,11 +26,11 @@ Proc pscTooltip_wndproc(hWnd,Msg,wParam,lParam:Entero)
 		Si Hdr@
 			Seleccionar hdr.code
 				Caso TTN_SHOW ' Notifica la ventana due$F1o que un control de informaci$F3n sobre herramientas est$E1 a punto de ser visualizada.
-					Si (Eventos.AlMostrarse@) Entonces (Eventos.AlMostrarse(hdr.hwndfrom))
+					'Si Eventos.AlMostrarse@ Eventos.AlMostrarse(hdr.hwndfrom)
 				Caso TTN_POP ' Notifica la ventana due$F1o que una informaci$F3n sobre herramientas est$E1 a punto de ocultarse.
-					Si Eventos.AlOcultarse@ Entonces Eventos.AlOcultarse(hdr.hwndfrom)
+					'Si Eventos.AlOcultarse@ Entonces Eventos.AlOcultarse(hdr.hwndfrom)
 				Caso TTN_LINKCLICK ' Se env$EDa cuando se hace clic en un enlace de texto dentro de una informaci$F3n sobre herramientas de globo.
-					Si Eventos.AlCliquearEnlace@ Entonces Eventos.AlCliquearEnlace(hdr.hwndfrom)
+					'Si Eventos.AlCliquearEnlace@ Entonces Eventos.AlCliquearEnlace(hdr.hwndfrom)
 			FinSeleccionar
 		FinSi
 	FinSi
@@ -220,7 +220,7 @@ P$FAblico: ' Propiedades p$FAblicas.
 		Si hwndTooltip &lt;&gt; 0 Entonces DestroyWindow(hwndTooltip) ' Destruimos la ventana si es que existe.
 	   hwndTooltip = CreateWindowEx(0,TOOLTIPS_CLASS,NULL,EstiloT,CW_USEDEFAULT,CW_USEDEFAULT,CW_USEDEFAULT,CW_USEDEFAULT,hWndPadre,0,Instancia,Nulo)
 	   Si hwndTooltip = 0 Entonces Salir
-	   EVENT = Eventos@
+	   'EVENT = Eventos@
 		Eval tt
 			.lSize = Long(tt)
 			.hwnd = hWndPadre
@@ -235,7 +235,7 @@ P$FAblico: ' Propiedades p$FAblicas.
 		SendMessage(hwndTooltip,TTM_SETDELAYTIME,TTDT_AUTOPOP,LOWORD(mvarVisibleTime))
 		SendMessage(hwndTooltip,TTM_SETDELAYTIME,TTDT_INITIAL,LOWORD(mvarDelayTime))
 		SendMessage(hwndTooltip, TTM_ADDTOOLA, 0, tt@)
-		Padre.Eventos.Tooltip@ = pscTooltip_wndproc@
+		'Padre.Eventos.Tooltip@ = pscTooltip_wndproc@
 	FinProc
 FinClase
 </Contenido></Datos>

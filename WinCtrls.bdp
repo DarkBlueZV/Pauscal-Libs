@@ -431,7 +431,7 @@ Privado:
       Longit=GetWindowTextLength(ObjHwnd)*2
       iTexto=Espacio(Longit)
       GetWindowText(ObjHwnd,iTexto,Longit)
-      Devolver TruncarCadena(iTexto)
+      Devolver Parte(iTexto,1,Buscar(iTexto,Null))
     SiNo
       Devolver iTexto
     FinSi

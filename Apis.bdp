@@ -1,5 +1,81 @@
 <Datos><Nombre></Nombre><Icono>AA==</Icono><Version><Mayor>0</Mayor><Menor>0</Menor><Revision>0</Revision><AutoIncr>0</AutoIncr></Version><Info/><Contenido>Importar "Estructuras.prp"
+Importar "MSVBVM60.prp"
 
+Proc memcpy(,,:Entero):Entero, "msvcrt"
+Proc memmove(,,:Entero):Entero, "msvcrt"
+Proc strcpy (Referencia,:Cadena):Entero, "msvcrt"
+Proc strncpy(Referencia,:Cadena,:Entero):Entero, "msvcrt"
+Proc strcat(Referencia,:Cadena):Entero, "msvcrt"
+Proc strncat(Referencia,:Cadena,:Entero):Entero, "msvcrt"
+Proc memcmp(,,:Entero):Entero, "msvcrt"
+Proc strcmp(Referencia,:Cadena):Entero, "msvcrt"
+Proc strcoll(Referencia,:Cadena):Entero, "msvcrt"
+Proc strncmp(Referencia,:Cadena):Entero, "msvcrt"
+Proc strxfrm(Referencia,:Cadena,:Entero):Entero, "msvcrt"
+Proc memchr(,,:Entero):Entero, "msvcrt"
+Proc strchr(,:Entero):Entero, "msvcrt"
+Proc strcspn(Referencia,:Cadena):Entero, "msvcrt"
+Proc strpbrk(Referencia,:Cadena):Entero, "msvcrt"
+Proc strrchr(Referencia,:Cadena):Entero, "msvcrt"
+Proc strspn(Referencia,:Cadena):Entero, "msvcrt"
+Proc strstr(Referencia,:Cadena):Entero, "msvcrt"
+Proc strtok(,:Entero):Entero, "msvcrt"
+Proc memset(,,:Entero):Entero, "msvcrt"
+Proc strerror(:Entero):Entero, "msvcrt"
+Proc puts(Referencia:Cadena):Entero, "msvcrt"
+Proc printf(Referencia:Cadena,Opcional:Entero):Entero, "msvcrt"
+Proc rand:Entero, "msvcrt"
+Proc srand(:Entero), "msvcrt"
+Proc abort, "msvcrt"
+Proc abs(:Entero):Entero, "msvcrt"
+Proc labs(:EnteroSig):EnteroSig, "msvcrt"
+Proc atexit(:Entero):Entero, "msvcrt"
+Proc atof(Referencia:Cadena):Real, "msvcrt"
+Proc atoi(Referencia:Cadena):Entero, "msvcrt"
+Proc atol(Referencia:Cadena):EnteroSig, "msvcrt"
+Proc calloc(,:Entero):Entero, "msvcrt"
+Proc free(:Entero), "msvcrt"
+Proc realloc(,:Entero):Entero, "msvcrt"
+Proc exit(:Entero), "msvcrt"
+Proc getenv(Referencia:Cadena):Entero, "msvcrt"
+Proc malloc(:Entero):Entero, "msvcrt"
+Proc mblen(Referencia:Cadena,:Entero):Entero, "msvcrt"
+Proc mbstowcs(Referencia,:Cadena,:Entero):Entero, "msvcrt"
+Proc mbtowc(Referencia,:Cadena,:Entero):Entero, "msvcrt"
+Proc MessageBoxW(:Entero,Referencia,:Cadena,:Entero):Entero, "User32.dll"
+Proc strtod(Referencia:Cadena,:Entero):Real, "msvcrt"
+Proc strtol(Referencia:Cadena,:Entero):EnteroSig, "msvcrt"
+Proc strtold(Referencia:Cadena,:Entero):Decimal, "msvcrt"
+Proc strtoll(Referencia:Cadena,:Entero):Decimal, "msvcrt"
+Proc DosDateTimeToVariantTime(wDosDate,wDosTime:Word,Referencia pvtime:Real):Entero, "OleAut32.dll"
+Proc VarCyAbs(cyIn:Decimal,Referencia pcyResult:Decimal):Entero, "OleAut32.dll"
+Proc VarCyAdd(cyLeft,CyRight:Decimal,Referencia pcyResult:Decimal):Entero, "OleAut32.dll"
+Proc VarCyCmp(cyLeft,cyRight:Decimal):Entero, "OleAut32.dll"
+Proc VarCyCmpR8(cyLeft:Decimal,dblRight:Real):Entero, "OleAut32.dll"
+Proc VarCyFix(cyIn:Decimal,Referencia pcyResult:Decimal):Entero, "OleAut32.dll"
+Proc VarCyInt(cyIn:Decimal,Referencia pcyResult:Decimal):Entero, "OleAut32.dll"
+Proc VarCyMul(cyLeft,CyRight:Decimal,Referencia pcyResult:Decimal):Entero, "OleAut32.dll"
+Proc VarCyMulI4(cyLeft:Decimal,CyRight:Entero,Referencia pcyResult:Decimal):Entero, "OleAut32.dll"
+Proc VarCyMulI8(cyLeft,CyRight:Decimal,Referencia pcyResult:Decimal):Entero, "OleAut32.dll"
+Proc VarCyNeg(cyIn:Decimal,Referencia pcyResult:Decimal):Entero, "OleAut32.dll"
+Proc VarCyRound(cyIn:Decimal,cDecimals:Entero,Referencia pcyResult:Decimal):Entero, "OleAut32.dll"
+Proc VarCySub(cyLeft,CyRight:Decimal,Referencia pcyResult:Decimal):Entero, "OleAut32.dll"
+Proc BstrFromVector(ptrWVector,ptrbstr:Entero):Entero, "OleAut32.dll"
+Proc VectorFromBstr(ptrbstr,ppsa:Entero):Entero, "OleAut32.dll"
+Proc SysAllocString(Referencia psz:Cadena):Cadena, "OleAut32.dll"
+Proc SysAllocStringByteLen(Referencia psz:Cadena,len:Entero):Cadena, "OleAut32.dll"
+Proc SysAllocStringLen(Referencia strIn:Cadena,ui:Entero):Cadena, "OleAut32.dll"
+Proc SysFreeString(Referencia bstrString:Cadena), "OleAut32.dll"
+Proc SysReAllocString(Referencia pbstr,psz:Cadena):Entero, "OleAut32.dll"
+Proc SysReAllocStringLen(Referencia pbstr,psz:Cadena,len:Entero):Entero, "OleAut32.dll"
+Proc SysStringByteLen(Referencia bstr:Cadena):Entero, "OleAut32.dll"
+Proc SysStringLen(Referencia bstr:Cadena):Entero, "OleAut32.dll"
+Proc VariantInit(pvarg:Entero), "OleAut32.dll"
+Proc VariantCopy(pvargDest,pvargSrc:Entero):Entero, "OleAut32.dll"
+Proc VariantCopyInd(pvargDest,pvargSrc:Entero):Entero, "OleAut32.dll"
+Proc VariantClear(pvarg:Entero):Entero, "OleAut32.dll"
+Proc VariantChangeType(pvargDest,pvargSrc:Entero,wFlags:Word,vt:Entero):Entero, "OleAut32.dll"
+Proc VariantChangeTypeEx(pvargDest,pvargSrc,lcid:Entero,wFlags:Word,vt:Entero):Entero, "OleAut32.dll"
 Proc IIDFromString(:Cadena,Referencia:GUID):Entero, "Ole32.dll"
 Proc CoCreateInstance(Referencia rclsid:GUID,pUnkOuter,dwClsContext:Entero,Referencia riid:GUID,IUnknown:Entero):Entero, "Ole32.dll"
 Proc CLSIDFromString(GUID:Entero,Referencia Str:GUID):Entero, "Ole32.dll"
@@ -116,14 +192,6 @@ Proc lstrcmpi(Referencia lpString1,lpString2:Cadena):Entero,"Kernel32.dll" "lstr
 Proc CreateDirectory(Referencia lpPathName:Cadena,Referencia lpSecurityAttributes:SECURITY_ATTRIBUTES):Entero,"Kernel32.dll"
 Proc BringWindowToTop(hwnd:Entero):Entero,"User32.dll"
 Proc vbaLenBstr(Referencia Ptr:Cadena):Entero,"MSVBVM60" "__vbaLenBstrB"
-Proc rtcSpaceBstr(Longeur:Entero):Cadena,"MSVBVM60"
-Proc rtcStrReverse(sStr:Cadena):Cadena,"MSVBVM60"
-Proc rtcBstrFromAnsi(bChr:Byte):Cadena,"MSVBVM60"
-Proc rtcLeftCharBstr(Referencia sStr:Cadena,iLen:Entero):Cadena,"MSVBVM60"
-Proc rtcRightCharBstr(Referencia sStr:Cadena,iLen:Entero):Cadena,"MSVBVM60"
-Proc rtcTrimBstr(Referencia ItemPtr:Cadena):Cadena,"MSVBVM60"
-Proc rtcLeftTrimBstr(Referencia ItemPtr:Cadena):Cadena,"MSVBVM60"
-Proc rtcRightTrimBstr(Referencia ItemPtr:Cadena):Cadena,"MSVBVM60"
 Proc GetTcpStatistics(pStats:PMIB_TCPSTATS):Entero,"iphlpapi"
 Proc IsDebuggerPresent():Entero,"Kernel32.dll"
 Proc IsValidURL(pbc:Entero,Referencia szURL:Cadena,dwReserved:Entero):Entero,"URLMON.DLL"
@@ -140,16 +208,6 @@ Proc VirtualAlloc(lpAddress,dwSize,flAllocationType,flProtect:Entero):Entero,"Ke
 Proc FatalExit(code:Entero),"Kernel32.dll"
 Proc FatalAppExit(uAction:Entero,Referencia lpMessageText:Cadena),"Kernel32.dll" "FatalAppExitA"
 Proc FreeLibrary(hLibModule:Entero):Entero,"Kernel32.dll"
-Proc vbaStrI2(Number:WordSig):Cadena,"MSVBVM60" "__vbaStrI2" ' Indocumentado ;)
-Proc vbaStrI4(Number:EnteroSig):Cadena,"MSVBVM60" "__vbaStrI4" ' Indocumentado ;)
-Proc vbaStrCy(Number:Decimal):Cadena,"MSVBVM60" "__vbaStrCy" ' Indocumentado ;)
-Proc vbaStrR8(Number:Real):Cadena,"MSVBVM60" "__vbaStrR8" ' Indocumentado ;)
-Proc vbaStrUI1(Number:Byte):Cadena,"MSVBVM60" "__vbaStrUI1" ' Indocumentado ;)
-Proc vbaI2Str(Referencia Number:Cadena):WordSig,"MSVBVM60" "__vbaI2Str" ' Indocumentado ;)
-Proc vbaI4Str(Referencia Number:Cadena):EnteroSig,"MSVBVM60" "__vbaI4Str" ' Indocumentado ;)
-Proc vbaCyStr(Referencia Number:Cadena):Decimal,"MSVBVM60" "__vbaCyStr" ' Indocumentado ;)
-Proc vbaR8Str(Referencia Number:Cadena):Real,"MSVBVM60" "__vbaR8Str" ' Indocumentado ;)
-Proc vbaUI1Str(Referencia Number:Cadena):Byte,"MSVBVM60" "__vbaUI1Str" ' Indocumentado ;)
 Proc DirectDrawCreate(,,:Entero):Entero,"ddraw"
 Proc DirectDrawCreateEx(,,,:Entero):Entero,"ddraw"
 Proc DirectDrawEnumerate(,:Entero):Entero,"ddraw" "DirectDrawEnumerateA"
@@ -166,12 +224,12 @@ Proc GdiplusShutdown(:Entero),"gdiplus"
 Proc SetPixelV(,,,:Entero):Booleano,"gdi32"
 Proc GdipLoadImageFromFile(:Entero,Referencia:Entero):Entero,"gdiplus"'(filename,himage)
 Proc GdipCreateFromHWND(:Entero,Referencia:Entero):Entero,"gdiplus"'(hwnd,hgraphic)
-Proc GdipCreateFromHDC(:Entero,Referencia:Entero):Entero,"gdiplus"'(hdc,&amp;graphics)
+Proc GdipCreateFromHDC(:Entero,Referencia:Entero):Entero,"gdiplus"'(hdc,&amp;amp;graphics)
 Proc GdipDrawImage(,,,:Entero):Entero,"gdiplus"'(hgraphic,himage,x,y)
 Proc GdipDrawImageI(,,,:Entero):Entero,"gdiplus"'(hgraphic,himage,x,y)
 Proc GdipDrawImageRectI(,,,,,:EnteroSig):Entero,"gdiplus"'(hgraphic,himage,x,y,width,height)
-Proc GdipGetImageWidth(:Entero,Referencia:Entero):Entero,"gdiplus"'(nativeImage,&amp;width)
-Proc GdipGetImageHeight(:Entero,Referencia:Entero):Entero,"gdiplus"'(nativeImage,&amp;height)
+Proc GdipGetImageWidth(:Entero,Referencia:Entero):Entero,"gdiplus"'(nativeImage,&amp;amp;width)
+Proc GdipGetImageHeight(:Entero,Referencia:Entero):Entero,"gdiplus"'(nativeImage,&amp;amp;height)
 Proc GdipDeleteGraphics(:Entero),"gdiplus"'(nativeGraphics)
 Proc GdipDisposeImage(:Entero),"gdiplus"'(gpdstBitmap)
 Proc GdipSetRenderingOrigin(,,:Entero):Entero,"gdiplus"'nativeGraphics,x,y
@@ -419,8 +477,8 @@ Proc FtpRenameFile(hConnect:Entero,Referencia lpszExisting,lpszNew:Cadena):Boole
 Proc FtpGetFileSize(hFile:Entero,lpdwFileSizeHigh:Entero):Entero,"Wininet.dll" 
 Proc FtpDeleteFile(hFtpSession:Entero,Referencia lpszFileName:Cadena):Booleano,"Wininet.dll" "FtpDeleteFileA"
 Proc FtpGetFile(hConnect:Entero,Referencia lpszRemoteFile,lpszNewFile:Cadena,fFailIfExists,dwFlagsAndAttributes,dwFlags,dwContext:Entero):Booleano,"Wininet.dll" "FtpGetFileA"
-Proc FtpFindFirstFile(hFtpSession:Entero,Referencia lpszSearchFile:Cadena,Referencia lpFindFileData:FTPInformaci$F3n,dwFlags,dwContent:Entero):Entero,"Wininet.dll" "FtpFindFirstFileA"
-Proc InternetFindNextFile(hFind:Entero,Referencia lpvFindData:FTPInformaci$F3n):Booleano,"Wininet.dll" "InternetFindNextFileA"
+Proc FtpFindFirstFile(hFtpSession:Entero,Referencia lpszSearchFile:Cadena,Referencia lpFindFileData:WIN32_FIND_DATA,dwFlags,dwContent:Entero):Entero,"Wininet.dll" "FtpFindFirstFileA"
+Proc InternetFindNextFile(hFind:Entero,Referencia lpvFindData:WIN32_FIND_DATA):Booleano,"Wininet.dll" "InternetFindNextFileA"
 Proc FtpGetCurrentDirectory(hConnect:Entero,Referencia lpszDirectory:Cadena,lpdwCurrentDirectory:Entero):Booleano,"Wininet.dll" "FtpGetCurrentDirectoryA"
 Proc FtpSetCurrentDirectory(hConnect:Entero,Referencia lpszDirectory:Cadena):Booleano,"Wininet.dll" "FtpSetCurrentDirectoryA"
 Proc GetPrivateProfileString(Referencia lpApplicationName,lpKeyName,lpDefault,lpReturnedString:Cadena,nSize:Entero,Referencia lpFileName:Cadena):Entero,"Kernel32.dll" "GetPrivateProfileStringA"

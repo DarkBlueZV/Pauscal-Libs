@@ -1,0 +1,38 @@
+<Datos><Nombre></Nombre><Icono>AA==</Icono><Version><Mayor>0</Mayor><Menor>0</Menor><Revision>0</Revision><AutoIncr>0</AutoIncr></Version><Info/><Contenido>' Programador: Yuki
+' Formato de cadenas: Unicode
+' Estado de funciones: Indocumentadas
+' Cantidad de funciones declaradas: 26
+
+' Miscel$E1neos
+Proc IsEmpty(Referencia:Cadena):Booleano, "msvbvm60" "rtcIsEmpty"
+Proc IsNull(Referencia:Cadena):Booleano, "msvbvm60" "rtcIsNull"
+Proc IsArray(:Entero):Booleano, "msvbvm60" "rtcIsArray"
+Proc IsNumeric(Referencia:Cadena):Booleano, "msvbvm60" "rtcIsNumeric"
+Proc VarType(:Entero):Entero, "msvbvm60" "rtcVarType"
+Proc IsObject(:Entero):Booleano, "msvbvm60" "rtcIsObject"
+Proc DoEvents, "msvbvm60" "rtcDoEvents" ' Totalmente funcional.
+Proc VarPtr(Str:Cadena):Entero, "msvbvm60"
+
+' Conversi$F3n de datos.
+Proc vbaStrI2(Number:WordSig):Cadena,"MSVBVM60" "__vbaStrI2"
+Proc vbaStrI4(Number:EnteroSig):Cadena,"MSVBVM60" "__vbaStrI4"
+Proc vbaStrCy(Number:Decimal):Cadena,"MSVBVM60" "__vbaStrCy"
+Proc vbaStrR8(Number:Real):Cadena,"MSVBVM60" "__vbaStrR8"
+Proc vbaStrUI1(Number:Byte):Cadena,"MSVBVM60" "__vbaStrUI1"
+Proc vbaI2Str(Referencia Number:Cadena):WordSig,"MSVBVM60" "__vbaI2Str"
+Proc vbaI4Str(Referencia Number:Cadena):EnteroSig,"MSVBVM60" "__vbaI4Str"
+Proc vbaCyStr(Referencia Number:Cadena):Decimal,"MSVBVM60" "__vbaCyStr"
+Proc vbaR8Str(Referencia Number:Cadena):Real,"MSVBVM60" "__vbaR8Str"
+Proc vbaUI1Str(Referencia Number:Cadena):Byte,"MSVBVM60" "__vbaUI1Str"
+
+' Cadenas
+Proc Space(Longeur:Entero):Cadena,"MSVBVM60" "rtcSpaceBstr"
+Proc StrReverse(sStr:Cadena):Cadena,"MSVBVM60" "rtcStrReverse"
+Proc Chr(bChr:Byte):Cadena,"MSVBVM60" "rtcBstrFromAnsi"
+Proc Left(Referencia sStr:Cadena,iLen:Entero):Cadena,"MSVBVM60" "rtcLeftCharBstr"
+Proc Right(Referencia sStr:Cadena,iLen:Entero):Cadena,"MSVBVM60" "rtcRightCharBstr"
+Proc Trim(Referencia ItemPtr:Cadena):Cadena,"MSVBVM60" "rtcTrimBstr"
+Proc LTrim(Referencia ItemPtr:Cadena):Cadena,"MSVBVM60" "rtcLeftTrimBstr"
+Proc RTrim(Referencia ItemPtr:Cadena):Cadena,"MSVBVM60" "rtcRightTrimBstr"
+Proc Len(Referencia Expresi$F3n:Cadena):Entero, "MSVBVM60" "__vbaLenBstr"
+</Contenido></Datos>

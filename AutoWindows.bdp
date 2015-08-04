@@ -70,7 +70,7 @@ FinProc
 
 Proc Ventana_ObtT$EDtulo(HWND:Entero):Cadena
 	Var Variable:Cadena,Longi:Entero
-	Longi = GetWindowTextLength(HWND)
+	Longi = GetWindowTextLength(HWND)*2
 	Variable = Espacio(Longi)
 	Variable = Izquierda(Variable,GetWindowText(HWND,Variable,Longi + 1))
 	Si CadLong(Variable) &gt; 0 Entonces Resultado = Variable
